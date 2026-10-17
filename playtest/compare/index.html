@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a2b">
+  <link rel="icon" href="data:,">
+  <meta name="description" content="Optional private-by-default comparison notes for Game Company prototype labs.">
+  <title>Compare Two Experiences — Game Company</title>
+  <style>
+    :root { color-scheme: dark; font: 16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+      background:#101a2b; color:#f2f7fc; --muted:#c5d1df; --border:#52667c; --accent:#b5f3d3; }
+    * { box-sizing:border-box; }
+    body { margin:0; }
+    a { color:var(--accent); text-underline-offset:3px; }
+    a:focus-visible,button:focus-visible,textarea:focus-visible,select:focus-visible,
+    input:focus-visible { outline:3px solid #ffe49b; outline-offset:3px; }
+    .wrap { max-width:1020px; margin:auto; padding:20px clamp(16px,4vw,42px) 60px; }
+    header { display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
+      border-bottom:1px solid var(--border); padding-bottom:16px; font-size:.9rem; }
+    header strong { letter-spacing:.08em; font-size:.78rem; }
+    h1 { font-size:clamp(2.2rem,6.5vw,4.2rem); letter-spacing:-.05em; line-height:1.1; margin:20px 0 15px; }
+    h1 span { color:var(--accent); }
+    h2 { font-size:1.15rem; margin:0 0 12px; }
+    .lede { max-width:790px; color:var(--muted); margin-bottom:26px; }
+    .privacy { border-left:4px solid var(--accent); background:#1d3944; padding:14px 18px; border-radius:0 10px 10px 0;
+      font-size:.88rem; margin:18px 0 26px; }
+    .columns { display:grid; grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr); align-items:start; gap:25px; }
+    .panel, fieldset, details { min-width:0; background:#1a2a40; border:1px solid var(--border); border-radius:15px; padding:20px; margin:0 0 19px; }
+    legend { padding:0 8px; font-weight:800; }
+    label { display:block; font-size:.89rem; font-weight:700; margin:0 0 6px; }
+    .field { margin:0 0 16px; }
+    .field:last-child { margin-bottom:0; }
+    select, textarea, input { color:#f3f7fc; background:#0d1c2d; border:1px solid #768ba1;
+      border-radius:8px; width:100%; padding:11px; font:inherit; font-size:.91rem; }
+    textarea { min-height:95px; resize:vertical; max-width:100%; }
+    .hint { margin:4px 0 10px; color:var(--muted); font-size:.8rem; }
+    .launch { margin:8px 0 0; display:block; font-weight:800; width:fit-content; }
+    .launch[hidden] { display:none; }
+    .game-title { font-size:1.02rem; margin:2px 0 6px; color:#ffffff; }
+    .meta { margin:0 0 9px; color:var(--muted); font-size:.79rem; }
+    .steps { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .steps > fieldset { margin:0 0 18px; }
+    details summary { font-weight:800; cursor:pointer; }
+    details[open] summary { margin-bottom:18px; }
+    .preview { position:sticky; top:14px; }
+    #preview { min-height:410px; max-height:60vh; resize:vertical; white-space:pre;
+      font:.76rem/1.55 ui-monospace,SFMono-Regular,Consolas,monospace; }
+    .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+    button { background:var(--accent); color:#0c2732; border:0; border-radius:9px;
+      font:inherit; font-size:.85rem; font-weight:850; cursor:pointer; padding:11px 15px; }
+    button.secondary { color:#f1f6fc; border:1px solid #7793aa; background:#35516c; }
+    #status { color:var(--accent); font-size:.8rem; min-height:22px; margin-top:12px; }
+    .share-note { border-top:1px solid var(--border); padding-top:15px; font-size:.82rem; color:var(--muted); }
+    .foot { border-top:1px solid var(--border); padding-top:18px; color:var(--muted); font-size:.78rem; }
+    @media(max-width:850px) { .columns { grid-template-columns:1fr; } .preview { position:static; } }
+    @media(max-width:560px) { .steps { grid-template-columns:1fr; gap:0; } .panel,fieldset,details { padding:16px; } }
+  </style>
+  <script type="module" src="./compare.mjs"></script>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <strong>✳ GAME COMPANY / OPTIONAL COMPARISON</strong>
+    <nav aria-label="Related pages"><a href="../../">← Arcade</a> ·
+      <a href="../">Standard playtest notes</a></nav>
+  </header>
+  <h1>Two experiences.<br><span>Your own observations.</span></h1>
+  <p class="lede">This optional worksheet helps compare the original and a separate experimental variation. Record what each actually felt like. Nothing here claims the newer version is better, and no response is required.</p>
+  <aside class="privacy"><strong>Private by default.</strong> Links open the games in separate tabs. Your notes stay in this page and are not tracked, stored or submitted. You choose whether to copy or download them. Please do not enter personal details; a public GitHub comment would be visible to others.</aside>
+
+  <div class="columns">
+    <form id="comparison" autocomplete="off" aria-label="Optional game comparison notes">
+      <fieldset>
+        <legend>1 · Choose the pair and order</legend>
+        <div class="field">
+          <label for="pair">Experiences to compare</label>
+          <select id="pair" name="pair">
+            <option value="" selected>Choose a pair…</option>
+            <option value="garden-coupled">Signal Garden ↔ Coupled Garden</option>
+            <option value="prism-fork">Prism Relay ↔ Forked Spectrum</option>
+            <option value="pulse-voices">Pulse Garden ↔ Plant Voices Lab</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="order">Which will you play first?</label>
+          <select id="order" name="order">
+            <option value="original-first">Original first, then lab</option>
+            <option value="variant-first">Lab first, then original</option>
+          </select>
+          <p class="hint">Choose either order. This is not randomized or blinded: game titles are visible. Use the same device and play for roughly comparable periods if convenient.</p>
+        </div>
+        <div class="field">
+          <label for="environment">Test environment (optional, no personal details)</label>
+          <input id="environment" name="environment" maxlength="300" placeholder="e.g., tablet, touch input">
+        </div>
+        <div class="field">
+          <label for="version">Build/commit identifiers if known (optional)</label>
+          <input id="version" name="version" maxlength="300" placeholder="Leave blank if unknown">
+        </div>
+      </fieldset>
+
+      <div class="steps">
+        <fieldset aria-labelledby="title-a">
+          <legend>2 · First experience</legend>
+          <h2 id="title-a" class="game-title">Choose a pair first</h2>
+          <p class="meta" id="credit-a">No game chosen.</p>
+          <a class="launch" id="link-a" hidden target="_blank" rel="noopener noreferrer">Open experience A ↗</a>
+          <p class="hint">Play A first, then return here to record this impression before opening B.</p>
+          <label for="notesA">What did you notice?</label>
+          <textarea id="notesA" name="notesA" maxlength="3000" placeholder="What felt easy, surprising, confusing or interesting?"></textarea>
+        </fieldset>
+        <fieldset aria-labelledby="title-b">
+          <legend>3 · Second experience</legend>
+          <h2 id="title-b" class="game-title">Choose a pair first</h2>
+          <p class="meta" id="credit-b">No game chosen.</p>
+          <a class="launch" id="link-b" hidden target="_blank" rel="noopener noreferrer">Open experience B ↗</a>
+          <p class="hint">After writing A's notes, play B and record what you actually noticed.</p>
+          <label for="notesB">What did you notice?</label>
+          <textarea id="notesB" name="notesB" maxlength="3000" placeholder="No need to prefer the variant. A negative response is useful."></textarea>
+        </fieldset>
+      </div>
+
+      <details id="after-both">
+        <summary>4 · After both (optional follow-up questions)</summary>
+        <p class="hint">Only open this section after recording your first impressions of A and B. Any opinion, including “neither,” is useful.</p>
+        <div class="field">
+          <label for="returnChoice">Would you return to either experience? Why?</label>
+          <textarea id="returnChoice" name="returnChoice" maxlength="3000"></textarea>
+        </div>
+        <div class="field">
+          <label for="difference">What actually differed in the choices you made?</label>
+          <textarea id="difference" name="difference" maxlength="3000"></textarea>
+        </div>
+        <div class="field">
+          <label for="friction">Did anything feel more confusing, frustrating, or worse?</label>
+          <textarea id="friction" name="friction" maxlength="3000"></textarea>
+        </div>
+      </details>
+    </form>
+
+    <section class="panel preview" aria-label="Local report preview">
+      <h2>Locally generated report</h2>
+      <p class="hint">The text is editable. Blank answers export as “Not recorded.” This page never sends it anywhere.</p>
+      <label for="preview">Markdown preview</label>
+      <textarea id="preview" spellcheck="false"></textarea>
+      <div class="actions">
+        <button id="copy" type="button">Copy Markdown</button>
+        <button id="download" type="button" class="secondary">Download .md</button>
+      </div>
+      <p id="status" role="status" aria-live="polite"></p>
+      <p class="share-note">Sharing is optional. <a href="https://github.com/Minuteandone/Game-company/issues/4" target="_blank" rel="noopener noreferrer">Open the public feedback discussion ↗</a> only if you choose; it will <strong>not</strong> carry or submit your notes. Review any text for personal details before posting.</p>
+    </section>
+  </div>
+  <p class="foot">Created by agent-02 (AI agent). This is a comparison aid, not a research randomizer, participant tracker, leaderboard or statement that one experiment is superior. See the game-specific design issues for context only <em>after</em> you have played.</p>
+</main>
+</body>
+</html>
