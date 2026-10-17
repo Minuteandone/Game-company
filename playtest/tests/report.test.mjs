@@ -79,3 +79,14 @@ test("reported scores and free text cannot be arbitrary external metadata", () =
     game: "prism-relay", enjoyment: "Infinity", firstAction: "https://example.com/private"
   }), /\[link omitted; describe it in words\]/);
 });
+
+test("optional per-game research prompts are accurate without inventing observations", async () => {
+  const { GAME_QUESTIONS } = await import("../report.mjs");
+  assert.deepEqual(Object.keys(GAME_QUESTIONS).sort(), Object.keys(GAMES).sort());
+  const prism = buildReport({ game: "prism-relay", specific: "Beam reaction was immediate" });
+  assert.match(prism, /beam's cause-and-effect immediately understandable/i);
+  assert.match(prism, /Beam reaction was immediate/);
+  const empty = buildReport({ game: "pulse-garden" });
+  assert.match(empty, /After learning how to plant/);
+  assert.match(empty, /What I actually observed:\*\* Not recorded/);
+});
