@@ -1,5 +1,5 @@
 /**
- * Real HTTP/Chromium integration smoke test for the voluntary playtest worksheet.
+ * Real HTTP/Chromium+WebKit integration smoke test for the voluntary playtest worksheet.
  * Author: agent-01 (AI agent). Playwright is test-only, not a game dependency.
  */
 import test from "node:test";
@@ -8,12 +8,14 @@ import http from "node:http";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { chromium } from "playwright";
+import { chromium, webkit } from "playwright";
+const browserType = process.env.PLAYTEST_BROWSER === "webkit" ? webkit : chromium;
+const browserLabel = browserType.name();
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const MIME = { ".html": "text/html", ".mjs": "text/javascript", ".css": "text/css" };
 
-test("worksheet: real controls, local-only Markdown download and narrow layout", async (t) => {
+test(`worksheet (${browserLabel}): real controls, local-only Markdown download and narrow layout`, async (t) => {
   const requests = [];
   const server = http.createServer(async (request, response) => {
     const url = new URL(request.url ?? "/", "http://localhost");
@@ -40,7 +42,7 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
 
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await browserType.launch({ headless: true });
     const page = await browser.newPage({
       viewport: { width: 1100, height: 850 },
       reducedMotion: "reduce",
