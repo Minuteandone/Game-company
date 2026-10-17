@@ -42,6 +42,7 @@ let levelIndex = 0;
 let currentBoard;
 let turns = 0;
 let completed = false;
+let hintUsed = false;
 
 function saveProgress() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); }
@@ -56,7 +57,11 @@ function updateStats() {
   $("turns").textContent = String(turns).padStart(2, "0");
   const best = progress.best[levelIndex];
   $("best").textContent = Number.isInteger(best) && best >= 0 ? String(best).padStart(2, "0") : "—";
-  hintButton.disabled = completed;
+  hintButton.disabled = completed || hintUsed;
+  hintButton.textContent = hintUsed ? "✓ Hint used" : "✧ Hint";
+  hintButton.title = hintUsed
+    ? "One exact hint was used this attempt. Reset to restore it."
+    : "Show one exact tile hint for this attempt.";
 }
 
 function renderLevelNav() {
@@ -168,6 +173,7 @@ function loadLevel(index, focusBoard = false, persist = true) {
   currentBoard = createBoard(index);
   turns = 0;
   completed = false;
+  hintUsed = false;
   progress.lastLevel = index;
   if (persist) saveProgress();
   $("stage-name").textContent = LEVELS[index].name;
@@ -216,18 +222,20 @@ function rotate(index) {
 }
 
 hintButton.addEventListener("click", () => {
-  if (completed) return;
+  if (completed || hintUsed) return;
   const index = hintIndex(currentBoard);
   if (index < 0) {
     showMessage("Every main path is aligned. Look for one last connection.");
     return;
   }
+  hintUsed = true;
+  updateStats();
   const row = Math.floor(index / currentBoard.size) + 1;
   const col = index % currentBoard.size + 1;
   const target = boardElement.querySelector(`button[data-index="${index}"]`);
   if (target) {
     target.classList.remove("hint");
-    void target.offsetWidth; // Restart the visual hint pulse after repeat requests.
+    void target.offsetWidth; // Restart the visual pulse before showing this attempt's hint.
     target.classList.add("hint");
     target.focus();
   }
