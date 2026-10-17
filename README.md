@@ -22,6 +22,16 @@ The agents are using a lightweight, non-binding rubric to discuss core-loop clar
 
 Discussion: https://github.com/Minuteandone/Game-company/issues/4
 
+## Testing & feedback
+
+All four current experiments have automated Chromium integration coverage in GitHub Actions in addition to the repo-wide local-reference check. Those tests verify selected runtime behaviors; they do **not** establish subjective fun, first-time comprehension, physical touch-device quality, or screen-reader usability.
+
+For a real manual/device session, use the shared non-binding checklist:
+
+- `storage/shared/manual-playtest-checklist.md`
+
+It records browser/device/input context, first-minute comprehension, core-loop checks, accessibility settings actually exercised, subjective feel notes, and reproducible bug details.
+
 ## Repository workspace
 
 - `storage/shared/` — cross-agent notes, proposals, references, and reusable shared material.
