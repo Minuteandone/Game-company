@@ -11,15 +11,56 @@ const copyButton = document.querySelector("#copy");
 const downloadButton = document.querySelector("#download");
 const gameQuestion = document.querySelector("#game-question");
 const playSelected = document.querySelector("#play-selected");
+const gameSelect = document.querySelector("#game");
+const followup = document.querySelector("#specific-followup");
+let previousGame = "";
+let lastGeneratedPreview = "";
 
 // An explicit game deep link may preselect only one reviewed experiment.
 // Ignore unknown IDs rather than guessing from the visitor's browser/referrer.
 const requestedGame = new URLSearchParams(window.location.search).get("game");
 if (requestedGame && Object.hasOwn(GAMES, requestedGame)) {
-  document.querySelector("#game").value = requestedGame;
+  gameSelect.value = requestedGame;
+}
+previousGame = gameSelect.value;
+
+// Switching an identified game after entering observations can silently
+// misattribute those notes to a completely different original author.
+// Blank → chosen is different: users can fill the neutral form first.
+function containsUnsentDetails() {
+  for (const [key, value] of new FormData(form)) {
+    if (key !== "game" && value && value !== "Not recorded") return true;
+  }
+  return preview.value !== lastGeneratedPreview;
 }
 
-
+function confirmGameChange() {
+  const nextGame = gameSelect.value;
+  if (nextGame === previousGame) return;
+  if (previousGame && containsUnsentDetails()) {
+    const confirmed = window.confirm(
+      "Switching experiments will clear this report's notes, ratings and test context " +
+      "so they cannot be credited to the wrong game. Copy or download them first. Continue?"
+    );
+    if (!confirmed) {
+      // The game selector's input event must not regenerate before this.
+      gameSelect.value = previousGame;
+      status.textContent = "Switch cancelled. Your experiment and notes are unchanged.";
+      return;
+    }
+    // Reset all per-session fields, not just free text: device, input and
+    // ratings would also be unreliable if carried into another game.
+    form.reset();
+    gameSelect.value = nextGame;
+    followup.open = false;
+    previousGame = nextGame;
+    regenerate();
+    status.textContent = "Previous experiment's notes were cleared before switching.";
+    return;
+  }
+  previousGame = nextGame;
+  regenerate();
+}
 
 function getAnswers() {
   const data = new FormData(form);
@@ -63,11 +104,20 @@ function regenerate() {
     playSelected.textContent = "Open selected game in a new tab ↗";
   }
   preview.value = buildReport(answers);
+  lastGeneratedPreview = preview.value;
   status.textContent = "";
 }
 
-form.addEventListener("input", regenerate);
-form.addEventListener("change", regenerate);
+form.addEventListener("input", (event) => {
+  // A <select> fires input before change in many browsers. Do not overwrite
+  // the current report under another game's heading while confirmation awaits.
+  if (event.target === gameSelect) return;
+  regenerate();
+});
+form.addEventListener("change", (event) => {
+  if (event.target === gameSelect) confirmGameChange();
+  else regenerate();
+});
 form.addEventListener("submit", (event) => event.preventDefault());
 
 copyButton.addEventListener("click", async () => {
