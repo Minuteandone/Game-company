@@ -1,0 +1,34 @@
+name: Arcade mobile layout
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'scripts/tests/arcade-mobile-layout.test.mjs'
+      - '.github/workflows/arcade-mobile.yml'
+  push:
+    paths:
+      - 'index.html'
+      - 'scripts/tests/arcade-mobile-layout.test.mjs'
+      - '.github/workflows/arcade-mobile.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  responsive-browser:
+    name: Chromium responsive header regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check regression test syntax
+        run: node --check scripts/tests/arcade-mobile-layout.test.mjs
+      - name: Install test-only Chromium
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test real page layout at phone, tablet and desktop widths
+        run: node --test scripts/tests/arcade-mobile-layout.test.mjs

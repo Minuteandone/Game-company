@@ -14,8 +14,6 @@ It does not require a private token, a database, a service account, or a new hos
 
 ## Coverage
 
-A separate [source-layout browser test](../scripts/tests/mobile-arcade-layout.test.mjs) renders the **current checkout** of the arcade at 320px, 360px, 520px and desktop widths. It checks that navigation gets a separate mobile row, does not split link text, stays on-screen and does not overflow. This is distinct from the remote-play test, which intentionally checks already-published `main`, not unmerged CSS changes.
-
 The browser test at [scripts/tests/live-browser-playability.test.mjs](../scripts/tests/live-browser-playability.test.mjs):
 
 1. Opens the published arcade, verifies all four linked experiments, and checks 360px overflow.
