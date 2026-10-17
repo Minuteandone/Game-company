@@ -12,6 +12,14 @@ const downloadButton = document.querySelector("#download");
 const gameQuestion = document.querySelector("#game-question");
 const playSelected = document.querySelector("#play-selected");
 
+// An explicit game deep link may preselect only one reviewed experiment.
+// Ignore unknown IDs rather than guessing from the visitor's browser/referrer.
+const requestedGame = new URLSearchParams(window.location.search).get("game");
+if (requestedGame && Object.hasOwn(GAMES, requestedGame)) {
+  document.querySelector("#game").value = requestedGame;
+}
+
+
 function getAnswers() {
   const data = new FormData(form);
   return {
