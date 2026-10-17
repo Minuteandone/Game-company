@@ -20,6 +20,7 @@ if (requestedGame && Object.hasOwn(GAMES, requestedGame)) {
 }
 
 
+
 function getAnswers() {
   const data = new FormData(form);
   return {
@@ -51,13 +52,14 @@ function regenerate() {
   const game = Object.hasOwn(GAMES, answers.game) ? GAMES[answers.game] : null;
   if (game) {
     // All paths come from the reviewed static allowlist, not free-text input.
-    playSelected.hidden = false;
     playSelected.href = "../" + game.path;
     playSelected.textContent = "Open " + game.name + " in a new tab ↗";
+    playSelected.hidden = false;
   } else {
-    // Never imply Signal Garden was played when the visitor did not choose.
+    // No silent Signal Garden attribution or usable launch destination.
     playSelected.hidden = true;
     playSelected.removeAttribute("href");
+    playSelected.textContent = "Open selected game in a new tab ↗";
   }
   preview.value = buildReport(answers);
   status.textContent = "";
