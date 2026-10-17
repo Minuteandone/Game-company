@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a2b">
+  <meta name="description" content="Optional private-by-default playtest worksheet for Game Company's four experiments.">
+  <title>Playtest Notes — Game Company</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: #101a2b; color: #f3f6fb; --soft: #bdc9da; --border: #475b71;
+      --accent: #b1eecf; --panel: #192a40; }
+    * { box-sizing: border-box; }
+    body { margin: 0; line-height: 1.55; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:focus-visible, button:focus-visible, select:focus-visible,
+    input:focus-visible, textarea:focus-visible { outline: 3px solid #ffe49b; outline-offset: 3px; }
+    .wrap { max-width: 1050px; margin: auto; padding: 20px clamp(16px, 4vw, 48px) 65px; }
+    header { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center;
+      padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+    header strong { letter-spacing: .08em; font-size: .78rem; }
+    header a { font-size: .85rem; }
+    .eyebrow { text-transform: uppercase; font-size: .72rem; font-weight: 800; letter-spacing: .15em; color: var(--accent); }
+    h1 { font-size: clamp(2.4rem, 7vw, 4.4rem); letter-spacing: -.06em; line-height: 1.08; margin: 15px 0; }
+    h1 span { color: var(--accent); }
+    .lede { color: var(--soft); max-width: 790px; font-size: 1.05rem; }
+    .notice { border-left: 4px solid var(--accent); padding: 12px 18px; margin: 27px 0;
+      background: #213949; border-radius: 0 10px 10px 0; }
+    .notice p { margin: 0; font-size: .9rem; }
+    .columns { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 28px; align-items: start; }
+    fieldset { min-width: 0; border: 1px solid var(--border); border-radius: 16px;
+      background: var(--panel); padding: 20px; margin: 0 0 20px; }
+    legend { font-weight: 800; font-size: 1rem; padding: 0 8px; }
+    .field { margin: 0 0 16px; }
+    .field:last-child { margin-bottom: 0; }
+    label, .question { display: block; font-size: .87rem; font-weight: 650; margin: 0 0 6px; }
+    .hint { color: var(--soft); font-size: .74rem; margin: 0 0 7px; }
+    input:not([type="checkbox"]), select, textarea, #preview { display: block; width: 100%; max-width: 100%;
+      background: #0d1d30; color: #f3f6fb; border: 1px solid #61758c; border-radius: 8px;
+      padding: 11px 12px; font: inherit; font-size: .92rem; }
+    textarea { resize: vertical; min-height: 75px; }
+    .checks { display: flex; gap: 10px 18px; flex-wrap: wrap; }
+    .check { display: inline-flex; gap: 8px; align-items: center; font-size: .85rem; font-weight: normal; }
+    .check input { width: 18px; height: 18px; accent-color: var(--accent); }
+    .preview-panel { position: sticky; top: 18px; border: 1px solid var(--border);
+      padding: 22px; background: #17273a; border-radius: 16px; }
+    .preview-panel h2 { margin: 0 0 7px; font-size: 1.22rem; }
+    .preview-panel p { color: var(--soft); font-size: .84rem; margin: 0 0 16px; }
+    #preview { min-height: 370px; max-height: 55vh; resize: vertical; white-space: pre;
+      font: .76rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+    button { border-radius: 9px; background: var(--accent); color: #0b2330;
+      font: inherit; font-size: .87rem; font-weight: 800; padding: 12px 17px; border: 0; cursor: pointer; }
+    button:hover { background: #d7ffea; }
+    button.secondary { background: #32465d; color: #f4f7fb; border: 1px solid #6d8298; }
+    button.secondary:hover { background: #435970; }
+    #status { min-height: 25px; color: var(--accent); margin: 13px 0 0; font-size: .85rem; }
+    .foot { border-top: 1px solid var(--border); margin-top: 30px; padding-top: 18px; color: var(--soft); font-size: .77rem; }
+    @media (max-width: 820px) {
+      .columns { grid-template-columns: 1fr; }
+      .preview-panel { position: static; }
+      #preview { min-height: 280px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+  </style>
+  <script type="module" src="./worksheet.mjs"></script>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <strong>✳ GAME COMPANY / FEEDBACK</strong>
+      <nav aria-label="Related pages"><a href="../">← Arcade</a> ·
+        <a href="../storage/shared/manual-playtest-checklist.md">Full testing checklist</a></nav>
+    </header>
+    <section aria-labelledby="title">
+      <p class="eyebrow">Optional playtest worksheet</p>
+      <h1 id="title">Good games need<br><span>good questions.</span></h1>
+      <p class="lede">Try a prototype without reading its source code first. Then record what you actually experienced, not what the game was intended to do. You can fill in just the questions you know.</p>
+      <aside class="notice" aria-label="Privacy and evidence note">
+        <p><strong>Private by default.</strong> This page does not submit, track, store, or send your answers. It produces a Markdown report only in your browser. You decide whether to copy or download it. Closing or reloading loses unsaved notes. Please don't include names, addresses, contact details, or other personal information.</p>
+      </aside>
+    </section>
+
+    <div class="columns">
+      <form id="feedback" autocomplete="off" aria-label="Game playtest feedback">
+        <fieldset>
+          <legend>1 · What did you try?</legend>
+          <div class="field">
+            <label for="game">Experiment</label>
+            <select id="game" name="game">
+              <option value="signal-garden">Signal Garden — agent-01</option>
+              <option value="prism-relay">Prism Relay — agent-02</option>
+              <option value="ringfall">Ringfall — agent-03</option>
+              <option value="pulse-garden">Pulse Garden — agent-04</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="familiarity">Session</label>
+            <select id="familiarity" name="familiarity">
+              <option value="Not recorded">Not recorded</option>
+              <option>First time</option>
+              <option>Played before</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="device">Device type actually used</label>
+            <select id="device" name="device">
+              <option value="Not recorded">Not recorded</option>
+              <option>Desktop/laptop</option>
+              <option>Phone</option>
+              <option>Tablet</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <p class="question" id="input-question">Input actually used (select all that apply)</p>
+            <div class="checks" role="group" aria-labelledby="input-question">
+              <label class="check"><input type="checkbox" name="input" value="Keyboard">Keyboard</label>
+              <label class="check"><input type="checkbox" name="input" value="Mouse / trackpad">Mouse/trackpad</label>
+              <label class="check"><input type="checkbox" name="input" value="Touch">Touch</label>
+              <label class="check"><input type="checkbox" name="input" value="Other">Other</label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="browser">Browser/version (optional)</label>
+            <input id="browser" name="browser" maxlength="160" placeholder="e.g. Firefox 128">
+          </div>
+          <div class="field">
+            <label for="version">Version or commit actually tested (optional)</label>
+            <input id="version" name="version" maxlength="160" placeholder="e.g. main at commit abc123">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>2 · Your first minute</legend>
+          <div class="field">
+            <label for="goal">Was the goal clear without looking at the source?</label>
+            <select id="goal" name="goal">
+              <option value="Not recorded">Not recorded</option><option>Yes</option><option>Partly</option><option>No</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="firstAction">What did you try first?</label>
+            <textarea id="firstAction" name="firstAction" maxlength="1200" rows="2" placeholder="Describe the first thing you actually did."></textarea>
+          </div>
+          <div class="field">
+            <label for="firstMinute">What happened? What confused you?</label>
+            <textarea id="firstMinute" name="firstMinute" maxlength="2000" rows="3" placeholder="What responded, what didn't, and what helped you understand?"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>3 · How did it feel?</legend>
+          <div class="field">
+            <label for="enjoyment">Enjoyment, your impression (1 = low, 5 = high)</label>
+            <select id="enjoyment" name="enjoyment">
+              <option value="">Not rated</option><option value="1">1 / 5</option><option value="2">2 / 5</option>
+              <option value="3">3 / 5</option><option value="4">4 / 5</option><option value="5">5 / 5</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="agency">How meaningful were your choices? (1 = low, 5 = high)</label>
+            <select id="agency" name="agency">
+              <option value="">Not rated</option><option value="1">1 / 5</option><option value="2">2 / 5</option>
+              <option value="3">3 / 5</option><option value="4">4 / 5</option><option value="5">5 / 5</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pacing">Pacing</label>
+            <select id="pacing" name="pacing">
+              <option value="Not recorded">Not recorded</option>
+              <option>Too slow</option><option>About right</option><option>Too fast</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="replay">Would you choose another round or level?</label>
+            <select id="replay" name="replay">
+              <option value="Not recorded">Not recorded</option><option>Yes</option><option>Unsure</option><option>No</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="strength">What worked best?</label>
+            <textarea id="strength" name="strength" maxlength="2000" rows="2"></textarea>
+          </div>
+          <div class="field">
+            <label for="improvement">What single change would help most?</label>
+            <textarea id="improvement" name="improvement" maxlength="2000" rows="2"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>4 · Bug details (optional)</legend>
+          <p class="hint">Only write a bug report if you observed a failure; leave everything blank otherwise.</p>
+          <div class="field"><label for="bugSteps">Steps to reproduce</label>
+            <textarea id="bugSteps" name="bugSteps" maxlength="2000" rows="2"></textarea></div>
+          <div class="field"><label for="expected">What did you expect?</label>
+            <textarea id="expected" name="expected" maxlength="2000" rows="2"></textarea></div>
+          <div class="field"><label for="actual">What actually happened?</label>
+            <textarea id="actual" name="actual" maxlength="2000" rows="2"></textarea></div>
+        </fieldset>
+      </form>
+
+      <aside class="preview-panel" aria-labelledby="preview-title">
+        <h2 id="preview-title">Your Markdown report</h2>
+        <p>Updates as you type. Blank questions are marked <em>Not recorded</em>, never treated as passed tests. There is no automatic submission.</p>
+        <label for="preview">Editable export preview</label>
+        <textarea id="preview" spellcheck="false" aria-describedby="preview-description"></textarea>
+        <p class="hint" id="preview-description">You may edit the report directly before copying or downloading. Updating the questions will regenerate the preview.</p>
+        <div class="buttons">
+          <button id="copy" type="button">Copy Markdown</button>
+          <button id="download" class="secondary" type="button">Download .md</button>
+        </div>
+        <p id="status" role="status" aria-live="polite"></p>
+      </aside>
+    </div>
+    <footer class="foot">Worksheet created by <strong>agent-01 (AI agent)</strong> as a companion to agent-04's manual playtest checklist. No automated score or rating here can prove a game is enjoyable.</footer>
+  </main>
+</body>
+</html>
