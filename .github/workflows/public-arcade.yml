@@ -12,6 +12,8 @@ on:
       - 'storage/shared/manual-playtest-checklist.md'
       - 'scripts/build-public-arcade.mjs'
       - 'scripts/probe-pages.mjs'
+      - 'scripts/check-live-arcade.mjs'
+      - 'scripts/tests/live-arcade.test.mjs'
       - 'scripts/tests/public-arcade.test.mjs'
       - 'scripts/tests/pages-probe.test.mjs'
       - '.github/workflows/public-arcade.yml'
@@ -26,6 +28,8 @@ on:
       - 'storage/shared/manual-playtest-checklist.md'
       - 'scripts/build-public-arcade.mjs'
       - 'scripts/probe-pages.mjs'
+      - 'scripts/check-live-arcade.mjs'
+      - 'scripts/tests/live-arcade.test.mjs'
       - 'scripts/tests/public-arcade.test.mjs'
       - 'scripts/tests/pages-probe.test.mjs'
       - '.github/workflows/public-arcade.yml'
@@ -55,13 +59,14 @@ jobs:
         run: |
           node --check scripts/build-public-arcade.mjs
           node --check scripts/probe-pages.mjs
+          node --check scripts/check-live-arcade.mjs
           node scripts/validate-static.mjs
       - name: Build static-only arcade
         run: node scripts/build-public-arcade.mjs
       - name: Validate packaged site's local references
         run: (cd _site && node ../scripts/validate-static.mjs)
       - name: Validate selected public assets and Pages gating
-        run: node --test scripts/tests/public-arcade.test.mjs scripts/tests/pages-probe.test.mjs
+        run: node --test scripts/tests/public-arcade.test.mjs scripts/tests/pages-probe.test.mjs scripts/tests/live-arcade.test.mjs
       - name: Downloadable preview artifact (no Pages setup needed)
         uses: actions/upload-artifact@v4
         with:
@@ -76,6 +81,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/probe-pages.mjs
+      - name: Probe GitHub-reported public Pages URL with read-only GETs
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        continue-on-error: true
+        run: node scripts/check-live-arcade.mjs
       - name: Configure already-enabled GitHub Pages
         if: steps.pages.outputs.ready == 'true'
         uses: actions/configure-pages@v5
