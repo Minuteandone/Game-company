@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101a2b"><link rel="icon" href="data:,">
+  <title>Paired Prototype Notes — Game Company</title>
+  <meta name="description" content="Optional private-by-default form to compare one original browser prototype with its isolated mechanic lab.">
+  <style>
+    :root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#f1f6fa;background:#101a2b;--accent:#b1eecf;--soft:#c2d0df;--line:#53677c;--panel:#1b2d43}
+    *{box-sizing:border-box}body{margin:0;line-height:1.55}main{max-width:1050px;margin:auto;padding:20px clamp(16px,4vw,46px) 70px}
+    a{color:var(--accent);text-underline-offset:4px}
+    :focus-visible{outline:3px solid #ffe49b;outline-offset:3px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:20px;font-size:.83rem}
+    header strong{letter-spacing:.1em}h1{font-size:clamp(2.1rem,7vw,3.9rem);letter-spacing:-.05em;line-height:1.12;margin:26px 0 14px}
+    .lede{color:var(--soft);max-width:760px}.notice{border-left:4px solid var(--accent);padding:13px 18px;margin:22px 0;background:#213949;border-radius:0 9px 9px 0;font-size:.86rem}
+    .columns{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:25px;align-items:start}
+    fieldset,.output{min-width:0;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:20px;margin:0 0 17px}
+    legend{font-size:1rem;font-weight:800;padding:0 6px}label{display:block;font-weight:650;font-size:.85rem;margin:12px 0 5px}
+    label:first-of-type{margin-top:0}
+    select,input,textarea{display:block;width:100%;max-width:100%;color:#f1f6fa;background:#0b1c30;border:1px solid #71869b;border-radius:8px;padding:10px 12px;font:inherit}
+    textarea{min-height:85px;resize:vertical}.launches{display:flex;gap:12px;flex-wrap:wrap;margin:13px 0}
+    .launches a{display:inline-block;padding:10px 13px;border:1px solid #719b90;border-radius:8px;font-weight:750;font-size:.85rem}
+    .muted,.hint{font-size:.78rem;color:var(--soft)}
+    details{margin-top:15px;border-top:1px solid var(--line);padding-top:12px}
+    summary{font-weight:750;cursor:pointer}button{padding:12px 16px;background:var(--accent);border:0;border-radius:9px;color:#0b2330;font-weight:850;cursor:pointer}
+    button.secondary{background:#33495f;color:white;border:1px solid #8398a8}
+    .buttons{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+    .output{position:sticky;top:15px}.output h2{margin:0 0 9px}#preview{min-height:360px;max-height:60vh;font:12px/1.55 ui-monospace,Consolas,monospace;white-space:pre}
+    #status{min-height:22px;font-size:.82rem;color:var(--accent)}
+    @media(max-width:810px){.columns{grid-template-columns:1fr}.output{position:static}#preview{min-height:260px}}
+  </style>
+  <script type="module" src="./compare.mjs"></script>
+</head>
+<body>
+<main>
+<header><strong>✳ GAME COMPANY / RESEARCH</strong><nav aria-label="Related pages"><a href="../../">← Arcade</a> · <a href="../">Single-game worksheet</a></nav></header>
+<h1>One game.<br>One experiment.<br>Two honest impressions.</h1>
+<p class="lede">This is an optional paired-playtest worksheet, not a ranking. Try an original game and its separate experimental lab, then describe what happened. Play <em>before</em> reading the design hypotheses if you want an unprimed first impression.</p>
+<div class="notice"><strong>Private by default.</strong> Nothing is submitted, tracked, saved, or posted automatically. The report exists only in this browser until you choose to copy or download it. Reloading discards unsaved notes. Do not enter names, contacts, locations or other personal information.</div>
+<div class="columns">
+<form id="comparison" autocomplete="off" aria-label="Optional paired prototype comparison">
+<fieldset><legend>1 · What did you actually try?</legend>
+<label for="pair">Original game and experiment</label>
+<select id="pair" name="pair">
+<option value="" selected>Choose a comparison pair…</option>
+<option value="signal-coupled">Signal Garden / Coupled Garden · agent-01</option>
+<option value="prism-spectrum">Prism Relay / Forked Spectrum · agent-02</option>
+<option value="pulse-voices">Pulse Garden / Plant Voices · agent-04</option>
+</select>
+<p class="hint">No pair is inferred from your browser history. Ringfall has a cue update inside its original game, not a separate lab; use the <a href="../?game=ringfall">single-game worksheet</a> for it.</p>
+<div class="launches">
+<a id="original-link" hidden target="_blank" rel="noopener noreferrer">Open original ↗</a>
+<a id="lab-link" hidden target="_blank" rel="noopener noreferrer">Open experiment ↗</a>
+</div>
+<p class="muted">Links open new tabs. Selecting a pair does not launch any game or send your responses.</p>
+<label for="played">Which versions did you actually play?</label>
+<select id="played" name="played">
+<option selected>Not recorded</option><option>Both</option><option>Original only</option><option>Lab only</option><option>Neither</option>
+</select>
+<label for="order">Order actually played</label>
+<select id="order" name="order"><option selected>Not recorded</option><option>Original first</option><option>Lab first</option><option>Only one version played</option></select>
+<label for="originalVersion">Original game build/version (optional)</label>
+<input id="originalVersion" name="originalVersion" maxlength="160" placeholder="e.g. commit or build label you noted">
+<label for="labVersion">Experimental lab build/version (optional)</label>
+<input id="labVersion" name="labVersion" maxlength="160" placeholder="e.g. commit or build label you noted">
+<label for="device">Device and input actually used (optional)</label>
+<input id="device" name="device" maxlength="160" placeholder="e.g. tablet touch, desktop keyboard">
+</fieldset>
+<fieldset><legend>2 · What happened, before reading hypotheses?</legend>
+<label for="originalNotes">Original game: what did you try and notice?</label>
+<textarea id="originalNotes" name="originalNotes" maxlength="1800" placeholder="Describe a concrete action, not a rating"></textarea>
+<label for="labNotes">Experimental version: what did you try and notice?</label>
+<textarea id="labNotes" name="labNotes" maxlength="1800" placeholder="What felt different, surprising or unclear?"></textarea>
+<details id="post-play"><summary>3 · Optional questions after trying both</summary>
+<p class="hint">Only compare versions you actually played. This section is collapsed initially to avoid biasing first impressions.</p>
+<label for="preference">Which version would you voluntarily return to?</label>
+<select id="preference" name="preference"><option selected>Not recorded</option><option>Original</option><option>Lab</option><option>Neither</option><option>Unsure</option></select>
+<label for="consequence">Which actions had noticeable consequences? Why?</label>
+<textarea id="consequence" name="consequence" maxlength="1800"></textarea>
+<label for="distinct">Did the lab feel more distinct, more frustrating, or neither?</label>
+<textarea id="distinct" name="distinct" maxlength="1800"></textarea>
+<label for="change">What would you change or remove?</label>
+<textarea id="change" name="change" maxlength="1800"></textarea>
+</details></fieldset></form>
+<section class="output" aria-labelledby="report-title">
+<h2 id="report-title">Your editable Markdown report</h2>
+<p class="muted">“Not recorded” means missing evidence, not success. If you did not play both versions, the report explicitly refuses a head-to-head conclusion.</p>
+<textarea id="preview" aria-label="Editable Markdown comparison report" spellcheck="false"></textarea>
+<div class="buttons"><button id="copy" type="button">Copy Markdown</button><button id="download" class="secondary" type="button">Download .md</button></div>
+<p id="status" role="status" aria-live="polite"></p>
+<p class="muted">Sharing is optional. You can <a href="https://github.com/Minuteandone/Game-company/issues/4" target="_blank" rel="noopener noreferrer">open the public prototype discussion ↗</a> and paste a reviewed report yourself. GitHub comments are public and may require an account; remove personal details first. This form never posts anything.</p>
+</section>
+</div>
+<p class="muted">Prototype authors: Signal/Coupled Garden — agent-01; Prism Relay/Forked Spectrum — agent-02; Pulse Garden/Plant Voices — agent-04. Comparison worksheet — agent-01. All are AI agents; no human study results are inferred.</p>
+</main></body></html>
