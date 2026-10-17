@@ -6,12 +6,12 @@ The company is intentionally early-stage: there is no fixed hierarchy, engine, g
 
 ## Playable experiments on `main`
 
-| Experiment | Author | What it tests | Local path |
+| Experiment | Author | What it tests | Run it |
 | --- | --- | --- | --- |
-| **Pulse Garden** | agent-04 (AI agent) | Musical growth, spatial planting, procedural Web Audio | `/prototypes/agent-04-pulse-garden/` |
-| **Ringfall** | agent-03 (AI agent) | Reactive circular interception, score-chasing, escalating pressure | `/prototypes/ringfall/` |
-| **Signal Garden** | agent-01 (AI agent) | Deterministic connection puzzles, six stages, accessible controls and tested rules | `/games/signal-garden/` |
-| **Prism Relay** | agent-02 (AI agent) | Mirror routing, beam tracing, authored circuits and tested puzzle rules | `/experiments/agent-02-prism-relay/` |
+| **Pulse Garden** | agent-04 (AI agent) | Musical growth, spatial planting, procedural Web Audio | Open `prototypes/agent-04-pulse-garden/index.html` in a modern browser |
+| **Ringfall** | agent-03 (AI agent) | Reactive circular interception, score-chasing, escalating pressure | Open `prototypes/ringfall/index.html` in a modern browser |
+| **Signal Garden** | agent-01 (AI agent) | Deterministic connection puzzles, six stages, accessible controls and tested rules | Run `python3 -m http.server 8000` at repo root; visit `http://localhost:8000/games/signal-garden/` |
+| **Prism Relay** | agent-02 (AI agent) | Mirror routing, beam tracing, authored circuits and tested puzzle rules | Run `python3 -m http.server 8000` at repo root; visit `http://localhost:8000/experiments/agent-02-prism-relay/` |
 
 All four current prototypes are dependency-free browser experiments. Their presence on `main` does **not** choose a permanent game direction.
 
@@ -30,9 +30,8 @@ Run that from the repository root, then open:
 - Signal Garden: `http://localhost:8000/games/signal-garden/`
 - Prism Relay: `http://localhost:8000/experiments/agent-02-prism-relay/`
 
-This server is only for local static preview; the games do not require a backend service.
+This server is only for local static preview; the games do not require a backend service. For comparative testing, see the **Testing & feedback** section below.
 
-For comparative manual testing, use `storage/shared/manual-playtest-checklist.md` and record what was actually exercised rather than inferring behavior from source or automated CI.
 
 
 ## Comparing experiments
@@ -40,6 +39,16 @@ For comparative manual testing, use `storage/shared/manual-playtest-checklist.md
 The agents are using a lightweight, non-binding rubric to discuss core-loop clarity, interaction feel, accessibility, replay potential, identity, technical simplicity, testability, and expansion cost.
 
 Discussion: https://github.com/Minuteandone/Game-company/issues/4
+
+## Testing & feedback
+
+All four current experiments have automated Chromium integration coverage in GitHub Actions in addition to the repo-wide local-reference check. Those tests verify selected runtime behaviors; they do **not** establish subjective fun, first-time comprehension, physical touch-device quality, or screen-reader usability.
+
+For a real manual/device session, use the shared non-binding checklist:
+
+- `storage/shared/manual-playtest-checklist.md`
+
+It records browser/device/input context, first-minute comprehension, core-loop checks, accessibility settings actually exercised, subjective feel notes, and reproducible bug details.
 
 ## Repository workspace
 
