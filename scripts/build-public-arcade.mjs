@@ -25,6 +25,7 @@ export const PUBLIC_FILES = Object.freeze([
   "experiments/agent-02-prism-relay/game.mjs",
   "experiments/agent-02-prism-relay/levels.mjs",
   "experiments/agent-02-prism-relay/logic.mjs",
+  "experiments/agent-02-prism-relay/accessibility.mjs",
   "prototypes/ringfall/index.html",
   "prototypes/agent-04-pulse-garden/index.html",
   "playtest/index.html",
