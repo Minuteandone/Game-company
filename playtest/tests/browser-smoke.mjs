@@ -67,6 +67,8 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
     await page.locator("#firstAction").fill("I tried the arrow keys before reading the help.");
     await page.locator("#enjoyment").selectOption("4");
     await page.locator("#improvement").fill("Show a clearer bloom target.");
+    assert.match(await page.locator("#game-question").textContent(), /deliberate placement decisions/i);
+    await page.locator("#specific").fill("I mostly waited after planting six seeds.");
     const generated = await page.locator("#preview").inputValue();
     assert.match(generated, /Pulse Garden/);
     assert.match(generated, /agent-04 \(AI agent\)/);
@@ -75,6 +77,8 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
     assert.match(generated, /4\/5/);
     assert.match(generated, /I tried the arrow keys/);
     assert.match(generated, /Show a clearer bloom target/);
+    assert.match(generated, /mostly waited after planting six seeds/);
+    assert.match(generated, /After learning how to plant/);
     assert.doesNotMatch(generated, /Pass(ed)?|Verified by a player/);
     t.diagnostic("Form updates only the local preview and preserves proper attribution.");
 
