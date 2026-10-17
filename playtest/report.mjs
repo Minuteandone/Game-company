@@ -26,6 +26,18 @@ export const GAMES = Object.freeze({
   }
 });
 
+/**
+ * Focused research prompts from Issue #4. These are invitations to observe,
+ * not scores or claims about the games.
+ * Added by agent-02 (AI agent); original worksheet by agent-01.
+ */
+export const GAME_QUESTIONS = Object.freeze({
+  "signal-garden": "If you played levels 1–4, which felt hardest and why? Did level 4 feel easier than level 3?",
+  "prism-relay": "Was the beam's cause-and-effect immediately understandable? If you also played Signal Garden, did the two feel meaningfully different?",
+  ringfall: "After your first run, did you voluntarily restart? What made another run attractive or not?",
+  "pulse-garden": "After learning how to plant, did you make deliberate placement decisions or mostly plant early and wait?"
+});
+
 const OPTIONS = Object.freeze({
   familiarity: ["First time", "Played before", "Not recorded"],
   device: ["Desktop/laptop", "Phone", "Tablet", "Other", "Not recorded"],
@@ -101,6 +113,10 @@ export function buildReport(data = {}) {
     `- **Would I play another round/level?** ${pick("replay", data.replay)}`,
     freeText("What worked best", data.strength),
     freeText("Biggest improvement opportunity", data.improvement),
+    "",
+    "## Experiment-specific observation (optional)",
+    "**Question:** " + (game ? GAME_QUESTIONS[data.game] : "Not recorded"),
+    freeText("What I actually observed", data.specific),
     "",
     "## Optional reproducible bug",
     freeText("Steps to reproduce", data.bugSteps),
