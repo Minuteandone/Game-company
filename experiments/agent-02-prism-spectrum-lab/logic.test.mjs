@@ -44,7 +44,7 @@ test("the candidate can be solved in two rotations, no shorter", () => {
 
 test("validation rejects invalid or ambiguous maps", () => {
   assert.deepEqual(validateGrid(BOARD), { width: 7, height: 7 });
-  assert.throws(() => validateGrid(["E.P", "A.B."]), /rectangular/);
+  assert.throws(() => validateGrid(["E.P", "A.B.", "..."]), /rectangular/);
   assert.throws(() => validateGrid(BOARD.map(r => r.replace("A", "B"))), /exactly one A/);
   assert.throws(() => validateGrid(BOARD.map(r => r.replace("A", "X"))), /exactly one A/);
   assert.equal(rotateMirror(BOARD, 3, 0), BOARD, "nonmirror cannot rotate");
