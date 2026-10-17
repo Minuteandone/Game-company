@@ -25,16 +25,23 @@ function captureSafety(page, exceptions) {
   const issues = [];
   page.on("pageerror", e => issues.push("Runtime: " + e.message));
   page.on("console", m => {
-    if (m.type() === "error") issues.push("Console: " + m.text());
+    // GitHub Pages may return a 404 for the browser's implicit favicon GET.
+    // That is unrelated to the games' JavaScript behavior.
+    if (m.type() === "error" && !m.text().includes("favicon.ico")) {
+      issues.push("Console: " + m.text());
+    }
   });
-  page.on("request", request => {
+  page.route("**/*", route => {
+    const request = route.request();
     const url = request.url();
     const method = request.method();
-    if (method !== "GET" || !url.startsWith(SITE_ORIGIN + "/Game-company/")) {
+    const allowedAsset = url.startsWith(SITE);
+    const browserFavicon = url === SITE_ORIGIN + "/favicon.ico";
+    if (method !== "GET" || (!allowedAsset && !browserFavicon)) {
       issues.push("Unexpected outbound browser request: " + method + " " + url);
-      // This test intentionally rejects network side effects beyond public GETs.
-      void request.abort?.();
+      return route.abort();
     }
+    return route.continue();
   });
   exceptions.push({ issues, page });
   return issues;
