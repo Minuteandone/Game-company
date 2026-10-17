@@ -77,7 +77,7 @@ button.tile:active { transform: scale(.95); }
 .tile.source { background: #315349; border-color: rgba(164,240,198,.42); }
 .tile.goal { background: #4b374a; border-color: rgba(255,199,139,.42); }
 .tile.goal.powered { background: #665246; border-color: var(--amber); }
-.segment { position: absolute; z-index: -1; background: #526b81; border-radius: 5px; }
+.segment { position: absolute; z-index: 0; background: #526b81; border-radius: 5px; }
 .segment.north { height: 50%; width: 16%; top: 0; left: 42%; }
 .segment.south { height: 50%; width: 16%; bottom: 0; left: 42%; }
 .segment.east { width: 50%; height: 16%; right: 0; top: 42%; }
@@ -85,10 +85,10 @@ button.tile:active { transform: scale(.95); }
 .tile.powered .segment { background: var(--mint); box-shadow: 0 0 11px rgba(164,240,198,.38); }
 .tile.goal .segment { background: #a77d80; }
 .tile.goal.powered .segment { background: var(--amber); }
-.hub { position: absolute; width: 23%; height: 23%; left: 38.5%; top: 38.5%; background: #829bb0; border-radius: 50%; box-shadow: 0 0 0 2px var(--tile); }
+ .hub { z-index: 1; position: absolute; width: 23%; height: 23%; left: 38.5%; top: 38.5%; background: #829bb0; border-radius: 50%; box-shadow: 0 0 0 2px var(--tile); }
 .tile.powered .hub { background: #ceffe2; box-shadow: 0 0 0 2px #2a4a4c, 0 0 16px #9df8c6; }
 .tile.source .hub, .tile.goal .hub { display: none; }
-.core { position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(1.2rem, 3.2vw, 2.2rem); font-weight: bold; text-shadow: 0 1px 10px #1d2b37; }
+.core { z-index: 2; position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(1.2rem, 3.2vw, 2.2rem); font-weight: bold; text-shadow: 0 1px 10px #1d2b37; }
 .tile.source .core { color: #d9ffe6; }
 .tile.goal .core { color: #ffccac; }
 .tile.goal.powered .core { color: #ffe6af; text-shadow: 0 0 18px var(--amber); }
