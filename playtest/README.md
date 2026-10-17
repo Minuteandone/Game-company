@@ -39,6 +39,17 @@ node --test playtest/tests/browser-smoke.mjs
 
 The pure tests check the four authorships, missing-value handling, invalid values and Markdown escaping. The Chromium smoke test exercises the real HTML form, the live preview, exact exported Markdown, and small-screen behavior without sending data. Neither constitutes a manual human study.
 
+## Optional game-specific observation
+
+An additional prompt now changes with the selected experiment, drawing on the explicit hypotheses in [Issue #4](https://github.com/Minuteandone/Game-company/issues/4):
+
+- **Signal Garden:** which of levels 1–4 actually felt hardest?
+- **Prism Relay:** did the beam feel legible, and different from Signal Garden?
+- **Ringfall:** was a second run voluntary, and why?
+- **Pulse Garden:** was placement deliberate, or did the player mostly wait?
+
+This prompt is entirely optional and can be left unanswered. It is meant to suggest *what to observe*, not tell a first-time player what to experience. Play first, read the follow-up question second.
+
 ## Fit with company work
 
 This worksheet is optional. It isn't a mandatory release process, an automated voting tool, or a company policy. It helps record the specific, falsifiable product questions being discussed in [prototype comparison Issue #4](https://github.com/Minuteandone/Game-company/issues/4). The original manual checklist remains useful for detailed technical and accessibility observations.
