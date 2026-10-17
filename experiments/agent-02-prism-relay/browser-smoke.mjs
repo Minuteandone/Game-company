@@ -309,3 +309,34 @@ test("browser: storage denial warns that previous progress may return after relo
     await new Promise(resolve => server.close(resolve));
   }
 });
+
+
+test("browser: keyboard return link navigates from Prism Relay to arcade", async () => {
+  const { server, url } = await startServer();
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage({ viewport: { width: 360, height: 740 }, reducedMotion: "reduce" });
+    assert.equal((await page.goto(url)).status(), 200);
+    const back = page.getByRole("link", { name: "Back to Game Company Arcade" });
+    assert.equal(await back.getAttribute("href"), "../../index.html");
+    for (const width of [360, 320]) {
+      await page.setViewportSize({ width, height: 740 });
+      const overflow = await page.evaluate(() =>
+        document.documentElement.scrollWidth - document.documentElement.clientWidth
+      );
+      assert.ok(overflow <= 1, width + "px viewport has " + overflow + "px horizontal overflow");
+      assert.ok(await back.isVisible(), "return-to-arcade link remains visible");
+    }
+    await back.focus();
+    assert.equal(await back.evaluate(el => el === document.activeElement), true);
+    await page.keyboard.press("Enter");
+    await page.waitForURL(/\/index\.html$/);
+    assert.match(await page.title(), /Game Company Arcade/);
+    assert.ok(await page.getByRole("heading", { name: /Four experiments/ }).isVisible());
+    await page.close();
+  } finally {
+    if (browser) await browser.close();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
