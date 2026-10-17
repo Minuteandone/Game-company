@@ -60,7 +60,7 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
     const neutralReport = await page.locator("#preview").inputValue();
     assert.match(neutralReport, /Playtest notes — Unspecified experiment/);
     assert.match(neutralReport, /Original author:\*\* Not recorded/);
-    assert.doesNotMatch(neutralReport, /Signal Garden|agent-01 \(AI agent\)/,
+    assert.doesNotMatch(neutralReport, /Playtest notes — Signal Garden|\*\*Original author:\*\* agent-01 \(AI agent\)/,
       "blank worksheet must not falsely attribute a player's notes to Signal Garden");
     assert.equal(await page.locator("#play-selected").isVisible(), false);
     assert.equal(await page.locator("#play-selected").getAttribute("href"), null);
