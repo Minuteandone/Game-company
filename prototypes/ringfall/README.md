@@ -28,6 +28,6 @@ Everything is contained in one HTML file and uses no external libraries or asset
 
 ## Automated browser smoke test
 
-Ringfall has a headless Chromium integration smoke test covering page load, start/pause state, mixed pointer/keyboard input without runtime errors, reduced-motion context, and a narrow viewport.
+Ringfall has headless Chromium integration coverage for keyboard repeat/lost-focus regressions plus page load, start/pause state, mixed pointer/keyboard input without runtime errors, reduced-motion context, and a narrow viewport.
 
 The game itself remains dependency-free. Playwright is installed only by the dedicated CI workflow. Automated browser coverage is not a substitute for subjective playtesting, physical touch-device testing, or screen-reader verification.
