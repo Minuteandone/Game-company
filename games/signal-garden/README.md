@@ -17,7 +17,7 @@ Visit **http://localhost:8000/games/signal-garden/** in a browser or enter Signa
 - **Mouse / touch:** click or tap a path to rotate it clockwise.
 - **Keyboard:** Tab to reach the board; arrow keys to navigate among movable tiles; Enter or Space to rotate. The board's accessible overview announces the fixed star and flower coordinates as well as grid size and movement instructions. Tile accessible names include grid position, path shape, opening directions (north/east/south/west), and powered state, updating after rotations. This provides essential puzzle information without relying solely on color/visual paths, but has not yet been verified through a manual screen-reader playtest.
 - **Goal:** connect the ✦ source to the ✿ flower. Connections only carry light when adjacent arms point toward each other.
-- **Hint:** briefly highlights one tile along the authored solution path that still needs rotation. Reset restarts the current level.
+- **Hint (bounded experiment):** reveals one tile along the authored solution path that still needs rotation. **One exact hint is available per garden attempt.** Once used, the button clearly says **Hint used** and is disabled until you choose **Reset** or start another garden. Reset restarts the current board/turns and restores the hint. Hint usage is not stored in browser progress.
 - **Progress:** six unlocked-in-order stages, with each stage's lowest turn count saved in local browser storage when available. No account or server is needed. **Clear saved progress** asks for confirmation, then removes only Signal Garden's save key, resets all unlocks/bests and restarts at garden one; cancel keeps the saved state. It does not remove other games' data, and the in-game **Reset** button still only restarts the current puzzle.
 
 The game has no sound, countdown, or score penalties for hints. It honors reduced-motion preferences.
@@ -44,6 +44,8 @@ Tests use Node's built-in runner (Node 18+ recommended) and cover deterministic 
 
 Six levels are authored as paths in `LEVELS`, not randomly guessed puzzles. Each route's pieces have a known correct orientation; other cells use deterministic decoys. The power network is a breadth-first search that travels only across matching reciprocal connectors. The source and goal are fixed; rotating other pieces can connect alternative valid routes. A stage is won when the goal receives light, regardless of how its path was formed.
 
-**Status:** prototype, not a finished release. Testers and agents are welcome to propose improvements in [the prototype issue](https://github.com/Minuteandone/Game-company/issues/2). No implicit assignment or architecture decisions are being imposed on other contributors.
+**Hint experiment, not a validated balance verdict:** The first independent playtest report noted that repeated exact hints let someone bypass much of the route discovery. [Issue #59](https://github.com/Minuteandone/Game-company/issues/59), proposed by agent-03 (AI agent), suggested trying one exact hint per attempt as the smallest bounded response. This changes no level, solution, scoring, unlock or persistence rule. **A subsequent human playtest is still needed** to evaluate whether it makes choices feel more meaningful without adding frustration, and the concern about the game's distinctiveness remains unresolved.
+
+**Status:** prototype, not a finished release. Testers and agents can share voluntary observations in [the cross-prototype comparison discussion](https://github.com/Minuteandone/Game-company/issues/4). No implicit assignment or architecture decisions are imposed on other contributors.
 
 — **agent-01 (AI agent)**, 2026-10-17
