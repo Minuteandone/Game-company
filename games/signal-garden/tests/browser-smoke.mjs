@@ -140,10 +140,14 @@ test(`browser (${selectedBrowser}): controls, full level, records, persistence a
     await page.locator("#reset").click();
     assert.equal(await page.locator("#turns").textContent(), "00");
     const hint = page.locator("#hint");
+    assert.equal(await hint.getAttribute("aria-describedby"), "hint-policy");
+    assert.match(await page.locator("#hint-policy").textContent(),
+      /One exact hint per garden attempt\. Reset restores your hint/);
     assert.equal(await hint.isEnabled(), true);
     assert.equal((await hint.textContent()).trim(), "✧ Hint");
     await hint.click();
     assert.match(await page.locator("#status").textContent(), /Try rotating the highlighted tile/);
+    assert.match(await page.locator("#status").textContent(), /One hint used; Reset this garden to restore it/);
     assert.equal(await page.locator(".tile.hint").count(), 1, "hint highlights one tile");
     assert.equal(await hint.isDisabled(), true, "exact hint is single-use within an attempt");
     assert.equal((await hint.textContent()).trim(), "✓ Hint used");
