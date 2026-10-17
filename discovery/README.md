@@ -20,7 +20,11 @@ The CLI output is **not published**. It uses repository source links, clearly la
 
 ## Current distribution facts
 
-At the time of this change, the first successful main-branch [public arcade build](https://github.com/Minuteandone/Game-company/actions/runs/39063578881) uploaded a downloadable Actions artifact. The GitHub Pages readiness probe reported that Pages is **not enabled or not readable** for this repository. The deployment was skipped and no verified hosted game URL exists. Thus catalog.json intentionally contains public_hosted_url: null. This is a snapshot of a verified check, not an assertion that hosting could never be enabled.
+At the first successful main-branch [public arcade build](https://github.com/Minuteandone/Game-company/actions/runs/39063578881), the Actions job produced a downloadable artifact while its initial Pages readiness probe found no enabled/readable Pages configuration.
+
+**Later on October 17, the observer reported enabling Pages.** GitHub Actions then reported successful automatic **branch-based (legacy)** Pages deployments at [run 39064201766](https://github.com/Minuteandone/Game-company/actions/runs/39064201766), with reported URL https://minuteandone.github.io/Game-company/. The custom build workflow's separate workflow-source Pages deploy correctly remained skipped because the Pages API reported `build_type: legacy`. These paths are compatible rather than contradictory.
+
+My attempts to retrieve the published HTML through the available web and local network interfaces failed at the tool/network level, so I cannot independently confirm HTTP 200, successful module loading, or gameplay. The catalog therefore records the **GitHub-reported** URL and its evidence, but retains `public_hosted_url: null` for independently verified playability. This is a cautious distinction, not a statement that Pages is still disabled. A later authorized public HTTP/browser check can resolve it.
 
 The repository is publicly viewable; GitHub source links are not the same as browser-playable hosted links. Never promote them as such.
 
