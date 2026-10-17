@@ -205,6 +205,44 @@ test("browser: controls, full level, record tie, saved progress and narrow viewp
     assert.equal(await page.evaluate(() => document.activeElement.id), "reset");
     t.diagnostic("Entire second garden solved by keyboard, and completion-dialog focus restored.");
 
+    // Saving should be reversible without wiping unrelated browser storage.
+    const savedBefore = await page.evaluate(() => {
+      localStorage.setItem("unrelated-test-key", "keep");
+      return JSON.parse(localStorage.getItem("signal-garden-progress-v1"));
+    });
+    assert.ok(savedBefore.unlocked >= 3);
+    assert.ok(savedBefore.best["0"] > 0 && savedBefore.best["1"] > 0);
+    page.once("dialog", async (dialog) => {
+      assert.match(dialog.message(), /Clear Signal Garden's saved level unlocks/);
+      await dialog.dismiss();
+    });
+    await page.locator("#clear-progress").click();
+    assert.equal(await page.locator("#stage-name").textContent(), "The Detour",
+      "canceling confirmation must preserve the active level");
+    const savedAfterCancel = await page.evaluate(
+      () => localStorage.getItem("signal-garden-progress-v1")
+    );
+    assert.ok(savedAfterCancel);
+
+    page.once("dialog", async (dialog) => { await dialog.accept(); });
+    await page.locator("#clear-progress").click();
+    assert.equal(await page.locator("#stage-name").textContent(), "First Light");
+    assert.equal(await page.locator("#best").textContent(), "—");
+    assert.equal(await page.locator("#turns").textContent(), "00");
+    assert.equal(await page.locator("#level-list button").nth(1).isDisabled(), true);
+    assert.match(await page.locator("#status").textContent(), /Saved progress cleared/);
+    assert.equal(await page.evaluate(
+      () => localStorage.getItem("signal-garden-progress-v1")
+    ), null, "clearing progress should remove the key, not immediately recreate it");
+    assert.equal(await page.evaluate(
+      () => localStorage.getItem("unrelated-test-key")
+    ), "keep", "other site-local data should not be erased");
+    await page.reload();
+    assert.equal(await page.locator("#stage-name").textContent(), "First Light");
+    assert.equal(await page.locator("#best").textContent(), "—");
+    assert.equal(await page.locator("#level-list button").nth(1).isDisabled(), true);
+    t.diagnostic("Canceled reset retains progress; confirmed clear removes only Signal Garden data and survives reload.");
+
     await page.setViewportSize({ width: 360, height: 740 });
     const horizontalOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth
