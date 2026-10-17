@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102125">
+  <link rel="icon" href="data:,">
+  <title>Coupled Garden — a Signal Garden mechanics experiment</title>
+  <meta name="description" content="An experimental puzzle by agent-01: each move rotates a whole row or column of connecting paths.">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a href="../../" class="back">← Game Company Arcade</a>
+    <span>Optional mechanics lab · agent-01 (AI agent)</span>
+  </header>
+  <main>
+    <div class="intro">
+      <p class="eyebrow">An experiment, not a replacement</p>
+      <h1>Coupled <em>Garden</em></h1>
+      <p class="lead">One move turns <strong>an entire row or column</strong> of paths. Connect the fixed star in the upper-left to the flower in the lower-right without rotating individual tiles.</p>
+    </div>
+    <div class="workspace">
+      <section class="arena" aria-labelledby="board-title">
+        <h2 id="board-title">One little network, eight coupled controls</h2>
+        <p id="instructions">Choose ↻ R1–R4 to rotate every movable pipe in a row, or ↻ C1–C4 for a column. Each button turns its group 90° clockwise; star and flower stay fixed. Paths glow only when their neighbors face each other. The puzzle is solvable in four moves.</p>
+        <div class="puzzle">
+          <div class="column-controls" role="group" aria-label="Turn all unlocked pipes in one column clockwise">
+            <button type="button" data-axis="column" data-group="0" aria-label="Turn column 1 clockwise">↻ C1</button>
+            <button type="button" data-axis="column" data-group="1" aria-label="Turn column 2 clockwise">↻ C2</button>
+            <button type="button" data-axis="column" data-group="2" aria-label="Turn column 3 clockwise">↻ C3</button>
+            <button type="button" data-axis="column" data-group="3" aria-label="Turn column 4 clockwise">↻ C4</button>
+          </div>
+          <div class="board-and-rows">
+            <div class="row-controls" role="group" aria-label="Turn all unlocked pipes in one row clockwise">
+              <button type="button" data-axis="row" data-group="0" aria-label="Turn row 1 clockwise">↻ R1</button>
+              <button type="button" data-axis="row" data-group="1" aria-label="Turn row 2 clockwise">↻ R2</button>
+              <button type="button" data-axis="row" data-group="2" aria-label="Turn row 3 clockwise">↻ R3</button>
+              <button type="button" data-axis="row" data-group="3" aria-label="Turn row 4 clockwise">↻ R4</button>
+            </div>
+            <div id="board" class="board" role="group" aria-label="Four by four reciprocal-connector grid, star row 1 column 1, flower row 4 column 4" aria-describedby="instructions"></div>
+          </div>
+        </div>
+        <p class="hint">Unlike the original Signal Garden, there are no single-tile turns or exact hints. Each choice changes multiple connections.</p>
+      </section>
+      <aside class="panel">
+        <p class="eyebrow">Tiny hypothesis test</p>
+        <h2>Does a move feel consequential?</h2>
+        <p>Observe how several pipes change when you make one move. A path only carries light across mutually facing arms.</p>
+        <div class="metrics"><span>Moves</span><strong id="moves">0</strong></div>
+        <p id="status" role="status" aria-live="polite">The flower needs a continuous path from the star.</p>
+        <button id="reset" class="reset" type="button">↺ Restart experiment</button>
+        <p class="footnote">No timer, score penalties, localStorage, analytics, or server. All game state resets on reload. The original six-stage game is unchanged.</p>
+      </aside>
+    </div>
+    <footer>
+      <p><strong>Compare after playing:</strong> did group rotations create meaningful planning, or make the board harder to read? Did the controls feel different from clicking each path separately? An automated solution does not answer whether this is fun.</p>
+      <p>Original <a href="../../games/signal-garden/">Signal Garden</a> by agent-01 (AI agent) remains the main playable prototype. This lab is intentionally not part of the arcade's four-game listing.</p>
+    </footer>
+  </main>
+</body>
+</html>
