@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pulse Garden — agent-04</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#07110e;color:#effff7}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 20% 10%,#183a2d 0,transparent 42rem),#07110e}
+main{width:min(1100px,96vw);padding:22px 0 34px}.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:end;margin-bottom:12px}
+h1{margin:0;font-size:clamp(1.7rem,4vw,2.5rem);letter-spacing:-.04em}p{margin:.35rem 0;color:#98bdad}
+.hud{display:flex;gap:8px;flex-wrap:wrap}.chip{min-width:86px;text-align:center;padding:7px 11px;border:1px solid #ffffff18;border-radius:999px;background:#0d211bbb}
+.chip b{display:block}.chip small{color:#88ad9e;text-transform:uppercase;letter-spacing:.08em}
+.stage{overflow:hidden;border:1px solid #ffffff18;border-radius:22px;box-shadow:0 25px 70px #0007;background:#0a1713}
+canvas{display:block;width:100%;height:min(68vh,680px);min-height:430px;touch-action:none;cursor:crosshair}.help{font-size:.9rem;color:#789b8d}
+kbd{border:1px solid #ffffff2b;border-bottom-width:2px;border-radius:6px;padding:1px 6px;background:#ffffff0d;color:#eafff5}
+</style>
+</head>
+<body>
+<main>
+<div class="top">
+<div><h1>Pulse Garden</h1><p>Plant a chorus. The sweep grows seeds and nearby blooms harmonize.</p></div>
+<div class="hud">
+<div class="chip"><b id="score">0</b><small>score</small></div>
+<div class="chip"><b id="blooms">0 / 12</b><small>blooms</small></div>
+<div class="chip"><b id="time">60.0</b><small>seconds</small></div>
+<div class="chip"><b id="sound">on</b><small>sound</small></div>
+</div>
+</div>
+<div class="stage"><canvas id="game" aria-label="Pulse Garden play area"></canvas></div>
+<p class="help">Click/tap to plant · <kbd>Space</kbd> pause · <kbd>R</kbd> reset · <kbd>M</kbd> mute</p>
+</main>
+<script>
+(()=>{"use strict";
+const c=document.querySelector("#game"),x=c.getContext("2d"),$=id=>document.querySelector(id);
+const scoreEl=$("#score"),bloomsEl=$("#blooms"),timeEl=$("#time"),soundEl=$("#sound");
+const GOAL=12,ROUND=60,MAX=28,SPEED=.19,LINK=118,MIN=28,pal=[[104,223,154],[114,205,235],[188,152,255],[247,192,111],[238,133,171]];
+let w=1,h=1,d=1,seeds=[],parts=[],score=0,elapsed=0,sweep=0,last=performance.now(),started=false,paused=false,ended=false,muted=false,audio=null;
+
+function resize(){const oldW=w,oldH=h,r=c.getBoundingClientRect(),nw=Math.max(1,r.width),nh=Math.max(1,r.height);if(oldW>1&&oldH>1&&(oldW!==nw||oldH!==nh)){const sx=nw/oldW,sy=nh/oldH;for(const s of seeds){s.x*=sx;s.y*=sy}for(const p of parts){p.x*=sx;p.y*=sy}}d=Math.min(devicePixelRatio||1,2);w=nw;h=nh;c.width=Math.round(w*d);c.height=Math.round(h*d);x.setTransform(d,0,0,d,0,0)}
+function ac(){if(muted)return null;if(!audio){const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;audio=new A}if(audio.state==="suspended")audio.resume();return audio}
+function tone(s){const a=ac();if(!a)return;const notes=[0,2,4,7,9,12,14],i=Math.max(0,Math.min(notes.length-1,Math.floor(s.x/w*notes.length))),semi=notes[i]+Math.max(0,s.g-1)*12,f=164.81*Math.pow(2,semi/12),o=a.createOscillator(),g=a.createGain(),n=a.currentTime;o.type=s.g>=4?"triangle":"sine";o.frequency.value=f;g.gain.setValueAtTime(.0001,n);g.gain.exponentialRampToValueAtTime(.045,n+.012);g.gain.exponentialRampToValueAtTime(.0001,n+.34);o.connect(g);g.connect(a.destination);o.start(n);o.stop(n+.36)}
+function burst(px,py,n,col){for(let i=0;i<n;i++){const q=Math.random()*Math.PI*2,s=18+Math.random()*42;parts.push({x:px,y:py,vx:Math.cos(q)*s,vy:Math.sin(q)*s,l:.45+Math.random()*.4,m:.8,c:col})}}
+function bloomCount(){return seeds.filter(s=>s.g>=4).length}
+function hud(){scoreEl.textContent=score.toLocaleString();bloomsEl.textContent=bloomCount()+" / "+GOAL;timeEl.textContent=Math.max(0,ROUND-elapsed).toFixed(1);soundEl.textContent=muted?"off":"on"}
+function reset(){seeds=[];parts=[];score=0;elapsed=0;sweep=0;started=false;paused=false;ended=false;hud()}
+function plant(px,py){if(ended||seeds.length>=MAX)return;if(seeds.some(s=>Math.hypot(s.x-px,s.y-py)<MIN))return;started=true;ac();const col=pal[seeds.length%pal.length];seeds.push({x:px,y:py,g:0,w:Math.random()*Math.PI*2,c:col});score+=2;burst(px,py,5,col);hud()}
+function hit(s){s.g=Math.min(4,s.g+1);let n=0;for(const o of seeds)if(o!==s&&o.g>=2&&Math.hypot(o.x-s.x,o.y-s.y)<=LINK)n++;score+=8+s.g*3+n*4;tone(s);burst(s.x,s.y-8,4+s.g*2,s.c)}
+function update(dt){if(!started||paused||ended)return;elapsed+=dt;if(elapsed>=ROUND){elapsed=ROUND;ended=true;hud();return}const prev=sweep;sweep=(sweep+SPEED*dt)%1;const wrap=sweep<prev;for(const s of seeds){const nx=s.x/w,cross=wrap?(nx>prev||nx<=sweep):(nx>prev&&nx<=sweep);if(cross)hit(s)}for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=14*dt;p.l-=dt}parts=parts.filter(p=>p.l>0);hud()}
+function bg(){const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,"#10241e");g.addColorStop(1,"#09130f");x.fillStyle=g;x.fillRect(0,0,w,h);x.strokeStyle="#b0ffda0e";for(let q=0;q<w;q+=54){x.beginPath();x.moveTo(q,0);x.lineTo(q,h);x.stroke()}for(let q=0;q<h;q+=54){x.beginPath();x.moveTo(0,q);x.lineTo(w,q);x.stroke()}}
+function links(){for(let i=0;i<seeds.length;i++){const a=seeds[i];if(a.g<3)continue;for(let j=i+1;j<seeds.length;j++){const b=seeds[j];if(b.g<3)continue;const dis=Math.hypot(a.x-b.x,a.y-b.y);if(dis>LINK)continue;x.strokeStyle="rgba(171,255,218,"+((1-dis/LINK)*.34)+")";x.beginPath();x.moveTo(a.x,a.y-6);x.lineTo(b.x,b.y-6);x.stroke()}}}
+function seed(s,t){const [r,g,b]=s.c,sw=Math.sin(t*.002+s.w)*(2+s.g*.7),sh=9+s.g*12,top=s.y-sh;x.strokeStyle="rgba("+r+","+g+","+b+",.82)";x.lineWidth=2;x.beginPath();x.moveTo(s.x,s.y+5);x.quadraticCurveTo(s.x+sw,s.y-sh*.45,s.x+sw*.45,top);x.stroke();x.fillStyle="rgba("+r+","+g+","+b+",.72)";if(s.g>=2){x.beginPath();x.ellipse(s.x-5,s.y-sh*.48,7,3.5,-.5,0,Math.PI*2);x.fill()}if(s.g>=3){x.beginPath();x.ellipse(s.x+6,s.y-sh*.7,7,3.5,.45,0,Math.PI*2);x.fill()}const rr=5+s.g*2.2;x.shadowColor="rgba("+r+","+g+","+b+",.5)";x.shadowBlur=10+s.g*3;x.fillStyle="rgb("+r+","+g+","+b+")";x.beginPath();x.arc(s.x+sw*.45,top,rr,0,Math.PI*2);x.fill();x.shadowBlur=0;if(s.g>=4){x.strokeStyle="#f0fff8b8";for(let i=0;i<6;i++){const a=Math.PI*2*i/6+t*.00015;x.beginPath();x.arc(s.x+sw*.45+Math.cos(a)*(rr+5),top+Math.sin(a)*(rr+5),2.2,0,Math.PI*2);x.stroke()}}}
+function sweepDraw(){const px=sweep*w,g=x.createLinearGradient(px-42,0,px+18,0);g.addColorStop(0,"#9fffd400");g.addColorStop(.78,"#9fffd429");g.addColorStop(1,"#daffeeaa");x.fillStyle=g;x.fillRect(px-42,0,60,h);x.strokeStyle="#ddfff0d1";x.beginPath();x.moveTo(px,0);x.lineTo(px,h);x.stroke()}
+function particles(){for(const p of parts){const [r,g,b]=p.c,a=Math.max(0,Math.min(1,p.l/p.m));x.fillStyle="rgba("+r+","+g+","+b+","+a+")";x.beginPath();x.arc(p.x,p.y,2.4,0,Math.PI*2);x.fill()}}
+function overlay(){x.textAlign="center";if(!started){x.fillStyle="#040c0959";x.fillRect(0,0,w,h);x.fillStyle="#effff7";x.font="700 28px system-ui";x.fillText("Plant your first seed",w/2,h/2-8);x.fillStyle="#9bc1b1";x.font="15px system-ui";x.fillText("Click or tap anywhere in the garden",w/2,h/2+22)}else if(paused&&!ended){x.fillStyle="#040c0994";x.fillRect(0,0,w,h);x.fillStyle="#effff7";x.font="700 28px system-ui";x.fillText("Paused",w/2,h/2)}else if(ended){x.fillStyle="#040c09ad";x.fillRect(0,0,w,h);x.fillStyle="#effff7";x.font="700 30px system-ui";x.fillText(bloomCount()>=GOAL?"Garden chorus complete!":"The garden cycle ended",w/2,h/2-22);x.fillStyle="#a9cebd";x.font="16px system-ui";x.fillText(bloomCount()+" blooms · "+score.toLocaleString()+" points",w/2,h/2+10);x.fillText("Press R to grow another garden",w/2,h/2+40)}}
+function draw(t){bg();links();for(const s of seeds)seed(s,t);particles();if(started)sweepDraw();overlay()}
+function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;update(dt);draw(now);requestAnimationFrame(frame)}
+c.addEventListener("pointerdown",e=>{const r=c.getBoundingClientRect();plant(e.clientX-r.left,e.clientY-r.top)});
+addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();if(started&&!ended)paused=!paused}else if(e.key.toLowerCase()==="r")reset();else if(e.key.toLowerCase()==="m"){muted=!muted;hud()}});
+addEventListener("resize",resize);resize();reset();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
