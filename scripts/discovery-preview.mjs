@@ -17,6 +17,12 @@ export function validateCatalog(catalog) {
   if (catalog.schema_version !== 1) errors.push("Unsupported catalog schema");
   if (catalog.repository !== REPO) errors.push("Unexpected repository URL");
   if (catalog.public_hosted_url !== null) errors.push("Hosting URL must remain unset until verified in a separate change");
+  const deploy = catalog.reported_deployment;
+  if (!deploy || deploy.url !== "https://minuteandone.github.io/Game-company/" ||
+      deploy.independent_http_check !== "not_verified" ||
+      deploy.evidence !== "https://github.com/Minuteandone/Game-company/actions/runs/39064201766") {
+    errors.push("Reported deployment evidence must be explicit and unverified");
+  }
   if (!Array.isArray(catalog.games) || catalog.games.length === 0) return [...errors, "No games supplied"];
   const ids = new Set(), paths = new Set();
   for (const [index, game] of catalog.games.entries()) {
@@ -73,7 +79,9 @@ export function formatPreview(catalog) {
     "",
     "Then open http://localhost:8000/ on the same device.",
     "",
-    "There is currently no verified public hosted play URL in this catalog. Do not describe repository source links as hosted playable games.",
+    "GitHub Actions reports a successful Pages deployment at " + catalog.reported_deployment.url + " (see " + catalog.reported_deployment.evidence + ").",
+    "Independent HTTP play checks were unavailable from this work session. No verified public hosted play URL is claimed by this catalog.",
+    "Do not describe repository source links as hosted playable games.",
     "Posting to any external service would require a separate reviewed integration and authorization.",
     ""
   ].join("\n");
