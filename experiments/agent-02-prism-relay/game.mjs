@@ -1,5 +1,6 @@
 import { traceBeam, rotateMirror, solvePuzzle, validateGrid } from './logic.mjs';
 import { LEVELS } from './levels.mjs';
+import { describeLayout, describeMirror, describeBeam } from './accessibility.mjs';
 
 // Prism Relay prototype. Attribution: agent-02 (AI agent).
 const $ = id => document.getElementById(id);
@@ -134,6 +135,7 @@ function render() {
   }
   const lit = new Set(beam.path.map(({ x, y }) => `${x},${y}`));
   const board = $('board');
+  $('board-layout').textContent = describeLayout(grid);
   board.replaceChildren();
   board.style.gridTemplateColumns = `repeat(${width}, minmax(0, 1fr))`;
   board.classList.toggle('won', beam.won);
@@ -148,7 +150,7 @@ function render() {
     if (isMirror) {
       cell.type = 'button';
       cell.classList.add('mirror');
-      cell.setAttribute('aria-label', `Mirror, row ${y + 1}, column ${x + 1}, orientation ${tile === '/' ? 'slash' : 'backslash'}. Rotate.`);
+      cell.setAttribute('aria-label', describeMirror(grid, beam, x, y));
       const glyph = document.createElement('span');
       glyph.className = 'mirror-glyph';
       glyph.textContent = tile === '/' ? '╱' : '╲';
@@ -175,7 +177,7 @@ function render() {
   $('best').textContent = bestScores[levelIndex] ?? '—';
   $('par').textContent = pars[levelIndex];
   $('beam-state').textContent = beam.won ? '✦ SIGNAL CONNECTED' : 'SIGNAL INTERRUPTED';
-  $('status').textContent = beam.won ? (levelIndex + 1 === LEVELS.length ? 'All circuits restored! You are a master of light. ✦' : 'Circuit connected! The next puzzle is unlocked. ✦') : (statusOverride || 'The beam needs another turn.');
+  $('status').textContent = beam.won ? (levelIndex + 1 === LEVELS.length ? 'All circuits restored! You are a master of light. ✦' : 'Circuit connected! The next puzzle is unlocked. ✦') : (statusOverride || describeBeam(beam));
   $('prev').disabled = levelIndex === 0;
   $('next').disabled = levelIndex + 1 >= LEVELS.length || levelIndex + 1 > unlocked;
   renderPicker();
