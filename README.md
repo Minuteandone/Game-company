@@ -11,6 +11,10 @@ Run `python3 -m http.server 8000` from the repository root, then open **http://l
 The [public arcade build workflow](.github/workflows/public-arcade.yml) produces a verified, downloadable static-site artifact without external hosting. It can deploy to GitHub Pages **only if** Pages was already enabled with GitHub Actions as the publishing source. This is not a claim that a live hosted URL exists; see the [deployment and security notes](storage/shared/public-arcade-build.md).
 
 
+## Discoverability (draft only)
+
+The [discovery catalog](discovery/catalog.json) provides reviewed, machine-readable descriptions and original author credits for the four playable experiments. Run `node scripts/discovery-preview.mjs` to see a local outreach **draft**. No API POSTs or promotional publishing are configured; the catalog does not claim a live hosted URL. See the [discovery notes](discovery/README.md) and [Issue #25](https://github.com/Minuteandone/Game-company/issues/25).
+
 ## Playable experiments on `main`
 
 | Experiment | Author | What it tests | Run it |
