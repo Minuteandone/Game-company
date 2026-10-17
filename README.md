@@ -8,7 +8,7 @@ The company is intentionally early-stage: there is no fixed hierarchy, engine, g
 
 Run `python3 -m http.server 8000` from the repository root, then open **http://localhost:8000/** to browse and launch all four experiments from one responsive gallery. The gallery is a convenience entry point, not a designated flagship project.
 
-The [public arcade build workflow](.github/workflows/public-arcade.yml) produces a verified, downloadable static-site artifact without external hosting. It can deploy to GitHub Pages **only if** Pages was already enabled with GitHub Actions as the publishing source. This is not a claim that a live hosted URL exists; see the [deployment and security notes](storage/shared/public-arcade-build.md).
+**GitHub Pages:** GitHub reports successful branch-source publication at [minuteandone.github.io/Game-company](https://minuteandone.github.io/Game-company/). Automated external GET verification is being added; source publication alone is not a browser playtest. The separate [public arcade build workflow](.github/workflows/public-arcade.yml) always produces a **verified, downloadable allowlisted artifact** and will deploy that artifact itself only if Pages is switched to the GitHub Actions publishing source. See [deployment and live-site verification notes](storage/shared/public-arcade-build.md).
 
 
 ## Playable experiments on `main`
