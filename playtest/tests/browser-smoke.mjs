@@ -1,0 +1,114 @@
+/**
+ * Real HTTP/Chromium integration smoke test for the voluntary playtest worksheet.
+ * Author: agent-01 (AI agent). Playwright is test-only, not a game dependency.
+ */
+import test from "node:test";
+import assert from "node:assert/strict";
+import http from "node:http";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { chromium } from "playwright";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const MIME = { ".html": "text/html", ".mjs": "text/javascript", ".css": "text/css" };
+
+test("worksheet: real controls, local-only Markdown download and narrow layout", async (t) => {
+  const requests = [];
+  const server = http.createServer(async (request, response) => {
+    const url = new URL(request.url ?? "/", "http://localhost");
+    requests.push(url.pathname);
+    const requested = url.pathname.endsWith("/") ? url.pathname + "index.html" : url.pathname;
+    const absolute = path.resolve(ROOT, "." + decodeURIComponent(requested));
+    if (!absolute.startsWith(ROOT + path.sep)) {
+      response.writeHead(403).end("Forbidden");
+      return;
+    }
+    try {
+      const data = await readFile(absolute);
+      response.writeHead(200, { "content-type": MIME[path.extname(absolute)] ?? "application/octet-stream" });
+      response.end(data);
+    } catch {
+      response.writeHead(404).end("Not found");
+    }
+  });
+
+  await new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", resolve);
+  });
+
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage({
+      viewport: { width: 1100, height: 850 },
+      reducedMotion: "reduce",
+      acceptDownloads: true
+    });
+    const errors = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    page.on("console", (message) => {
+      if (message.type() === "error") errors.push(message.text());
+    });
+
+    const loaded = await page.goto(`http://127.0.0.1:${server.address().port}/playtest/`);
+    assert.equal(loaded.status(), 200);
+    assert.equal(await page.title(), "Playtest Notes — Game Company");
+    assert.match(await page.locator("#preview").inputValue(), /Signal Garden/);
+    assert.match(await page.locator("#preview").inputValue(), /Not recorded/);
+    t.diagnostic("Blank worksheet renders and explicitly marks unanswered items.");
+
+    await page.locator("#game").selectOption("pulse-garden");
+    await page.locator("#familiarity").selectOption("First time");
+    await page.locator("#device").selectOption("Desktop/laptop");
+    await page.locator('input[value="Keyboard"]').check();
+    await page.locator("#goal").selectOption("Partly");
+    await page.locator("#firstAction").fill("I tried the arrow keys before reading the help.");
+    await page.locator("#enjoyment").selectOption("4");
+    await page.locator("#improvement").fill("Show a clearer bloom target.");
+    const generated = await page.locator("#preview").inputValue();
+    assert.match(generated, /Pulse Garden/);
+    assert.match(generated, /agent-04 \(AI agent\)/);
+    assert.match(generated, /First time/);
+    assert.match(generated, /Keyboard/);
+    assert.match(generated, /4\/5/);
+    assert.match(generated, /I tried the arrow keys/);
+    assert.match(generated, /Show a clearer bloom target/);
+    assert.doesNotMatch(generated, /Pass(ed)?|Verified by a player/);
+    t.diagnostic("Form updates only the local preview and preserves proper attribution.");
+
+    const downloadWait = page.waitForEvent("download");
+    await page.locator("#download").click();
+    const download = await downloadWait;
+    assert.equal(download.suggestedFilename(), "game-company-playtest-pulse-garden.md");
+    const downloadedText = await readFile(await download.path(), "utf8");
+    assert.equal(downloadedText, generated);
+    assert.match(await page.locator("#status").textContent(), /Nothing was submitted/);
+    t.diagnostic("Downloaded Markdown exactly matches the preview.");
+
+    await page.locator("#preview").fill("# Custom note edited by the tester");
+    const customDownloadWait = page.waitForEvent("download");
+    await page.locator("#download").click();
+    const customDownload = await customDownloadWait;
+    assert.equal(await readFile(await customDownload.path(), "utf8"), "# Custom note edited by the tester");
+    t.diagnostic("Edited previews export exactly as shown.");
+
+    await page.setViewportSize({ width: 360, height: 760 });
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+    );
+    assert.ok(overflow <= 1, `Unexpected horizontal overflow: ${overflow}px`);
+    assert.deepEqual(errors, [], "no browser JavaScript or console errors");
+    assert.deepEqual(
+      [...new Set(requests)].sort(),
+      ["/playtest/", "/playtest/report.mjs", "/playtest/worksheet.mjs"].sort(),
+      "test page loads no external endpoints, tracking scripts or other assets"
+    );
+    t.diagnostic("360px layout is usable without horizontal overflow or extra requests.");
+    await page.close();
+  } finally {
+    if (browser) await browser.close();
+    await new Promise((resolve) => server.close(resolve));
+  }
+});

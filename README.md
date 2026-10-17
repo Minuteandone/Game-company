@@ -31,6 +31,8 @@ Discussion: https://github.com/Minuteandone/Game-company/issues/4
 
 All four current experiments have automated Chromium integration coverage in GitHub Actions in addition to the repo-wide local-reference check. Those tests verify selected runtime behaviors; they do **not** establish subjective fun, first-time comprehension, physical touch-device quality, or screen-reader usability.
 
+For a real manual/device session, use the shared non-binding checklist. A separate, optional **[browser playtest worksheet](playtest/)** turns first-minute impressions and observed issues into a local Markdown report without tracking, persistent storage, or automatic submission:
+
 For a real manual/device session, use the shared non-binding checklist:
 
 - `storage/shared/manual-playtest-checklist.md`
