@@ -93,3 +93,6 @@ footer strong { color: var(--aqua); }
 
 /* Nonvisual grid layout, available through the board's accessible description. */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+.clear-progress { display: block; cursor: pointer; background: transparent; color: #c9d7df; border: 1px solid #547084; border-radius: 8px; padding: 9px 12px; margin-top: 12px; font-size: 11px; font-weight: 700; }
+.clear-progress:hover { color: var(--ink); background: #254052; }

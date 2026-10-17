@@ -23,6 +23,8 @@ Click/tap a mirror, or focus it with Tab and rotate with Enter/Space. R restarts
 
 Sound is disabled by default. Progress is stored in the browser when localStorage is available.
 
+**Clear saved progress** is a separate, confirmed action for people replaying from the beginning or using a shared browser. Cancel leaves the save untouched. Confirmation removes only Prism Relay’s storage key, re-locks later circuits and clears best rotation scores; other games remain unaffected. If storage deletion is blocked, the session resets and clearly warns that old progress may return after reload.
+
 Mirror buttons now describe their coordinate, slash/backslash orientation, whether the live beam reaches them, and the beam's inbound/outbound directions when reached. The board's accessible description lists the emitter, receiver, walls and keyboard controls. Interrupted-beam status messages give a terminating cell when available. **Automated DOM checks do not replace actual assistive-technology usability testing.**
 
 ## Tests
