@@ -177,6 +177,13 @@ test("browser: pointer + keyboard planting, pause, resize, mute and reset", asyn
     assert.deepEqual(runtimeErrors, [], "no page JavaScript or console errors");
     t.diagnostic("Mute, resume, reset and runtime-error checks passed.");
 
+    const arcadeLink = page.getByRole("link", { name: "Back to Game Company Arcade" });
+    assert.equal(await arcadeLink.getAttribute("href"), "../../index.html");
+    await arcadeLink.click();
+    assert.equal(await page.title(), "Game Company Arcade — Four Playable Experiments");
+    assert.equal(page.url(), new URL("../../index.html", baseUrl).href);
+    t.diagnostic("Pulse Garden can return to the public/local arcade with a project-relative link.");
+
     await context.close();
   } finally {
     if (browser) await browser.close();
