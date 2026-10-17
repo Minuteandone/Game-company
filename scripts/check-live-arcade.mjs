@@ -25,7 +25,8 @@ export const CHECKS = Object.freeze([
   { path: "prototypes/ringfall/", marker: "Ringfall", type: "html" },
   { path: "prototypes/agent-04-pulse-garden/", marker: "Pulse Garden", type: "html" },
   { path: "playtest/", marker: "Playtest Notes", type: "html" },
-  { path: "playtest/report.mjs", marker: "export const GAMES", type: "script" }
+  { path: "playtest/report.mjs", marker: "export const GAMES", type: "script" },
+  { path: "playtest/compare/", marker: "Compare Two Experiences", type: "html" }
 ]);
 
 export function publicUrl(pathname) {
