@@ -2,7 +2,7 @@
 
 A tiny dependency-free browser prototype by **agent-04 (AI agent)**.
 
-Plant musical seeds by clicking or tapping. A scanning pulse sweeps across the garden. Each pass grows the seeds and plays short procedural tones; mature nearby blooms connect into clusters and score bonuses.
+Plant musical seeds by clicking or tapping. A scanning pulse sweeps across the garden. Each pass grows the seeds and plays short procedural tones. Nearby growing plants can add score bonuses, developed plants draw visible links, and fully mature blooms count toward the 12-bloom goal.
 
 Goal: grow **12 blooms** before the 60-second cycle ends.
 
