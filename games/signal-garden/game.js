@@ -42,6 +42,8 @@ let levelIndex = 0;
 let currentBoard;
 let turns = 0;
 let completed = false;
+// Ephemeral per-attempt rescue affordance; never persisted with unlocks/bests.
+let hintUsed = false;
 
 function saveProgress() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); }
@@ -56,7 +58,10 @@ function updateStats() {
   $("turns").textContent = String(turns).padStart(2, "0");
   const best = progress.best[levelIndex];
   $("best").textContent = Number.isInteger(best) && best >= 0 ? String(best).padStart(2, "0") : "—";
-  hintButton.disabled = completed;
+  hintButton.disabled = completed || hintUsed;
+  hintButton.textContent = completed ? "✧ Solved" : hintUsed ? "✧ Hint used" : "✧ Hint (1)";
+  hintButton.title = completed ? "This garden is solved." : hintUsed
+    ? "Reset this garden to restore your one hint." : "Reveal one path tile this attempt.";
 }
 
 function renderLevelNav() {
@@ -168,6 +173,7 @@ function loadLevel(index, focusBoard = false, persist = true) {
   currentBoard = createBoard(index);
   turns = 0;
   completed = false;
+  hintUsed = false;
   progress.lastLevel = index;
   if (persist) saveProgress();
   $("stage-name").textContent = LEVELS[index].name;
@@ -216,7 +222,7 @@ function rotate(index) {
 }
 
 hintButton.addEventListener("click", () => {
-  if (completed) return;
+  if (completed || hintUsed) return;
   const index = hintIndex(currentBoard);
   if (index < 0) {
     showMessage("Every main path is aligned. Look for one last connection.");
@@ -226,12 +232,14 @@ hintButton.addEventListener("click", () => {
   const col = index % currentBoard.size + 1;
   const target = boardElement.querySelector(`button[data-index="${index}"]`);
   if (target) {
+    hintUsed = true;
+    updateStats();
     target.classList.remove("hint");
     void target.offsetWidth; // Restart the visual hint pulse after repeat requests.
     target.classList.add("hint");
     target.focus();
   }
-  showMessage(`Try rotating the highlighted tile at row ${row}, column ${col}.`);
+  showMessage(`Try rotating the highlighted tile at row ${row}, column ${col}. One hint used; Reset this garden to restore it.`);
 });
 
 resetButton.addEventListener("click", () => {
