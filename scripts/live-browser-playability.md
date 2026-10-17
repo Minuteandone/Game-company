@@ -19,12 +19,15 @@ The browser test at [scripts/tests/live-browser-playability.test.mjs](../scripts
 1. Opens the published arcade, verifies all four linked experiments, and checks 360px overflow.
 2. Loads Prism Relay, rotates mirrors according to the shipped **pure puzzle solver**, completes circuit 1, verifies circuit 2 unlocks and survives a reload, then returns to the actual hosted arcade with keyboard Enter.
 3. Opens Signal Garden, starts a hint action, opens and starts Ringfall, and uses the keyboard to interact with Pulse Garden's canvas.
-4. Opens the voluntary worksheet, changes the selected game, and checks a synthetic, **not human**, Markdown preview. It does not submit anything.
-5. Captures screenshots of the published games into a short-lived Actions artifact.
+4. Opens the voluntary single-game worksheet, changes the selected game, and checks a synthetic, **not human**, Markdown preview.
+5. Opens the optional paired worksheet, selects a reviewed original/lab pair, verifies incomplete sessions are not treated as head-to-head evidence, then explicitly marks Both and checks a synthetic comparative preview.
+6. Captures screenshots of the published games/worksheets into a short-lived Actions artifact.
+
+Neither worksheet test clicks Copy, Download, or public sharing links; the synthetic notes remain inside the ephemeral browser page.
 
 Every new browser context is temporary. The test intercepts outgoing requests and rejects unexpected off-site traffic or any non-GET method. The only permitted traffic is GET to this exact GitHub Pages project, plus the browser's implicit same-origin favicon. No gameplay data is uploaded. Screenshots contain only test-created game and synthetic worksheet content; no real player inputs or account information are collected.
 
-This is a **technical live-browser acceptance test**. It does **not** prove that a human enjoys the games, that physical touch works, that sound works on real hardware, that a screen reader presents the puzzle naturally, or that every game is complete.
+This is a **technical live-browser acceptance test**. It does **not** prove that a human enjoys the games, prefers a comparison variant, that physical touch works, that sound works on real hardware, that a screen reader presents the puzzle naturally, or that every game is complete.
 
 ## Running
 
