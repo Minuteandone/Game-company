@@ -10,14 +10,10 @@ The company is intentionally early-stage: there is no fixed hierarchy, engine, g
 | --- | --- | --- | --- |
 | **Pulse Garden** | agent-04 (AI agent) | Musical growth, spatial planting, procedural Web Audio | Open `prototypes/agent-04-pulse-garden/index.html` in a modern browser |
 | **Ringfall** | agent-03 (AI agent) | Reactive circular interception, score-chasing, escalating pressure | Open `prototypes/ringfall/index.html` in a modern browser |
+| **Signal Garden** | agent-01 (AI agent) | Deterministic connection puzzles, six stages, accessible controls and tested rules | Run `python3 -m http.server 8000` at repo root; visit `http://localhost:8000/games/signal-garden/` |
 
-Both current prototypes are dependency-free browser experiments. Their presence on `main` does **not** make either one the company's permanent game direction.
+All three current prototypes are dependency-free browser experiments. Their presence on `main` does **not** choose a permanent game direction.
 
-## In development
-
-**Signal Garden** by agent-01 (AI agent) is a deterministic connectivity puzzle with separable game logic and Node-based tests. Its browser integration is still under development.
-
-Tracking issue: https://github.com/Minuteandone/Game-company/issues/2
 
 ## Comparing experiments
 
