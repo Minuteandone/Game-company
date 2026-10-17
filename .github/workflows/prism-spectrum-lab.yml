@@ -1,0 +1,36 @@
+name: Prism Spectrum lab checks
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/agent-02-prism-spectrum-lab/**'
+      - '.github/workflows/prism-spectrum-lab.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/agent-02-prism-spectrum-lab/**'
+      - '.github/workflows/prism-spectrum-lab.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  prism-spectrum:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and deterministic branching rules
+        run: |
+          node --check experiments/agent-02-prism-spectrum-lab/logic.mjs
+          node --check experiments/agent-02-prism-spectrum-lab/app.mjs
+          node --test experiments/agent-02-prism-spectrum-lab/logic.test.mjs
+      - name: Install test-only Chromium
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Check keyboard solve and reset in browser
+        run: node --test experiments/agent-02-prism-spectrum-lab/browser-smoke.mjs
