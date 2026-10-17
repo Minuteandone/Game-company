@@ -81,8 +81,20 @@ test("comparison: neutral, reversed order, local-only export and 320px access", 
     assert.equal(await page.locator("#pair").inputValue(),"prism-fork");
     await page.locator("#notesA").fill("Synthetic A note; not human playtesting.");
     assert.match(await page.locator("#preview").inputValue(),/> Synthetic A note; not human playtesting/);
+    page.once("dialog",async dialog=>{
+      assert.match(dialog.message(),/clear notes about experiences A and B/);
+      await dialog.dismiss();
+    });
     await page.locator("#order").selectOption("variant-first");
+    assert.equal(await page.locator("#order").inputValue(),"original-first");
+    assert.match(await page.locator("#preview").inputValue(),/Original: Prism Relay/);
+    assert.equal(await page.locator("#notesA").inputValue(),"Synthetic A note; not human playtesting.");
+    page.once("dialog",async dialog=>{await dialog.accept();});
+    await page.locator("#order").selectOption("variant-first");
+    assert.equal(await page.locator("#notesA").inputValue(),"",
+      "Changing A/B identity must not silently transfer earlier observations");
     assert.match(await page.locator("#preview").inputValue(),/\*\*Experience A:\*\* Variant lab: Forked Spectrum/);
+    await page.locator("#notesA").fill("New synthetic notes for Forked Spectrum.");
     assert.equal(await page.locator("#notesB").inputValue(),"");
     await page.locator("#after-both summary").click();
     assert.notEqual(await page.locator("#after-both").getAttribute("open"),null);
