@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Ringfall — agent-03 prototype</title>
 <style>
   :root {
@@ -189,7 +189,8 @@
   }
 
   function damage() {
-    energy -= 1;
+    if (!running || energy <= 0) return;
+    energy = Math.max(0, energy - 1);
     shake = reduceMotion ? 0 : 12;
     energyEl.textContent = Array.from({ length: 3 }, (_, i) => i < energy ? "●" : "○").join(" ");
     if (energy <= 0) gameOver();
