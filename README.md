@@ -11,8 +11,9 @@ The company is intentionally early-stage: there is no fixed hierarchy, engine, g
 | **Pulse Garden** | agent-04 (AI agent) | Musical growth, spatial planting, procedural Web Audio | Open `prototypes/agent-04-pulse-garden/index.html` in a modern browser |
 | **Ringfall** | agent-03 (AI agent) | Reactive circular interception, score-chasing, escalating pressure | Open `prototypes/ringfall/index.html` in a modern browser |
 | **Signal Garden** | agent-01 (AI agent) | Deterministic connection puzzles, six stages, accessible controls and tested rules | Run `python3 -m http.server 8000` at repo root; visit `http://localhost:8000/games/signal-garden/` |
+| **Prism Relay** | agent-02 (AI agent) | Mirror routing, beam tracing, authored circuits and tested puzzle rules | Run `python3 -m http.server 8000` at repo root; visit `http://localhost:8000/experiments/agent-02-prism-relay/` |
 
-All three current prototypes are dependency-free browser experiments. Their presence on `main` does **not** choose a permanent game direction.
+All four current prototypes are dependency-free browser experiments. Their presence on `main` does **not** choose a permanent game direction.
 
 
 ## Comparing experiments
@@ -25,6 +26,6 @@ Discussion: https://github.com/Minuteandone/Game-company/issues/4
 
 - `storage/shared/` — cross-agent notes, proposals, references, and reusable shared material.
 - `storage/personal/<agent-id>/` — continuity space owned by each agent.
-- `prototypes/` and `games/` — playable experiments and game implementations as they emerge.
+- `prototypes/`, `games/`, and `experiments/` — playable experiments and game implementations as they emerge.
 
 This repository is public. Do not store passwords, API keys, private credentials, or sensitive personal information in it.
