@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1423">
+  <meta name="description" content="A local-only, optional feedback notebook for four Game Company browser prototypes.">
+  <title>Playtest Notebook · Game Company</title>
+  <script type="module" src="./app.mjs"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --bg: #0b1423; --panel: #14243a; --line: #3c556c;
+      --ink: #f4f7fd; --muted: #b7c6d6; --aqua: #8de8dc; --warm: #fff3ab;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 300px; color: var(--ink); line-height: 1.6;
+      background: radial-gradient(ellipse 700px 500px at 8% 3%, #29486280, transparent 75%), var(--bg); }
+    button, input, select, textarea { font: inherit; }
+    a { color: var(--aqua); text-underline-offset: 3px; }
+    :is(a, button, input, select, textarea):focus-visible { outline: 3px solid var(--warm); outline-offset: 3px; }
+    .skip { position: absolute; top: -70px; left: 15px; z-index: 5; background: var(--warm); color: #102337; padding: 10px; }
+    .skip:focus { top: 10px; }
+    .wrap { max-width: 1080px; margin: auto; padding: 0 clamp(16px, 4vw, 40px); }
+    .top { border-bottom: 1px solid #324c66; }
+    .nav { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 0; }
+    .brand { font-size: 14px; font-weight: 850; letter-spacing: .06em; color: var(--ink); text-decoration: none; }
+    .brand span { color: var(--aqua); }
+    .links { display: flex; flex-wrap: wrap; gap: 20px; font-size: 12px; }
+    .intro { padding: 49px 0 25px; max-width: 850px; }
+    .eyebrow, .tag { text-transform: uppercase; letter-spacing: .17em; font-size: 11px; font-weight: 800; color: var(--aqua); }
+    h1 { font-size: clamp(39px, 6vw, 66px); line-height: 1.08; letter-spacing: -.05em; margin: 10px 0 20px; }
+    h1 span { color: var(--aqua); }
+    .intro p { color: var(--muted); font-size: 15px; max-width: 690px; }
+    .privacy { padding: 16px 19px; border: 1px solid #567487; background: #183245; border-radius: 12px; color: #d7edf1; font-size: 13px; margin: 23px 0; }
+    .privacy strong { color: #b9fff3; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(265px, .48fr); gap: 22px; align-items: start; padding-bottom: 65px; }
+    .panel { min-width: 0; background: linear-gradient(145deg, #16273e, #101c2f); border: 1px solid var(--line); border-radius: 18px; padding: clamp(19px, 3vw, 31px); }
+    h2 { margin: 0 0 10px; font-size: 24px; letter-spacing: -.03em; }
+    .section-note { margin: 0 0 22px; color: var(--muted); font-size: 13px; }
+    form { display: grid; gap: 23px; }
+    .field { display: grid; gap: 7px; min-width: 0; }
+    label, legend { font-weight: 750; font-size: 13px; }
+    .helper { color: #acbece; font-size: 12px; margin: 0; }
+    input[type="text"], select, textarea { width: 100%; background: #0d1d2f; border: 1px solid #647e8b; border-radius: 9px; color: #f1f6ff; padding: 11px 12px; }
+    textarea { min-height: 88px; resize: vertical; }
+    input::placeholder, textarea::placeholder { color: #8c9eb0; }
+    fieldset { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; gap: 10px; }
+    legend { padding: 0; margin-bottom: 7px; }
+    .options { display: flex; flex-wrap: wrap; gap: 9px 19px; }
+    .check { display: inline-flex; gap: 8px; align-items: center; color: #dae8ef; font-size: 13px; }
+    .check input { width: 17px; height: 17px; accent-color: #90e8db; }
+    .rule { border: 0; border-top: 1px solid #405467; margin: 0; }
+    .button { cursor: pointer; display: inline-flex; justify-content: center; align-items: center; gap: 6px; padding: 12px 16px;
+      border-radius: 9px; border: 1px solid #96f5e6; background: #93eee0; color: #062936; font-size: 13px; font-weight: 800;
+      text-decoration: none; min-height: 45px; }
+    .button:hover:not(:disabled) { filter: brightness(1.08); }
+    .button.secondary { background: #28445b; border-color: #577d8f; color: #f0f8fc; }
+    .button:disabled { opacity: .44; cursor: not-allowed; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .steps { padding: 0 0 0 23px; font-size: 13px; line-height: 1.85; color: #cad8e4; }
+    .steps li { margin-bottom: 10px; }
+    .aside { display: grid; gap: 22px; }
+    .aside p { color: var(--muted); font-size: 13px; }
+    .aside a.button { width: 100%; text-align: center; margin-top: 7px; }
+    .aside h3 { font-size: 18px; margin: 0; }
+    #report-preview { margin-top: 8px; min-height: 160px; font-size: 12px; line-height: 1.6; font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; }
+    #status { color: #b6f5eb; min-height: 36px; font-size: 12px; margin: 13px 0 0; }
+    footer { border-top: 1px solid #3d526b; padding: 25px 0 35px; font-size: 11px; color: #adc0d1; }
+    @media(max-width: 810px) { .layout { grid-template-columns: 1fr; } .aside { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media(max-width: 540px) { .intro { padding-top: 35px; } .aside { grid-template-columns: 1fr; } .actions .button { flex: 1; } }
+    @media(prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#report-form">Skip to playtest form</a>
+  <header class="top">
+    <div class="wrap nav">
+      <a class="brand" href="../index.html">✧ GAME COMPANY <span>/ NOTEBOOK</span></a>
+      <nav class="links" aria-label="Resources">
+        <a href="../index.html">Arcade</a>
+        <a href="https://github.com/Minuteandone/Game-company/issues/4">Prototype discussion ↗</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="intro">
+      <div class="eyebrow">Voluntary feedback · No sign-in</div>
+      <h1>Good games begin<br><span>with good questions.</span></h1>
+      <p>Play one of the four prototypes, then record what really happened: the first action you tried, what confused you, and whether you wanted to play again. Partial notes are welcome.</p>
+      <p class="privacy"><strong>Your notes stay on this page.</strong> The notebook does not use analytics, cookies, local storage or automatic submissions. You decide whether to copy or download a report. Only share notes you are comfortable making public; do not include names, contact details or other private information.</p>
+    </div>
+    <div class="layout">
+      <section class="panel" aria-labelledby="form-heading">
+        <h2 id="form-heading">Your playtest notes</h2>
+        <p class="section-note">You don't need to complete every field. Answer from your actual experience, not what the source code says should happen.</p>
+        <form id="report-form">
+          <div class="field">
+            <label for="game">Experiment</label>
+            <select id="game" name="game" required>
+              <option value="signal">Signal Garden — agent-01</option>
+              <option value="prism">Prism Relay — agent-02</option>
+              <option value="ring">Ringfall — agent-03</option>
+              <option value="pulse">Pulse Garden — agent-04</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="context">Browser / device you actually used (optional)</label>
+            <input id="context" name="context" type="text" maxlength="180" placeholder="e.g. Chromium on laptop; Safari on phone">
+            <p class="helper">Do not enter names, account info, exact locations or other personal details.</p>
+          </div>
+          <fieldset>
+            <legend>Which input methods did you actually try?</legend>
+            <div class="options">
+              <label class="check"><input type="checkbox" name="inputs" value="mouse">Mouse</label>
+              <label class="check"><input type="checkbox" name="inputs" value="keyboard">Keyboard</label>
+              <label class="check"><input type="checkbox" name="inputs" value="touch">Touch</label>
+              <label class="check"><input type="checkbox" name="inputs" value="other">Other</label>
+            </div>
+            <label class="check"><input type="checkbox" name="reducedMotion">I actually tested the game with reduced-motion enabled</label>
+          </fieldset>
+          <hr class="rule">
+          <div class="tag">First minute · What did you notice?</div>
+          <div class="field">
+            <label for="goal">What did you think the goal was?</label>
+            <textarea id="goal" name="goal" maxlength="1600" placeholder="Your first understanding, before reading game code"></textarea>
+          </div>
+          <div class="field">
+            <label for="firstAction">What action did you try first? What happened?</label>
+            <textarea id="firstAction" name="firstAction" maxlength="1600" placeholder="What you clicked, pressed or attempted"></textarea>
+          </div>
+          <div class="field">
+            <label for="confusion">Where did you hesitate or get confused?</label>
+            <textarea id="confusion" name="confusion" maxlength="1600" placeholder="It's fine if nothing was confusing"></textarea>
+          </div>
+          <hr class="rule">
+          <div class="tag">A question specific to your game</div>
+          <div class="field">
+            <label id="specific-label" for="specific">If you played levels 1–4, which felt hardest, and why?</label>
+            <textarea id="specific" name="specific" maxlength="1900" placeholder="It's okay if you haven't reached this point"></textarea>
+          </div>
+          <fieldset>
+            <legend>Would you voluntarily play another round or stage?</legend>
+            <div class="options">
+              <label class="check"><input type="radio" name="replay" value="yes">Yes</label>
+              <label class="check"><input type="radio" name="replay" value="no">No</label>
+              <label class="check"><input type="radio" name="replay" value="unsure">Unsure</label>
+              <label class="check"><input type="radio" name="replay" value="not_tried">Can't judge yet</label>
+            </div>
+          </fieldset>
+          <div class="field">
+            <label for="other">Bugs, frustrating moments, or other observations</label>
+            <textarea id="other" name="other" maxlength="2800" placeholder="What happened and what you expected, if reporting a bug"></textarea>
+          </div>
+          <div class="actions">
+            <button class="button" type="submit">Generate Markdown report ↘</button>
+          </div>
+        </form>
+      </section>
+      <aside class="aside" aria-label="Playtest steps and export">
+        <section class="panel">
+          <h3>How it works</h3>
+          <ol class="steps">
+            <li>Choose a game and open it in a new tab.</li>
+            <li>Play before reading the experiment-specific question, to avoid bias.</li>
+            <li>Return here and write down what actually happened.</li>
+            <li>Generate, inspect and optionally share your Markdown report.</li>
+          </ol>
+          <a class="button secondary" id="play-link" href="../games/signal-garden/" target="_blank" rel="noopener">Open Signal Garden in a new tab ↗</a>
+        </section>
+        <section class="panel" aria-labelledby="export-heading">
+          <h3 id="export-heading">Your report preview</h3>
+          <p>Nothing is shared automatically. You can paste the report into <a href="https://github.com/Minuteandone/Game-company/issues/4">Issue #4</a> if you have access, or save it locally.</p>
+          <label for="report-preview">Markdown preview (selectable text)</label>
+          <textarea id="report-preview" readonly aria-describedby="status" placeholder="Generate a report to preview it here."></textarea>
+          <div class="actions">
+            <button class="button secondary" id="copy" type="button" disabled>Copy report</button>
+            <button class="button secondary" id="download" type="button" disabled>Download .md</button>
+          </div>
+          <p id="status" role="status" aria-live="polite">No report generated yet.</p>
+        </section>
+      </aside>
+    </div>
+  </main>
+  <footer><div class="wrap">A voluntary companion to Game Company's <a href="../storage/shared/manual-playtest-checklist.md">manual playtest checklist</a>. Created by <strong>agent-02 (AI agent)</strong>, 2026-10-17.</div></footer>
+</body>
+</html>
