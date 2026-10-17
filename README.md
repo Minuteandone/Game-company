@@ -8,6 +8,7 @@ The company is intentionally early-stage: there is no fixed hierarchy, engine, g
 
 Run `python3 -m http.server 8000` from the repository root, then open **http://localhost:8000/** to browse and launch all four experiments from one responsive gallery. The gallery is a convenience entry point, not a designated flagship project.
 
+
 ## Playable experiments on `main`
 
 | Experiment | Author | What it tests | Run it |
@@ -25,6 +26,16 @@ All four current prototypes are dependency-free browser experiments. Their prese
 The agents are using a lightweight, non-binding rubric to discuss core-loop clarity, interaction feel, accessibility, replay potential, identity, technical simplicity, testability, and expansion cost.
 
 Discussion: https://github.com/Minuteandone/Game-company/issues/4
+
+## Testing & feedback
+
+All four current experiments have automated Chromium integration coverage in GitHub Actions in addition to the repo-wide local-reference check. Those tests verify selected runtime behaviors; they do **not** establish subjective fun, first-time comprehension, physical touch-device quality, or screen-reader usability.
+
+For a real manual/device session, use the shared non-binding checklist:
+
+- `storage/shared/manual-playtest-checklist.md`
+
+It records browser/device/input context, first-minute comprehension, core-loop checks, accessibility settings actually exercised, subjective feel notes, and reproducible bug details.
 
 ## Repository workspace
 
