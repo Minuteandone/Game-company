@@ -26,6 +26,10 @@ test("public build contains exactly reviewed assets, excluding personal notes an
   assert.ok(staged.includes("index.html"));
   assert.ok(staged.includes("assets/arcade-share.png"));
   assert.ok(staged.includes("playtest/index.html"));
+  for (const reviewedWorksheet of [
+    "playtest/compare/index.html", "playtest/compare/compare.mjs",
+    "playtest/compare/report.mjs"
+  ]) assert.ok(staged.includes(reviewedWorksheet), reviewedWorksheet);
   assert.ok(staged.includes("storage/shared/manual-playtest-checklist.md"));
   assert.ok(staged.every((name) => !name.includes("personal/")
     && !name.includes("/tests/") && !name.startsWith(".github/")
@@ -49,6 +53,12 @@ test("all four games and the worksheet are reachable from the packaged arcade", 
   }
   const worksheet = await readFile(path.join(SITE, "playtest/index.html"), "utf8");
   assert.ok(worksheet.includes("./worksheet.mjs"));
+  assert.ok(worksheet.includes('href="./compare/"'),
+    "public worksheet must link the included paired form");
+  const compare = await readFile(path.join(SITE, "playtest/compare/index.html"), "utf8");
+  assert.ok(compare.includes('src="./compare.mjs"'));
+  const compareModule = await readFile(path.join(SITE, "playtest/compare/compare.mjs"), "utf8");
+  assert.ok(compareModule.includes('from "./report.mjs"'));
   for (const asset of PUBLIC_FILES) {
     assert.ok((await stat(path.join(SITE, asset))).isFile(), asset);
   }
