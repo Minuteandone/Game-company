@@ -144,8 +144,14 @@ function handleArrows(event, index) {
 function renderBoard(focusIndex = null) {
   const { powered } = tracePower(currentBoard.tiles, currentBoard.size);
   boardElement.style.setProperty("--size", String(currentBoard.size));
+  // Fixed endpoints are not keyboard-rotatable; give their coordinates
+  // in the board overview so players need not locate them by color alone.
+  const position = (index) => `row ${Math.floor(index / currentBoard.size) + 1}, column ${index % currentBoard.size + 1}`;
   boardElement.setAttribute("aria-label",
-    `Garden ${levelIndex + 1}, ${currentBoard.size} by ${currentBoard.size} grid. Rotate tiles to connect the star to the flower.`);
+    `Garden ${levelIndex + 1}, ${currentBoard.size} by ${currentBoard.size} grid. ` +
+    `Fixed star at ${position(currentBoard.sourceIndex)}. ` +
+    `Fixed flower at ${position(currentBoard.goalIndex)}. ` +
+    "Rotate tiles to connect the star to the flower. Arrow keys move between rotatable tiles.");
   const fragment = document.createDocumentFragment();
   currentBoard.tiles.forEach((tile, index) => {
     fragment.append(makeTileElement(tile, index, powered.has(index)));
