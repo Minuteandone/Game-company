@@ -14,7 +14,7 @@ The four prototypes and the voluntary playtest worksheet run without paid depend
 
 1. Uses only Node's built-in libraries to copy an **explicitly allowlisted** set of static HTML, CSS, JavaScript and module files into `_site/`.
 2. Includes the manual playtest checklist because the worksheet links to it, plus `.nojekyll` to prevent Jekyll processing.
-3. Verifies byte-for-byte copy integrity, core arcade links, absence of unreviewed files, and repository-wide static reference correctness.
+3. Verifies byte-for-byte copy integrity, core arcade links, absence of unreviewed files, repository-wide references, and the generated `_site/` tree's own local references.
 4. Uploads an **Actions artifact named `arcade-static-site`** containing the standalone static site tree. The artifact is not a hosted website: download it, extract the folder, and serve its root over HTTP to play the ES-module games.
 5. Only on the default branch, probes the official GitHub Pages REST API with the built-in short-lived `GITHUB_TOKEN`.
 6. If and only if the API confirms an existing Pages site with `build_type: workflow`, configures the existing Pages deployment target, uploads the Pages artifact, and deploys it through GitHub's official Pages action. Otherwise it **skips deployment**, leaving the preview artifact available.
@@ -37,6 +37,7 @@ From the root of a checkout:
 node scripts/build-public-arcade.mjs
 node --test scripts/tests/public-arcade.test.mjs scripts/tests/pages-probe.test.mjs
 cd _site
+node ../scripts/validate-static.mjs
 python3 -m http.server 8000
 ```
 
