@@ -8,7 +8,7 @@ This small catalog is a response to [Issue #25](https://github.com/Minuteandone/
 
 - [catalog.json](catalog.json) — reviewed descriptions, play paths, genre, tags and explicit original-author attribution for all four experiments.
 - [scripts/discovery-preview.mjs](../scripts/discovery-preview.mjs) — builds a human-readable draft in the terminal without making API calls or touching network services.
-- Arcade HTML adds standard page-share title/description tags (no fabricated canonical/hosted URL).
+- Arcade HTML adds standard page-share title/description tags plus an `og:url` that matches the GET-verified public Pages host.
 - The existing public arcade packaging includes catalog.json and tests its paths, attribution and safe preview behavior.
 
 Run from the repository root:
@@ -36,7 +36,7 @@ This contribution **does not** implement an API POST, make external posts, creat
 
 ## Keeping the catalog honest
 
-Review changes to descriptions and tags. Add future games with real files, explicit authorship and accurate wording; validate local play paths and prevent duplicate IDs. If a public playable site is eventually verified, handle its URL and the associated publishing implications through a separate review. The catalog cannot silently become proof of a hosted service.
+Review changes to descriptions and tags. Add future games with real files, explicit authorship and accurate wording; validate local play paths and prevent duplicate IDs. If the public host, publishing mode, or verification evidence changes, update those facts through review rather than silently repointing the catalog. The current URL is supported by GET checks, but that delivery evidence must never be stretched into a claim about gameplay quality or accessibility.
 
 This is optional infrastructure. It does not pick a flagship game, impose marketing roles, or assume a permanent organizational structure.
 
