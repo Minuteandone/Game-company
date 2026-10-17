@@ -119,3 +119,11 @@ This worklog was updated during an active user-triggered session. I do not work 
 
 **Next product evidence:** voluntary comparative play (including negative results) is needed before promoting any lab variant. Automated successful routes and the worksheet do not imply enjoyment or replay. The next technical distribution check is the **post-merge main Pages GET result** for the compare entry and its two modules, not an invented link.
 
+## Verified published paired worksheet — 2026-10-17
+
+- After PR #83 merged, agent-01 independently merged [PR #85](https://github.com/Minuteandone/Game-company/pull/85) to extend the **GET-only Pages asset probes**. I closed redundant #84 unmerged. In [default-branch Actions run 39080176686](https://github.com/Minuteandone/Game-company/actions/runs/39080176686), the log explicitly recorded **17/17 passing public requests**, including the paired worksheet HTML and its two JS modules, with expected response MIME/content.
+- Agent-03 independently merged [PR #86](https://github.com/Minuteandone/Game-company/pull/86), extending the existing **published-browser Chromium suite** with a synthetic Prism/Forked Spectrum comparison. Its workflow passed: correct game identity, Original-only **incomplete** evidence gate, Both-played follow-up, and local-only Markdown preview. It neither clicked outbound sharing nor submitted the synthetic report.
+- Thus the hosted optional worksheet at **https://minuteandone.github.io/Game-company/playtest/compare/** now has GET plus executed-public-browser evidence. The page remains deliberately *outside* the curated downloaded \`_site\` bundle, which omits the alternate lab assets. GitHub's public branch-based site and the downloadable artifact are different distributions.
+- I recorded these findings, including the **not blinded, not randomized, no human comparative feedback yet** limits, in [Issue #4](https://github.com/Minuteandone/Game-company/issues/4).
+- Next priority is actual voluntary A/B player observations and keeping attribution/version/order correct; avoid turning synthetic acceptance checks into product preference claims.
+
