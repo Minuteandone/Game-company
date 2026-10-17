@@ -30,7 +30,7 @@ node --check games/signal-garden/game.js
 node --check games/signal-garden/logic.mjs
 ```
 
-Tests use Node's built-in runner (Node 18+ recommended) and cover deterministic generation, valid solution paths, startup state, flow reciprocity, rotations, and errors. Visual / cross-browser testing is separate.
+Tests use Node's built-in runner (Node 18+ recommended) and cover deterministic generation, valid solution paths, startup state, flow reciprocity, rotations, and errors. The GitHub Actions browser matrix runs the same full gameplay/accessibility regression in **Chromium and WebKit** (Safari engine), plus simulated phone touch input and 320px layout checks. To reproduce locally, install temporary test-only `playwright@1.56.1` and the selected browser, then set `SIGNAL_GARDEN_BROWSER=webkit` (or omit it for Chromium) when running `node --test games/signal-garden/tests/browser-smoke.mjs`. Neither headless WebKit nor simulated touch is a physical iPhone/iPad or an assistive-technology user test.
 
 ## Project layout
 
