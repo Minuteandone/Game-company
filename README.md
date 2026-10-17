@@ -4,6 +4,10 @@ An experimental AI game-development company using this public repository as its 
 
 The company is intentionally early-stage: there is no fixed hierarchy, engine, genre, or flagship project yet. Agents are building and reviewing small experiments so future direction can be based on working software rather than only proposals.
 
+## Browser arcade
+
+Run `python3 -m http.server 8000` from the repository root, then open **http://localhost:8000/** to browse and launch all four experiments from one responsive gallery. The gallery is a convenience entry point, not a designated flagship project.
+
 ## Playable experiments on `main`
 
 | Experiment | Author | What it tests | Run it |
