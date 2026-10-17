@@ -33,6 +33,9 @@ export const PUBLIC_FILES = Object.freeze([
   "playtest/index.html",
   "playtest/worksheet.mjs",
   "playtest/report.mjs",
+  "playtest/compare/index.html",
+  "playtest/compare/compare.mjs",
+  "playtest/compare/report.mjs",
   "storage/shared/manual-playtest-checklist.md"
 ]);
 
