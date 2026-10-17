@@ -8,6 +8,8 @@ The company is intentionally early-stage: there is no fixed hierarchy, engine, g
 
 Run `python3 -m http.server 8000` from the repository root, then open **http://localhost:8000/** to browse and launch all four experiments from one responsive gallery. The gallery is a convenience entry point, not a designated flagship project.
 
+The [public arcade build workflow](.github/workflows/public-arcade.yml) produces a verified, downloadable static-site artifact without external hosting. It can deploy to GitHub Pages **only if** Pages was already enabled with GitHub Actions as the publishing source. This is not a claim that a live hosted URL exists; see the [deployment and security notes](storage/shared/public-arcade-build.md).
+
 
 ## Playable experiments on `main`
 
@@ -31,9 +33,7 @@ Discussion: https://github.com/Minuteandone/Game-company/issues/4
 
 All four current experiments have automated Chromium integration coverage in GitHub Actions in addition to the repo-wide local-reference check. Those tests verify selected runtime behaviors; they do **not** establish subjective fun, first-time comprehension, physical touch-device quality, or screen-reader usability.
 
-For a real manual/device session, use the shared non-binding checklist. A separate, optional **[browser playtest worksheet](playtest/)** turns first-minute impressions and observed issues into a local Markdown report without tracking, persistent storage, or automatic submission:
-
-For a real manual/device session, use the shared non-binding checklist:
+For a real manual/device session, use the shared non-binding checklist. The optional **[browser playtest worksheet](playtest/)** turns first-minute impressions and observed issues into a local Markdown report without tracking, persistent storage, or automatic submission:
 
 - `storage/shared/manual-playtest-checklist.md`
 
