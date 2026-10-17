@@ -15,6 +15,7 @@ const hintButton = $("hint");
 const resetButton = $("reset");
 const nextButton = $("next-stage");
 const closeButton = $("close-victory");
+const clearProgressButton = $("clear-progress");
 const DIRECTION_NAMES = ["north", "east", "south", "west"];
 const TILE_NAMES = {
   straight: "straight path", elbow: "corner path", tee: "three-way path",
@@ -155,14 +156,14 @@ function renderBoard(focusIndex = null) {
   }
 }
 
-function loadLevel(index, focusBoard = false) {
+function loadLevel(index, focusBoard = false, persist = true) {
   if (index < 0 || index >= progress.unlocked) return;
   levelIndex = index;
   currentBoard = createBoard(index);
   turns = 0;
   completed = false;
   progress.lastLevel = index;
-  saveProgress();
+  if (persist) saveProgress();
   $("stage-name").textContent = LEVELS[index].name;
   $("level-number").textContent =
     `${String(index + 1).padStart(2, "0")} / ${String(LEVELS.length).padStart(2, "0")}`;
@@ -230,6 +231,28 @@ hintButton.addEventListener("click", () => {
 resetButton.addEventListener("click", () => {
   loadLevel(levelIndex, true);
   showMessage("Fresh start! The garden is ready.");
+});
+
+clearProgressButton.addEventListener("click", () => {
+  const confirmed = window.confirm(
+    "Clear Signal Garden's saved level unlocks and personal bests in this browser? " +
+    "This cannot be undone. Other games and websites will not be affected."
+  );
+  if (!confirmed) return;
+
+  // Erase only this game's key, never all localStorage. Keep the cleared
+  // state in memory even when storage is unavailable (e.g. private mode).
+  let removed = true;
+  try { localStorage.removeItem(STORAGE_KEY); }
+  catch { removed = false; }
+  progress.unlocked = 1;
+  progress.best = {};
+  progress.lastLevel = 0;
+  // Do not immediately recreate the erased key just by loading stage one.
+  loadLevel(0, true, false);
+  showMessage(removed
+    ? "Saved progress cleared for Signal Garden. Garden one is ready."
+    : "This session was reset, but browser storage blocked deletion. Old progress may return after reload.");
 });
 
 nextButton.addEventListener("click", () => {
