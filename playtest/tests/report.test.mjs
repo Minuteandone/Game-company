@@ -20,7 +20,7 @@ test("all four experiments receive correct, explicit original-author credit", ()
 
 test("optional fields do not invent successful checks or observations", () => {
   const report = buildReport({ game: "ringfall" });
-  assert.match(report, /Goal clear\?\*\* Not recorded/);
+  assert.match(report, /Was the goal clear\?\*\* Not recorded/);
   assert.match(report, /Input actually used:\*\* Not recorded/);
   assert.match(report, /Enjoyment \(personal impression\):\*\* Not recorded/);
   assert.match(report, /Steps to reproduce:\*\* Not recorded/);
