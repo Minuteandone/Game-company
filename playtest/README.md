@@ -12,7 +12,7 @@ From the repository root:
 python3 -m http.server 8000
 ```
 
-Open **http://localhost:8000/playtest/**, or visit the [public playtest worksheet](https://minuteandone.github.io/Game-company/playtest/). Choose an experiment and use the optional **Open [game] in a new tab** link to try it while leaving the worksheet available for notes. Alternatively, launch any game from the [root arcade](../index.html). Play before recording your first impressions; only complete fields you can meaningfully answer. Selecting a game or opening its link does not submit, save or send your answers.
+Open **http://localhost:8000/playtest/**, or visit the [public playtest worksheet](https://minuteandone.github.io/Game-company/playtest/). **No experiment is preselected.** Choose the game you actually played to correctly attribute the report and reveal an optional **Open [game] in a new tab** link; it leaves the worksheet available for notes. Alternatively, launch from the [root arcade](../index.html). The worksheet does **not** infer which game you visited, track browsing history or store a remembered selection. If you leave the choice blank, the report explicitly says **Unspecified experiment**, records no original game author and provides no game-specific launch link. Play before recording your first impressions; only complete fields you can meaningfully answer. Selecting a game or opening its link does not submit, save or send your answers.
 
 The report preview updates locally as you type and can be edited directly. Select **Copy Markdown** or **Download .md** when ready. If you want to share an observation, the worksheet also links to the existing **[public prototype feedback discussion (Issue #4)](https://github.com/Minuteandone/Game-company/issues/4)**. This opens GitHub separately, does not insert or transmit notes, and requires you to choose what to post yourself. **Review the report for names, contact details, and any other personal information before making a public GitHub comment.** Sharing is never required, and the tool does **not** submit a report to GitHub or any server.
 
@@ -37,7 +37,7 @@ node --test playtest/tests/report.test.mjs
 node --test playtest/tests/browser-smoke.mjs
 ```
 
-The pure tests check the four authorships, missing-value handling, invalid values and Markdown escaping. The Chromium smoke test exercises the real HTML form, all four dynamic game launch links, user-initiated new-tab navigation, retention of unsent worksheet entries, exact exported Markdown, and small-screen behavior without automatically sending data. Neither constitutes a manual human study.
+The pure tests check the four authorships, **unattributed blank-game reports**, missing-value handling, invalid values and Markdown escaping. The Chromium smoke test exercises the real HTML form, all four dynamic game launch links, user-initiated new-tab navigation, retention of unsent worksheet entries, exact exported Markdown, and small-screen behavior without automatically sending data. Neither constitutes a manual human study.
 
 ## Game context from the arcade
 
