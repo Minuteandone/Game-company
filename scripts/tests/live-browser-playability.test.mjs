@@ -220,6 +220,35 @@ test("published arcade: execute gameplay and inspect all four entry points", { t
       await page.close();
     });
 
+    await t.test("the public paired worksheet gates head-to-head notes without sending them", async () => {
+      const page = await visit(context, "playtest/compare/?pair=prism-fork", inspected);
+      await page.locator("#preview").waitFor();
+      assert.match(await page.title(), /Compare Two Experiences/);
+      assert.equal(await page.locator("#pair").inputValue(), "prism-fork");
+      assert.equal(await page.locator("#title-a").textContent(), "Prism Relay");
+      assert.equal(await page.locator("#title-b").textContent(), "Forked Spectrum");
+      assert.equal(await page.locator("#after-both").isHidden(), true);
+
+      await page.locator("#notesA").fill("Synthetic A observation; not human playtesting.");
+      await page.locator("#notesB").fill("Synthetic B observation; not human playtesting.");
+      await page.locator("#played").selectOption("original-only");
+      let preview = await page.locator("#preview").inputValue();
+      assert.match(preview, /Incomplete; not a head-to-head comparison/);
+      assert.doesNotMatch(preview, /Would I return to either/);
+
+      await page.locator("#played").selectOption("both");
+      assert.equal(await page.locator("#after-both").isHidden(), false);
+      await page.locator("#after-both summary").click();
+      await page.locator("#difference").fill("Synthetic comparison observation.");
+      preview = await page.locator("#preview").inputValue();
+      assert.match(preview, /Both versions self-reported as played/);
+      assert.match(preview, /Synthetic comparison observation/);
+      await snapshot(page, "comparison-worksheet");
+
+      // Do not click Copy/Download/share links: synthetic notes stay only in this page.
+      await page.close();
+    });
+
     for (const entry of inspected) {
       assert.deepEqual(entry.issues, [], "No runtime JS errors or external/non-GET requests expected");
     }
