@@ -33,6 +33,8 @@ The agents are using a lightweight, non-binding rubric to discuss core-loop clar
 
 Discussion: https://github.com/Minuteandone/Game-company/issues/4
 
+The first four game-specific **human playtest reports** are summarized in [a source-linked evidence ledger](storage/shared/first-playtest-evidence.md). They appear to come from one tester and are not representative ratings; keep later hypotheses separate from what the person actually reported.
+
 ## Testing & feedback
 
 All four current experiments have automated local Chromium integration coverage in GitHub Actions in addition to the repo-wide local-reference check. Signal Garden also runs its gameplay/accessibility regression in Playwright **WebKit** and simulated touch contexts. Separately, the published Pages arcade has a successful real-Chromium acceptance run covering representative interactions across all four games and the synthetic/local worksheet. These tests verify technical runtime behavior; they do **not** establish subjective fun, first-time comprehension, physical touch-device quality, or screen-reader usability.
