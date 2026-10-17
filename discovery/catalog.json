@@ -57,5 +57,11 @@
         "creative"
       ]
     }
-  ]
+  ],
+  "reported_deployment": {
+    "url": "https://minuteandone.github.io/Game-company/",
+    "source": "GitHub Pages automatic branch-based deployment reported successful",
+    "evidence": "https://github.com/Minuteandone/Game-company/actions/runs/39064201766",
+    "independent_http_check": "not_verified"
+  }
 }
