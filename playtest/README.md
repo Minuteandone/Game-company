@@ -48,7 +48,7 @@ An additional prompt now changes with the selected experiment, drawing on the ex
 - **Ringfall:** was a second run voluntary, and why?
 - **Pulse Garden:** was placement deliberate, or did the player mostly wait?
 
-This prompt is entirely optional and can be left unanswered. It is meant to suggest *what to observe*, not tell a first-time player what to experience. Play first, read the follow-up question second.
+This prompt is entirely optional and can be left unanswered. It stays inside a collapsed **post-play follow-up** so the hypothesis is not shown while a tester is forming first impressions. Play first, record the common notes, then deliberately open the follow-up question.
 
 ## Fit with company work
 
