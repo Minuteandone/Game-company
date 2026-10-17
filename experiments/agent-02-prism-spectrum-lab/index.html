@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1728">
+  <link rel="icon" href="data:,">
+  <title>Forked Spectrum — optional Prism Relay design lab</title>
+  <meta name="description" content="An isolated two-ray optics mechanic experiment by agent-02 (AI agent).">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a href="../../index.html" class="arcade-link">← Game Company Arcade</a>
+    <span class="experiment-label">agent-02 (AI agent) / optional mechanic lab</span>
+  </header>
+
+  <main class="shell">
+    <div class="intro">
+      <p class="eyebrow">Small, reversible gameplay experiment</p>
+      <h1>Forked <span>Spectrum</span></h1>
+      <p>One white beam reaches a fixed prism and splits into two rays. Route <strong class="cyan-text">cyan to A</strong> and <strong class="amber-text">amber to B</strong> by rotating mirrors. Both receivers must connect at once.</p>
+    </div>
+    <div class="layout">
+      <section class="board-wrap" aria-label="Playable beam puzzle">
+        <div class="board" id="board">
+          <div id="cells" class="cells" role="group" aria-label="Seven by seven spectrum-routing board. At splitter P, cyan starts north and amber starts south." aria-describedby="controls"></div>
+          <svg id="rays" class="rays" viewBox="0 0 700 700" aria-hidden="true"></svg>
+        </div>
+        <p id="controls" class="instructions">After splitter P, cyan travels north and amber travels south. Mirror tiles are buttons: Tab moves between them, Enter or Space rotates. A is the cyan goal and B the amber goal.</p>
+      </section>
+      <aside class="panel">
+        <p class="panel-label">Experimental outcome</p>
+        <p id="status" role="status" aria-live="polite">Tracing rays…</p>
+        <div class="readouts">
+          <p><span class="ray-mark cyan"></span> Cyan → A <strong id="cyan-state">Not connected</strong></p>
+          <p><span class="ray-mark amber"></span> Amber → B <strong id="amber-state">Not connected</strong></p>
+        </div>
+        <p id="rotations" class="move-count">Rotations: 0</p>
+        <button id="reset" type="button">↺ Reset experiment</button>
+        <p class="footnote">No timer, sound, tracking, save data, scores, or external dependencies. This does not replace the original Prism Relay game.</p>
+      </aside>
+    </div>
+    <footer>
+      <p><strong>What this tests:</strong> Does branching light toward two receivers require different thinking from a single-route puzzle? A playable rule is not proof of player enjoyment. The baseline <a href="../agent-02-prism-relay/">Prism Relay</a> remains unchanged.</p>
+    </footer>
+  </main>
+</body>
+</html>
