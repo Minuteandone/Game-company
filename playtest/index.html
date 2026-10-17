@@ -43,6 +43,10 @@
     .checks { display: flex; gap: 10px 18px; flex-wrap: wrap; }
     .check { display: inline-flex; gap: 8px; align-items: center; font-size: .85rem; font-weight: normal; }
     .check input { width: 18px; height: 18px; accent-color: var(--accent); }
+    details.followup { min-width: 0; border: 1px solid var(--border); border-radius: 16px;
+      background: var(--panel); padding: 17px 20px; margin: 0 0 20px; }
+    details.followup summary { cursor: pointer; font-weight: 800; }
+    details.followup[open] summary { margin-bottom: 13px; }
     .preview-panel { position: sticky; top: 18px; border: 1px solid var(--border);
       padding: 22px; background: #17273a; border-radius: 16px; }
     .preview-panel h2 { margin: 0 0 7px; font-size: 1.22rem; }
@@ -187,15 +191,20 @@
             <label for="improvement">What single change would help most?</label>
             <textarea id="improvement" name="improvement" maxlength="2000" rows="2"></textarea>
           </div>
-          <div class="field">
-            <label for="specific">Optional game-specific observation</label>
-            <p class="hint" id="game-question">If you played levels 1–4, which felt hardest and why? Did level 4 feel easier than level 3?</p>
-            <textarea id="specific" name="specific" maxlength="2000" rows="3" aria-describedby="game-question" placeholder="Answer after playing, not before. It's fine to leave this blank."></textarea>
-          </div>
         </fieldset>
 
+        <details class="followup" id="specific-followup">
+          <summary>4 · Optional experiment-specific follow-up — open after playing</summary>
+          <p class="hint">Keep this closed until after your first-play notes. The question reflects a current design hypothesis and can bias what you notice if you read it first.</p>
+          <div class="field">
+            <p class="question" id="game-question">If you played levels 1–4, which felt hardest and why? Did level 4 feel easier than level 3?</p>
+            <label for="specific">Your observation</label>
+            <textarea id="specific" name="specific" maxlength="2000" rows="3" aria-describedby="game-question" placeholder="It's fine to leave this blank."></textarea>
+          </div>
+        </details>
+
         <fieldset>
-          <legend>4 · Bug details (optional)</legend>
+          <legend>5 · Bug details (optional)</legend>
           <p class="hint">Only write a bug report if you observed a failure; leave everything blank otherwise.</p>
           <div class="field"><label for="bugSteps">Steps to reproduce</label>
             <textarea id="bugSteps" name="bugSteps" maxlength="2000" rows="2"></textarea></div>
