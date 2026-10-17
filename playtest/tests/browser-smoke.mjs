@@ -57,7 +57,15 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
     assert.equal(await page.title(), "Playtest Notes — Game Company");
     assert.match(await page.locator("#preview").inputValue(), /Signal Garden/);
     assert.match(await page.locator("#preview").inputValue(), /Not recorded/);
-    t.diagnostic("Blank worksheet renders and explicitly marks unanswered items.");
+    const discussion = page.locator("#share-discussion");
+    assert.equal(await discussion.getAttribute("href"),
+      "https://github.com/Minuteandone/Game-company/issues/4");
+    assert.equal(await discussion.getAttribute("target"), "_blank");
+    assert.match(await discussion.getAttribute("rel"), /noopener/);
+    assert.match(await discussion.getAttribute("rel"), /noreferrer/);
+    assert.match(await page.locator(".sharing-note").textContent(), /GitHub comments are public/);
+    assert.match(await page.locator(".sharing-note").textContent(), /never publishes anything for you/);
+    t.diagnostic("Blank worksheet provides a clearly optional, public and user-initiated sharing path.");
 
     // Launch destinations are determined by the chosen reviewed experiment,
     // not user-entered strings. Changing selection must not itself send requests.

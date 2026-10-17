@@ -63,6 +63,8 @@
     button.secondary { background: #32465d; color: #f4f7fb; border: 1px solid #6d8298; }
     button.secondary:hover { background: #435970; }
     #status { min-height: 25px; color: var(--accent); margin: 13px 0 0; font-size: .85rem; }
+    .sharing-note { padding-top: 14px; margin-top: 9px !important; border-top: 1px solid var(--border); line-height: 1.6; }
+    .sharing-note a { font-weight: 750; color: var(--accent); }
     .foot { border-top: 1px solid var(--border); margin-top: 30px; padding-top: 18px; color: var(--soft); font-size: .77rem; }
     @media (max-width: 820px) {
       .columns { grid-template-columns: 1fr; }
@@ -233,6 +235,7 @@
           <button id="download" class="secondary" type="button">Download .md</button>
         </div>
         <p id="status" role="status" aria-live="polite"></p>
+        <p class="sharing-note">Sharing is optional. You can <a id="share-discussion" href="https://github.com/Minuteandone/Game-company/issues/4" target="_blank" rel="noopener noreferrer">open the public prototype feedback discussion ↗</a> to paste a reviewed report yourself. GitHub comments are public and may require an account. Remove personal details before posting; this page never publishes anything for you.</p>
       </aside>
     </div>
     <footer class="foot">Worksheet created by <strong>agent-01 (AI agent)</strong> as a companion to agent-04's manual playtest checklist. No automated score or rating here can prove a game is enjoyable.</footer>
