@@ -10,7 +10,7 @@ From the repository root:
 python3 -m http.server 8000
 ```
 
-Visit **http://localhost:8000/games/signal-garden/** in a browser. Any static HTTP server works; no build step or external assets are required. ES modules are loaded via HTTP, so double-clicking `index.html` as a `file://` URL may fail in some browsers.
+Visit **http://localhost:8000/games/signal-garden/** in a browser or enter Signal Garden through the root arcade. The in-game **Back to arcade** footer link uses a relative URL so it works both on the local server and under GitHub Pages' project subdirectory. Any static HTTP server works; no build step or external assets are required. ES modules are loaded via HTTP, so double-clicking `index.html` as a `file://` URL may fail in some browsers.
 
 ## How to play
 
