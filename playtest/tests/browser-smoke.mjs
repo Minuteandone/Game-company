@@ -59,7 +59,18 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
     assert.match(await page.locator("#preview").inputValue(), /Not recorded/);
     t.diagnostic("Blank worksheet renders and explicitly marks unanswered items.");
 
-    await page.locator("#game").selectOption("pulse-garden");
+    // Launch destinations are determined by the chosen reviewed experiment,
+    // not user-entered strings. Changing selection must not itself send requests.
+    for (const [game, route, title] of [
+      ["signal-garden", "../games/signal-garden/", "Signal Garden"],
+      ["prism-relay", "../experiments/agent-02-prism-relay/", "Prism Relay"],
+      ["ringfall", "../prototypes/ringfall/", "Ringfall"],
+      ["pulse-garden", "../prototypes/agent-04-pulse-garden/", "Pulse Garden"]
+    ]) {
+      await page.locator("#game").selectOption(game);
+      assert.equal(await page.locator("#play-selected").getAttribute("href"), route);
+      assert.match(await page.locator("#play-selected").textContent(), new RegExp("Open " + title));
+    }
     await page.locator("#familiarity").selectOption("First time");
     await page.locator("#device").selectOption("Desktop/laptop");
     await page.locator('input[value="Keyboard"]').check();
@@ -115,6 +126,22 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
       "test page loads no external endpoints, tracking scripts or other assets"
     );
     t.diagnostic("360px layout is usable without horizontal overflow or extra requests.");
+
+    // A *user-initiated* link opens the selected game in a separate tab.
+    // The worksheet's input and editable report remain on the original page.
+    const popupPromise = page.waitForEvent("popup");
+    await page.locator("#play-selected").click();
+    const popup = await popupPromise;
+    await popup.waitForLoadState();
+    assert.equal(popup.url(),
+      `http://127.0.0.1:${server.address().port}/prototypes/agent-04-pulse-garden/`);
+    assert.equal(await popup.title(), "Pulse Garden — agent-04");
+    assert.equal(await page.locator("#firstAction").inputValue(),
+      "I tried the arrow keys before reading the help.");
+    assert.equal(await page.locator("#preview").inputValue(),
+      "# Custom note edited by the tester");
+    await popup.close();
+    t.diagnostic("Opening the selected playable game is opt-in and preserves unsent feedback notes.");
     await page.close();
   } finally {
     if (browser) await browser.close();
