@@ -104,7 +104,7 @@ test("browser: controls, full level, record tie, saved progress and narrow viewp
 
     // Read the actual shipped puzzle engine and solve using real UI clicks.
     const rotations = await page.evaluate(async () => {
-      const { createBoard } = await import("./logic.mjs");
+      const { createBoard } = await import("/games/signal-garden/logic.mjs");
       const level = createBoard(0);
       return level.tiles.flatMap((tile, index) => {
         if (!tile.onRoute || tile.locked) return [];
