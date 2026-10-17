@@ -172,10 +172,11 @@ function rotate(index) {
   currentBoard.tiles = rotateTile(currentBoard.tiles, index);
   turns++;
   const { goalReached, powered } = tracePower(currentBoard.tiles, currentBoard.size);
+  let newRecord = false;
   if (goalReached) {
     completed = true;
     const previousBest = progress.best[levelIndex];
-    const newRecord = !Number.isInteger(previousBest) || turns < previousBest;
+    newRecord = !Number.isInteger(previousBest) || turns < previousBest;
     if (newRecord) progress.best[levelIndex] = turns;
     progress.unlocked = Math.max(progress.unlocked, Math.min(LEVELS.length, levelIndex + 2));
     saveProgress();
@@ -187,7 +188,7 @@ function rotate(index) {
     showMessage(`Flower awake! The signal arrived in ${turns} turns.`);
     $("victory-summary").textContent =
       `You restored ${LEVELS[levelIndex].name} in ${turns} turns.` +
-      (progress.best[levelIndex] === turns ? " A personal best!" : "");
+      (newRecord ? " A personal best!" : "");
     $("victory-title").textContent =
       levelIndex === LEVELS.length - 1 ? "Every garden is glowing." : "Beautifully connected.";
     nextButton.innerHTML = levelIndex === LEVELS.length - 1
