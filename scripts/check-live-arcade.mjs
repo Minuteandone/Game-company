@@ -25,6 +25,11 @@ export const CHECKS = Object.freeze([
   { path: "prototypes/ringfall/", marker: "Ringfall", type: "html" },
   { path: "prototypes/agent-04-pulse-garden/", marker: "Pulse Garden", type: "html" },
   { path: "playtest/", marker: "Playtest Notes", type: "html" },
+  // The comparison worksheet is hosted by branch-source Pages but deliberately
+  // omitted from the four-game _site artifact; verify the separate live route.
+  { path: "playtest/compare/", marker: "Compare Two Experiences", type: "html" },
+  { path: "playtest/compare/compare.mjs", marker: "buildComparison", type: "script" },
+  { path: "playtest/compare/pairs.mjs", marker: "export const PAIRS", type: "script" },
   { path: "playtest/report.mjs", marker: "export const GAMES", type: "script" }
 ]);
 
