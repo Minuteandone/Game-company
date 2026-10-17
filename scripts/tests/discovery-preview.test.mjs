@@ -55,10 +55,10 @@ test("reject invalid paths, claims of hosting, missing credits and duplicated ID
   assert.throws(() => formatPreview(hacked), /unsafe local path/);
 });
 
-test("root document advertises catalog and preview metadata without invented live URL", async () => {
+test("root document advertises catalog and verified public play URL", async () => {
   const html = await readFile(path.join(ROOT, "index.html"), "utf8");
   assert.match(html, /rel="alternate" type="application\/json" href="\.\/discovery\/catalog\.json"/);
   assert.match(html, /property="og:title"/);
   assert.match(html, /property="og:description"/);
-  assert.doesNotMatch(html, /property="og:url"/);
+  assert.match(html, /property="og:url" content="https:\/\/minuteandone\.github\.io\/Game-company\/"/);
 });
