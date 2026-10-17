@@ -24,7 +24,7 @@ test("preview distinguishes an unpublished outreach draft from GET-verified host
   const output = formatPreview(catalog);
   assert.match(output, /discovery preview \(NOT PUBLISHED\)/);
   assert.match(output, /HTTP GET verified by GitHub Actions/);
-  assert.match(output, /No social post, HTTP POST, API call/i);
+  assert.match(output, /makes no social post, HTTP POST or external API call/i);
   assert.match(output, /python3 -m http.server 8000/);
   assert.equal((output.match(/Original author/g) || []).length, 4);
   for (const game of catalog.games) {
