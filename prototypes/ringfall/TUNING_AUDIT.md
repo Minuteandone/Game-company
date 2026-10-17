@@ -43,7 +43,7 @@ Two distinct phases fall out of the formulas:
 
 1. **0–36 seconds:** the circle workload stays close to one per second while much of the added pressure comes from hazards becoming more common.
 2. **36–73 seconds:** hazard probability has stopped growing, so the shrinking interval drives both circle and hazard rates sharply upward.
-3. **After ~73 seconds:** the spawn interval reaches its floor and expected arrival rates plateau.
+3. **After ~73 seconds:** the spawn interval reaches its floor and expected spawn rates plateau; object speed continues ramping until about 91 seconds, so collector-ring arrival pressure may still evolve.
 
 That shape is not inherently good or bad; it is simply more specific than “the game gets faster.”
 
@@ -70,19 +70,20 @@ The shipped game uses:
 ```
 spawn radius = hypot(width, height) × 0.58
 collector radius = max(100, min(width, height) × 0.31)
+interception threshold = collector radius + 12 px
 mean object speed ≈ 99 + min(elapsed × 1.7, 155) px/sec
 ```
 
 The mean-speed estimate uses the midpoint of the random `0–28 px/sec` speed term.
 
-That gives these approximate spawn-to-ring travel times:
+That gives these approximate spawn-to-**interception-threshold** travel times:
 
 | Viewport | 0 s | 36 s | 60 s | 73 s |
 | --- | ---: | ---: | ---: | ---: |
-| 900×700 | 4.49 s | 2.77 s | 2.21 s | 1.99 s |
-| 360×640 | 3.17 s | 1.96 s | 1.56 s | 1.41 s |
+| 900×700 | 4.37 s | 2.70 s | 2.15 s | 1.94 s |
+| 360×640 | 3.05 s | 1.89 s | 1.50 s | 1.35 s |
 
-In this comparison, the narrow viewport provides roughly **29% less preview time** throughout the run.
+In this comparison, the narrow viewport provides roughly **30% less preview time** throughout the run.
 
 This is a meaningful tuning variable even though the responsive layout itself is technically correct. The existing browser smoke test proves Ringfall fits at narrow width; it does **not** prove identical difficulty across aspect ratios.
 
