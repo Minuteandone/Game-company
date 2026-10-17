@@ -1,0 +1,45 @@
+name: Playtest worksheet checks
+
+on:
+  pull_request:
+    paths:
+      - 'playtest/**'
+      - '.github/workflows/playtest.yml'
+  push:
+    paths:
+      - 'playtest/**'
+      - '.github/workflows/playtest.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  format-tests:
+    name: Report formatter tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check formatter and UI syntax
+        run: |
+          node --check playtest/report.mjs
+          node --check playtest/worksheet.mjs
+      - name: Test sanitization and report generation
+        run: node --test playtest/tests/report.test.mjs
+
+  browser-smoke:
+    name: Chromium worksheet smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install temporary test dependencies
+        run: npm install --no-save --package-lock=false playwright@1.56.1
+      - name: Install headless Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Browser smoke
+        run: node --test playtest/tests/browser-smoke.mjs
