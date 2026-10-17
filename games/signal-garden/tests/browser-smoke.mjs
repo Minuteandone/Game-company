@@ -1,11 +1,12 @@
 /**
- * Real Chromium smoke test for Signal Garden's browser integration.
+ * Real Chromium/WebKit browser smoke for Signal Garden's integration.
  * Author: agent-01 (AI agent).
  *
  * Run (from repository root):
  *   npm install --no-save --package-lock=false playwright@1.56.1
- *   npx playwright install chromium
+ *   npx playwright install chromium webkit
  *   node --test games/signal-garden/tests/browser-smoke.mjs
+ *   SIGNAL_GARDEN_BROWSER=webkit node --test games/signal-garden/tests/browser-smoke.mjs
  *
  * Only a test dependency; the playable game itself has zero packages.
  */
@@ -15,7 +16,13 @@ import http from "node:http";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { chromium } from "playwright";
+import { chromium, webkit } from "playwright";
+
+const selectedBrowser = process.env.SIGNAL_GARDEN_BROWSER ?? "chromium";
+if (!["chromium", "webkit"].includes(selectedBrowser)) {
+  throw new Error("Unsupported SIGNAL_GARDEN_BROWSER: " + selectedBrowser);
+}
+const browserType = selectedBrowser === "webkit" ? webkit : chromium;
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const MIME = {
@@ -60,11 +67,11 @@ function startServer() {
   });
 }
 
-test("browser: controls, full level, record tie, saved progress and narrow viewport", async (t) => {
+test(`browser (${selectedBrowser}): controls, full level, records, persistence and narrow viewport`, async (t) => {
   const { server, baseUrl } = await startServer();
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await browserType.launch({ headless: true });
     const context = await browser.newContext({
       viewport: { width: 1100, height: 850 },
       reducedMotion: "reduce"
@@ -266,5 +273,52 @@ test("browser: controls, full level, record tie, saved progress and narrow viewp
   } finally {
     if (browser) await browser.close();
     await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test(`mobile touch (${selectedBrowser}): real taps, reset, hint, and narrow-screen layout`, async (t) => {
+  const { server, baseUrl } = await startServer();
+  let browser;
+  try {
+    browser = await browserType.launch({ headless: true });
+    const context = await browser.newContext({
+      viewport: { width: 375, height: 812 },
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      reducedMotion: "reduce"
+    });
+    const page = await context.newPage();
+    const runtimeErrors = [];
+    page.on("pageerror", error => runtimeErrors.push(error.message));
+    page.on("console", message => {
+      if (message.type() === "error") runtimeErrors.push(message.text());
+    });
+    const response = await page.goto(baseUrl);
+    assert.equal(response.status(), 200);
+    assert.equal(await page.locator("#board .tile").count(), 16);
+    const first = page.locator("#board button.tile").first();
+    const before = await first.getAttribute("aria-label");
+    await first.tap();
+    assert.equal(await page.locator("#turns").textContent(), "01",
+      "a simulated touch tap must rotate a tile");
+    assert.notEqual(await first.getAttribute("aria-label"), before,
+      "touch rotation must update connector directions");
+    await page.locator("#reset").tap();
+    assert.equal(await page.locator("#turns").textContent(), "00");
+    await page.locator("#hint").tap();
+    assert.equal(await page.locator(".tile.hint").count(), 1);
+    assert.match(await page.locator("#status").textContent(), /row \d+, column \d+/);
+    await page.setViewportSize({ width: 320, height: 650 });
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+    );
+    assert.ok(overflow <= 1, `320px touch viewport overflows by ${overflow}px`);
+    assert.deepEqual(runtimeErrors, [], "no mobile-browser errors");
+    t.diagnostic(`${selectedBrowser}: real touch taps rotated/reset/hinted a tile; 320px viewport has no horizontal overflow.`);
+    await context.close();
+  } finally {
+    if (browser) await browser.close();
+    await new Promise(resolve => server.close(resolve));
   }
 });
