@@ -9,6 +9,8 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
+import { solvePuzzle } from "./logic.mjs";
+import { LEVELS } from "./levels.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const GAME_PATH = "/experiments/agent-02-prism-relay/";
@@ -126,6 +128,83 @@ test("browser: mirror focus survives redraw and unavailable audio state is acces
     t.diagnostic("Audio failure keeps visible and accessible toggle state consistent.");
 
     assert.deepEqual(runtimeErrors, [], "handled audio failure must not become a page/console error");
+    await context.close();
+  } finally {
+    if (browser) await browser.close();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
+
+
+test("browser: solve, unlock, persist and remain usable at narrow width", async (t) => {
+  const { server, url } = await startServer();
+  let browser;
+
+  try {
+    browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext({
+      viewport: { width: 1000, height: 760 },
+      reducedMotion: "reduce"
+    });
+    const page = await context.newPage();
+    const runtimeErrors = [];
+
+    page.on("pageerror", error => runtimeErrors.push(error.message));
+    page.on("console", message => {
+      if (message.type() === "error") runtimeErrors.push(message.text());
+    });
+
+    const response = await page.goto(url);
+    assert.equal(response.status(), 200);
+    assert.equal(await page.title(), "Prism Relay · agent-02 prototype");
+    assert.equal(await page.locator("#level-index").textContent(), "01 / 04");
+    assert.equal(await page.locator("#moves").textContent(), "0");
+    assert.equal(await page.locator("#best").textContent(), "—");
+    assert.equal(await page.locator("#level-picker .level-choice").count(), LEVELS.length);
+    assert.equal(await page.locator("#level-picker .level-choice:not(:disabled)").count(), 1);
+    assert.equal(await page.locator("#next").isDisabled(), true);
+
+    await page.keyboard.press("h");
+    assert.match(await page.locator("#status").textContent(), /^Hint:/);
+    await page.keyboard.press("r");
+    assert.equal(await page.locator("#status").textContent(), "Circuit restarted. A new route awaits.");
+    t.diagnostic("Initial controls, hint shortcut and restart shortcut passed.");
+
+    const solution = solvePuzzle(LEVELS[0].grid);
+    assert.ok(solution && solution.length > 0, "first circuit needs a non-empty known solution");
+    for (const { x, y } of solution) {
+      await page.locator(`#board .mirror[data-x="${x}"][data-y="${y}"]`).click();
+    }
+
+    assert.equal(await page.locator("#beam-state").textContent(), "✦ SIGNAL CONNECTED");
+    assert.equal(await page.locator("#moves").textContent(), String(solution.length));
+    assert.equal(await page.locator("#best").textContent(), String(solution.length));
+    assert.equal(await page.locator("#next").isDisabled(), false);
+    assert.equal(await page.locator("#level-picker .level-choice:not(:disabled)").count(), 2);
+    assert.match(await page.locator("#status").textContent(), /next puzzle is unlocked/i);
+    t.diagnostic("UI clicks solved the shipped first circuit and unlocked circuit 2.");
+
+    await page.locator("#next").click();
+    assert.equal(await page.locator("#level-index").textContent(), "02 / 04");
+    assert.equal(await page.locator("#level-title").textContent(), LEVELS[1].name);
+    assert.equal(await page.locator("#moves").textContent(), "0");
+
+    await page.reload();
+    assert.equal(await page.locator("#level-picker .level-choice:not(:disabled)").count(), 2);
+    assert.equal(await page.locator("#best").textContent(), String(solution.length));
+    await page.locator("#level-picker .level-choice").nth(1).click();
+    assert.equal(await page.locator("#level-title").textContent(), LEVELS[1].name);
+    t.diagnostic("Unlock and best-score persistence survived a real reload.");
+
+    await page.setViewportSize({ width: 360, height: 740 });
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+    );
+    assert.ok(overflow <= 1, `360px viewport has ${overflow}px horizontal overflow`);
+    assert.ok((await page.locator("#board").boundingBox())?.width <= 360);
+    assert.deepEqual(runtimeErrors, [], "no browser runtime/console errors expected");
+    t.diagnostic("Narrow viewport and runtime-error checks passed.");
+
     await context.close();
   } finally {
     if (browser) await browser.close();
