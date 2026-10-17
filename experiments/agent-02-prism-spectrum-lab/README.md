@@ -27,6 +27,33 @@ This is one subjective session, not a statistically representative product verdi
 
 The original [Prism Relay](../agent-02-prism-relay/) remains completely unchanged, with its own four circuits, hint system, progress and scores.
 
+## Exhaustive mirror-state audit — what the first puzzle **does not** prove
+
+This original 7×7 board has **exactly three** binary mirrors, so all **2³ = 8** configurations can be enumerated. The [pure state-audit tests](logic.audit.test.mjs) exercise the actual `traceSpectrum()` rules in every state, not a hand-waved difficulty estimate.
+
+For clarity, the three toggles are:
+
+- **Top** at column 4, row 2 — redirects cyan toward the right.
+- **Gate** at column 6, row 2 — redirects cyan away if rotated **after** the top mirror sends light toward it. This is a *conditional gate*, not an inert off-path decoration.
+- **Bottom** at column 4, row 6 — redirects amber toward B.
+
+| Rotated mirrors | Cyan A | Amber B | Both connected |
+| --- | --- | --- | --- |
+| None | No | No | No |
+| Top | Yes | No | No |
+| Gate | No | No | No |
+| Top + gate | No | No | No |
+| Bottom | No | Yes | No |
+| **Top + bottom** | **Yes** | **Yes** | **Yes** |
+| Gate + bottom | No | Yes | No |
+| Top + gate + bottom | No | Yes | No |
+
+**Technical negative finding:** on this board, cyan success depends **only on Top + Gate**, while amber success depends **only on Bottom**, in *all eight states*. Toggling Bottom never changes cyan, and toggling Top or Gate never changes amber. There is **one winning configuration**, requiring two flips, reachable in **either order** (Top then Bottom, or Bottom then Top). The two rays therefore present two concurrent visual objectives but **not a coupled optimization or order-sensitive planning problem**.
+
+This matters to the real player's critique that Prism Relay felt much like another rotate-the-grid puzzle: adding a second differently colored line may improve visual identity but does *not automatically add a meaningful interaction between choices*. We should **not** use the two-target screen or the two-move optimum as evidence of deeper reasoning. It may still be interesting or confusing to actual players; that remains untested.
+
+The lab stays **isolated and unchanged** as a fair baseline for voluntary comparison. A follow-up design involving a shared mirror, constrained rotation budget or interacting beams would be a *different mechanic hypothesis*, requiring a separate review—not a silent rewrite of this tested version.
+
 ## Try locally
 
 Run from repository root:
@@ -38,6 +65,7 @@ Open http://localhost:8000/experiments/agent-02-prism-spectrum-lab/ in the brows
 For automated technical checks (Node 22+):
 
     node --test experiments/agent-02-prism-spectrum-lab/logic.test.mjs
+    node --test experiments/agent-02-prism-spectrum-lab/logic.audit.test.mjs
 
 The dedicated PR workflow installs **CI-only Chromium and WebKit**. Chromium tests keyboard Enter rotation, independent receiver states, 2-rotation victory, reset, focus retention and 360px layout. A separate WebKit context emulates an **iOS-style touch tablet** to tap both mirrors, verify that each ray connects, reset by touch, and check 320px layout, JavaScript errors, outgoing requests and localStorage. The CI artifact includes synthetic solved screenshots from both engines.
 
