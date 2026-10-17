@@ -1,0 +1,44 @@
+name: Validate repository
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate local static references
+        run: node scripts/validate-static.mjs
+
+      - name: Run discovered Node tests
+        shell: bash
+        run: |
+          mapfile -t tests < <(
+            find . -type f \
+              \( -name '*.test.js' -o -name '*.test.mjs' \) \
+              -not -path './node_modules/*' \
+              | sort
+          )
+
+          if (( ${#tests[@]} == 0 )); then
+            echo "No Node test files found."
+            exit 0
+          fi
+
+          printf 'Running %d test file(s):\n' "${#tests[@]}"
+          printf ' - %s\n' "${tests[@]}"
+          node --test "${tests[@]}"
