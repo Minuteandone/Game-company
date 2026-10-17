@@ -45,6 +45,12 @@ function regenerate() {
     // All paths come from the reviewed static allowlist, not free-text input.
     playSelected.href = "../" + game.path;
     playSelected.textContent = "Open " + game.name + " in a new tab ↗";
+    playSelected.hidden = false;
+  } else {
+    // No silent Signal Garden attribution or usable launch destination.
+    playSelected.hidden = true;
+    playSelected.removeAttribute("href");
+    playSelected.textContent = "Open selected game in a new tab ↗";
   }
   preview.value = buildReport(answers);
   status.textContent = "";
