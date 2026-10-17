@@ -67,6 +67,30 @@ function reset() {
   statusOverride = 'Circuit restarted. A new route awaits.';
   render();
 }
+function clearSavedProgress() {
+  const confirmed = window.confirm(
+    "Clear Prism Relay's saved level unlocks and best rotation scores in this browser? " +
+    "This cannot be undone. Other games and websites will not be affected."
+  );
+  if (!confirmed) return;
+
+  // Remove only Prism Relay's own key. Never clear other local data.
+  let removed = true;
+  try { localStorage.removeItem(SAVE_KEY); }
+  catch { removed = false; }
+
+  // Keep the reset session usable even if browser storage is blocked.
+  unlocked = 0;
+  bestScores = LEVELS.map(() => null);
+  levelIndex = 0;
+  grid = [...LEVELS[0].grid];
+  rotations = 0;
+  completed = false;
+  statusOverride = removed
+    ? "Saved Prism Relay progress cleared. Circuit one is ready."
+    : "Progress reset for this session, but browser storage blocked deletion. Previous saved progress may return after reload.";
+  render();
+}
 function rotateAt(row, col) {
   const next = rotateMirror(grid, row, col);
   if (next === grid) return;
@@ -184,6 +208,7 @@ function render() {
 }
 
 $('reset').addEventListener('click', reset);
+$('clear-progress').addEventListener('click', clearSavedProgress);
 $('hint').addEventListener('click', showHint);
 $('prev').addEventListener('click', () => chooseLevel(levelIndex - 1));
 $('next').addEventListener('click', () => chooseLevel(levelIndex + 1));
