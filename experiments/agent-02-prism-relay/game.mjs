@@ -71,6 +71,8 @@ function rotateAt(row, col) {
   statusOverride = '';
   beep(330 + (rotations % 5) * 65);
   render();
+  const rotatedCell = $('board').querySelector('[data-x="' + col + '"][data-y="' + row + '"]');
+  rotatedCell?.focus({ preventScroll: true });
 }
 function showHint() {
   const moves = solvePuzzle(grid);
