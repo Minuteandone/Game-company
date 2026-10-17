@@ -42,13 +42,32 @@ test("reports preserve order, do not infer omitted answers", () => {
 test("user notes are quoted and HTML escapes stay in the report", () => {
   const content=buildComparison({pair:"garden-coupled",
     notesA:"# False heading\n<script>alert('x')</script>",
-    friction:"[fake link](https://example.com)\n> fabricated quote"});
+    friction:"[fake link](https://example.com)\n> fabricated quote",played:"both"});
   assert.match(content,/> # False heading/);
   assert.match(content,/&lt;script&gt;/);
   assert.doesNotMatch(content,/<script>/);
   assert.match(content,/> &gt; fabricated quote/);
 });
 
+
+
+test("one-game or unknown-completion reports cannot claim head-to-head preference",()=>{
+  const partial=buildComparison({pair:"prism-fork",played:"original-only",
+    returnChoice:"The variant was terrible",difference:"Difference claimed",
+    versionOriginal:"original-commit",versionVariant:"lab-commit"});
+  assert.match(partial,/Original only/);
+  assert.match(partial,/Incomplete; not a head-to-head comparison/);
+  assert.doesNotMatch(partial,/The variant was terrible/);
+  assert.doesNotMatch(partial,/Difference claimed/);
+  assert.match(partial,/original-commit/);
+  assert.match(partial,/lab-commit/);
+  const both=buildComparison({pair:"prism-fork",played:"both",returnChoice:"I preferred neither"});
+  assert.match(both,/Both versions self-reported as played/);
+  assert.match(both,/I preferred neither/);
+  const missing=buildComparison({pair:"not-known",played:"both",returnChoice:"A fake preference"});
+  assert.match(missing,/Incomplete/);
+  assert.doesNotMatch(missing,/A fake preference/);
+});
 
 test("every comparison game is an actual checked-in playable page",async()=>{
   const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../../..");
