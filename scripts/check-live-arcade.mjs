@@ -13,6 +13,7 @@ export const SITE = "https://minuteandone.github.io/Game-company/";
 
 export const CHECKS = Object.freeze([
   { path: "", marker: "Game Company Arcade", type: "html" },
+  { path: "assets/arcade-share.png", type: "image" },
   { path: "games/signal-garden/", marker: "Signal Garden", type: "html" },
   { path: "games/signal-garden/game.js", marker: "tracePower", type: "script" },
   { path: "games/signal-garden/logic.mjs", marker: "export function tracePower", type: "script" },
@@ -43,7 +44,16 @@ export function validateResponse(check, response, body) {
     !contentType.includes("ecmascript")) {
     failures.push("expected JavaScript module MIME, got " + (contentType || "none"));
   }
-  if (!body.includes(check.marker)) failures.push("missing expected page/module marker");
+  if (check.type === "image" && !contentType.includes("image/png")) {
+    failures.push("expected PNG MIME, got " + (contentType || "none"));
+  }
+  if (check.type === "image") {
+    const signature = body instanceof Uint8Array ? body.subarray(0, 8) : new Uint8Array();
+    const expected = [137, 80, 78, 71, 13, 10, 26, 10];
+    if (signature.length !== 8 || expected.some((byte, index) => signature[index] !== byte)) {
+      failures.push("invalid PNG signature");
+    }
+  } else if (!body.includes(check.marker)) failures.push("missing expected page/module marker");
   return failures;
 }
 
@@ -60,7 +70,9 @@ export async function checkLiveSite(fetcher = fetch) {
         redirect: "error",
         signal: AbortSignal.timeout(12000)
       });
-      const body = await response.text();
+      const body = check.type === "image"
+        ? new Uint8Array(await response.arrayBuffer())
+        : await response.text();
       const failures = validateResponse(check, response, body);
       return { path: check.path || "(arcade root)", url, failures };
     } catch (error) {
