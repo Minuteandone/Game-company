@@ -53,6 +53,8 @@ test("Forked Spectrum: keyboard splits, solves, resets and remains narrow-safe",
     assert.equal(loaded.status(), 200);
     assert.match(await page.title(), /Forked Spectrum/);
     assert.equal(await page.locator("#cells .mirror").count(), 3);
+    assert.match(await page.locator("#controls").textContent(), /cyan travels north and amber travels south/i);
+    assert.match(await page.locator("#cells").getAttribute("aria-label"), /cyan starts north and amber starts south/i);
     assert.equal(await page.locator("#rays polyline").count(), 3, "white feed and two colored traces");
     assert.equal(await page.locator("#cyan-state").textContent(), "Not connected");
     assert.equal(await page.locator("#amber-state").textContent(), "Not connected");
