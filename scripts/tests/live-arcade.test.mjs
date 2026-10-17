@@ -10,6 +10,8 @@ test("live-site URLs stay under the exact public GitHub Pages repository", () =>
     "experiments/agent-02-prism-spectrum-lab/",
     "experiments/agent-04-pulse-voices/"
   ]) assert.ok(paths.has(lab), "comparison lab must remain explicitly reviewed for public GET verification: " + lab);
+  assert.ok(paths.has("playtest/compare/"),
+    "paired comparison worksheet must remain explicitly reviewed for public GET verification");
   for (const bad of ["../", "../other/", "/other", "https://example.com", "playtest/?q=x", "a#x"]) {
     assert.throws(() => publicUrl(bad), /Only repository-relative/);
   }
