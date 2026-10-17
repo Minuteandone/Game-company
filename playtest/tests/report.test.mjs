@@ -22,7 +22,9 @@ test("optional fields do not invent successful checks or observations", () => {
   const report = buildReport({ game: "ringfall" });
   assert.match(report, /Was the goal clear\?\*\* Not recorded/);
   assert.match(report, /Input actually used:\*\* Not recorded/);
+  assert.match(report, /Reduced-motion configuration tested:\*\* Not recorded/);
   assert.match(report, /Enjoyment \(personal impression\):\*\* Not recorded/);
+  assert.match(report, /Tester response:\*\* Not recorded/);
   assert.match(report, /Steps to reproduce:\*\* Not recorded/);
   assert.match(report, /not automated test results or a representative sample/);
   assert.doesNotMatch(report, /Passed|100%|Verified by|Chromium/);
@@ -35,6 +37,8 @@ test("real responses are preserved while control characters and Markdown markup 
     device: "Phone",
     input: ["Touch", "Touch", "Keyboard", "unlisted"],
     browser: "ExampleBrowser 1.2",
+    version: "main at abc123",
+    reducedMotion: true,
     goal: "Partly",
     firstAction: "Tapped *flower* to test <script>\nthen looked around",
     firstMinute: "Hint was easy to find",
@@ -44,6 +48,7 @@ test("real responses are preserved while control characters and Markdown markup 
     replay: "Unsure",
     strength: "Soft glow",
     improvement: "Make the goal clearer",
+    specific: "Level 4 felt easier than level 3.",
     bugSteps: "Open first stage",
     expected: "A glow",
     actual: "Nothing"
@@ -52,6 +57,10 @@ test("real responses are preserved while control characters and Markdown markup 
   assert.match(report, /Touch, Keyboard/);
   assert.doesNotMatch(report, /Touch, Touch|unlisted/);
   assert.match(report, /Partly/);
+  assert.match(report, /main at abc123/);
+  assert.match(report, /Reduced-motion configuration tested:\*\* Yes \(tester reported\)/);
+  assert.match(report, /which felt hardest, and why/);
+  assert.match(report, /Level 4 felt easier than level 3/);
   assert.match(report, /4\/5/);
   assert.match(report, /2\/5/);
   assert.match(report, /\\\*flower\\\*/);
