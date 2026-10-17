@@ -1,0 +1,173 @@
+/**
+ * Headless Chromium checks against the REAL published Game Company arcade.
+ *
+ * Author: agent-02 (AI agent). Unlike localhost game tests and HTTP GET asset
+ * probes, this executes JS and clicks through the live GitHub Pages site.
+ * A hermetic, temporary browser context is used; nothing is submitted.
+ *
+ * Usage (after installing Playwright and Chromium):
+ *   node --test scripts/tests/live-browser-playability.test.mjs
+ */
+import test from "node:test";
+import assert from "node:assert/strict";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { chromium } from "playwright";
+import { LEVELS } from "../../experiments/agent-02-prism-relay/levels.mjs";
+import { solvePuzzle } from "../../experiments/agent-02-prism-relay/logic.mjs";
+
+const SITE = "https://minuteandone.github.io/Game-company/";
+const SITE_ORIGIN = new URL(SITE).origin;
+const OUT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../artifacts/live-browser");
+
+function captureSafety(page, exceptions) {
+  const issues = [];
+  page.on("pageerror", e => issues.push("Runtime: " + e.message));
+  page.on("console", m => {
+    if (m.type() === "error") issues.push("Console: " + m.text());
+  });
+  page.on("request", request => {
+    const url = request.url();
+    const method = request.method();
+    if (method !== "GET" || !url.startsWith(SITE_ORIGIN + "/Game-company/")) {
+      issues.push("Unexpected outbound browser request: " + method + " " + url);
+      // This test intentionally rejects network side effects beyond public GETs.
+      void request.abort?.();
+    }
+  });
+  exceptions.push({ issues, page });
+  return issues;
+}
+async function visit(context, pathname, exceptions) {
+  const page = await context.newPage();
+  captureSafety(page, exceptions);
+  const url = new URL(pathname, SITE).href;
+  assert.ok(url.startsWith(SITE), "Only the published arcade origin and prefix may be tested");
+  const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 35000 });
+  assert.equal(response?.status(), 200, "Published page must return HTTP 200: " + pathname);
+  return page;
+}
+async function snapshot(page, name) {
+  await page.screenshot({ path: path.join(OUT, name + ".png"), fullPage: true, animations: "disabled" });
+}
+
+test("published arcade: execute gameplay and inspect all four entry points", { timeout: 180000 }, async (t) => {
+  await mkdir(OUT, { recursive: true });
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({
+    viewport: { width: 1100, height: 790 },
+    reducedMotion: "reduce",
+    acceptDownloads: true,
+    serviceWorkers: "block"
+  });
+  const inspected = [];
+  try {
+    await t.test("the public arcade renders game links in Chromium", async () => {
+      const page = await visit(context, "", inspected);
+      assert.match(await page.title(), /Game Company Arcade/);
+      const links = page.locator("a.game-link");
+      assert.equal(await links.count(), 4);
+      const expected = [
+        "./games/signal-garden/",
+        "./experiments/agent-02-prism-relay/",
+        "./prototypes/ringfall/",
+        "./prototypes/agent-04-pulse-garden/"
+      ];
+      const hrefs = await links.evaluateAll(elements => elements.map(a => a.getAttribute("href")));
+      assert.deepEqual(hrefs, expected, "Game entries must preserve working project-relative paths");
+      await snapshot(page, "arcade-desktop");
+      await page.setViewportSize({ width: 360, height: 740 });
+      const extra = await page.evaluate(() =>
+        document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      assert.ok(extra <= 1, "360px gallery horizontal overflow: " + extra);
+      await snapshot(page, "arcade-mobile");
+      await page.close();
+    });
+
+    await t.test("Prism Relay really solves, unlocks and returns to the hosted arcade", async () => {
+      const page = await visit(context, "experiments/agent-02-prism-relay/", inspected);
+      await page.locator("#board .mirror").first().waitFor({ timeout: 20000 });
+      assert.equal(await page.locator("#level-index").textContent(), "01 / 04");
+      assert.equal(await page.locator("#next").isDisabled(), true);
+      await snapshot(page, "prism-before");
+
+      const solution = solvePuzzle(LEVELS[0].grid);
+      assert.ok(solution && solution.length > 0);
+      for (const move of solution) {
+        await page.locator('#board .mirror[data-x="' + move.x + '"][data-y="' + move.y + '"]').click();
+      }
+      assert.equal(await page.locator("#beam-state").textContent(), "✦ SIGNAL CONNECTED");
+      assert.equal(await page.locator("#moves").textContent(), String(solution.length));
+      assert.equal(await page.locator("#next").isDisabled(), false);
+      await snapshot(page, "prism-solved");
+
+      await page.locator("#next").click();
+      assert.equal(await page.locator("#level-index").textContent(), "02 / 04");
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await page.locator("#board .mirror").first().waitFor();
+      assert.equal(await page.locator("#level-picker .level-choice:not(:disabled)").count(), 2);
+
+      const arcade = page.getByRole("link", { name: "Back to Game Company Arcade" });
+      await arcade.focus();
+      await page.keyboard.press("Enter");
+      await page.waitForURL(SITE + "index.html", { timeout: 15000 });
+      assert.match(await page.title(), /Game Company Arcade/);
+      await page.close();
+    });
+
+    await t.test("Signal Garden, Ringfall and Pulse Garden render real controls", async () => {
+      const signal = await visit(context, "games/signal-garden/", inspected);
+      await signal.locator("#hint").waitFor();
+      assert.match(await signal.title(), /Signal Garden/);
+      const tiles = signal.locator(".tile");
+      assert.ok(await tiles.count() > 0, "Signal Garden should generate puzzle tiles");
+      await signal.locator("#hint").click();
+      assert.ok((await signal.locator("#status").textContent())?.length > 10);
+      await snapshot(signal, "signal-garden");
+      await signal.close();
+
+      const ring = await visit(context, "prototypes/ringfall/", inspected);
+      await ring.locator("#game").waitFor();
+      await ring.locator("#start").click();
+      await ring.waitForTimeout(160);
+      assert.equal(await ring.locator("#game").isVisible(), true);
+      await snapshot(ring, "ringfall");
+      await ring.close();
+
+      const pulse = await visit(context, "prototypes/agent-04-pulse-garden/", inspected);
+      const canvas = pulse.locator("#game");
+      await canvas.waitFor();
+      assert.equal(await canvas.isVisible(), true);
+      await canvas.focus();
+      assert.equal(await canvas.evaluate(el => el === document.activeElement), true);
+      await pulse.keyboard.press("Enter");
+      await pulse.waitForTimeout(160);
+      await snapshot(pulse, "pulse-garden");
+      await pulse.close();
+    });
+
+    await t.test("the public worksheet previews feedback locally without sending it", async () => {
+      const page = await visit(context, "playtest/", inspected);
+      await page.locator("#preview").waitFor();
+      await page.locator("#game").selectOption("prism-relay");
+      await page.locator("#firstAction").fill("Synthetic browser QA note; not a human playtest.");
+      const preview = await page.locator("#preview").inputValue();
+      assert.match(preview, /Prism Relay/);
+      assert.match(preview, /Synthetic browser QA note/);
+      const link = page.locator("#play-selected");
+      assert.equal(await link.getAttribute("href"), "../experiments/agent-02-prism-relay/");
+      await snapshot(page, "worksheet");
+      // Do not click Copy or Download: this check never shares mock data.
+      await page.close();
+    });
+
+    for (const entry of inspected) {
+      assert.deepEqual(entry.issues, [], "No runtime JS errors or external/non-GET requests expected");
+    }
+    t.diagnostic("All checks use ephemeral browser storage and public GETs; this is NOT human playtesting.");
+  } finally {
+    await context.close();
+    await browser.close();
+  }
+});
