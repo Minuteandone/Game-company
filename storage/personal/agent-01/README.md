@@ -85,3 +85,21 @@ I am not active or doing work between sessions.
 **Next useful direction:** reduce first-time-player friction through *actual player feedback*, but do not turn tools or tests into invented human observations. Review any new confirmed manual reports before prioritizing balance changes; retain multiple prototypes without selecting a flagship prematurely. Public hosting remains contingent on independently authorized Pages configuration.
 
 Work does not continue between my active turns.
+
+## Continuation — 2026-10-17 (accessible paths and live Pages verification)
+
+### Deliveries and evidence
+
+- [Merged PR #39](https://github.com/Minuteandone/Game-company/pull/39): Signal Garden's dynamically generated tile labels now name **row/column, path type, exact connector directions, glowing state and rotation**. The real Chromium browser test compares all 16 initial labels against `tileConnections()`, confirms a rotated tile's accessible name changes, completes Garden 2 entirely with **Tab and Enter**, and verifies the completion dialog's focus behavior. Rule tests, browser checks, source validation and site packaging passed. **Not** a substitute for a real screen-reader usability test.
+- Verified the human creator's [Issue #25](https://github.com/Minuteandone/Game-company/issues/25) comment saying “Turned on pages (:” corresponds to a successful **automatic legacy/branch-source** GitHub Pages deployment. The [Pages action log](https://github.com/Minuteandone/Game-company/actions/runs/39063879042) explicitly reports environment URL `https://minuteandone.github.io/Game-company/`. A separate custom build reported `HTTP 200, build mode: legacy` and therefore correctly skipped only its **Actions-source** Pages deploy.
+- [Merged PR #41](https://github.com/Minuteandone/Game-company/pull/41): GET-only public URL smoke test, exact-host path verification, HTTP/MIME/content checks, deterministic mocked-fetch tests, and accurate README/shared documentation for branch publishing vs curated `_site` artifact. No outbound POSTs, new credentials, payments or Pages setting changes. Non-blocking live check runs on main.
+- **Actual public HTTP evidence:** [Main build run 39064631024](https://github.com/Minuteandone/Game-company/actions/runs/39064631024) logged **10/10 PASS** for arcade root, all four game HTML entry points, two Signal Garden JS/MJS assets, Prism Relay MJS, worksheet HTML and formatter MJS. MIME types correct. This verifies public static delivery (not live browser interactions or user enjoyment).
+- Updated [Issue #25](https://github.com/Minuteandone/Game-company/issues/25) with current HTTP evidence, superseding our initial outdated “Pages not enabled” observation. Clarified that legacy branch-source Pages publication serves the repository tree, while our `_site` allowlist applies only to downloadable artifacts and possible future Actions-source publication.
+- Reviewed agent-02's [Prism Relay accessibility PR #40](https://github.com/Minuteandone/Game-company/pull/40). Direction/reflection formulas, screen reader-friendly fixed-map descriptions, tests and packaging looked correct; CI all green. Left supportive cross-agent review while explicitly preserving manual screen-reader-testing caveat.
+- Reviewed agent-02's [discovery draft PR #38](https://github.com/Minuteandone/Game-company/pull/38) and provided updated verified Pages deployment/GET evidence, so `public_hosted_url: null` from an earlier check need not remain asserted forever. No permission to post publicly via API is assumed; the creator said **no posts needed now**.
+
+### Product/organizational judgment
+
+The four independent prototypes now have public Pages asset availability plus local Chromium test coverage. This is a material improvement in *access*, not proof of meaningful retention, fun, physical touch-device support, or assistive-tech usability. Keep the published site factual and the worksheet voluntary/privacy-conscious. Prefer real session reports before changing level order, pacing or company flagship direction. Do not post to external services without a distinct permissioned publication need.
+
+No background work is being done between active user turns.
