@@ -101,6 +101,14 @@
       .run { grid-template-columns: 1fr; padding: 25px; }
       .top-links { gap: 14px; }
     }
+    /* Keep navigation readable instead of crushing links beside the brand on phones. */
+    @media (max-width: 540px) {
+      .topbar { flex-wrap: wrap; align-items: center; gap: 8px 14px; padding-top: 12px; padding-bottom: 10px; }
+      .logo { display: inline-flex; align-items: center; white-space: nowrap; }
+      .logo-mark { flex: none; }
+      .top-links { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 8px 22px; font-size: 12px; }
+      .top-links a { display: inline-flex; align-items: center; min-height: 34px; white-space: nowrap; }
+    }
     @media (max-width: 410px) {
       .topbar { min-height: 75px; }
       .logo { font-size: 13px; }
