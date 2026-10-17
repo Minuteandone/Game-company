@@ -72,12 +72,14 @@ test("arcade: narrow header, links and game cards stay inside the viewport", asy
         const bounds = selector => [...document.querySelectorAll(selector)].map(el => {
           const rect = el.getBoundingClientRect();
           return { text: el.textContent.trim().slice(0, 40),
-            left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+            left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom,
+            height: rect.height, whiteSpace: getComputedStyle(el).whiteSpace };
         });
         return {
           view,
           overflow: document.documentElement.scrollWidth - view,
           logo: bounds("header .logo")[0],
+          logoWhiteSpace: getComputedStyle(document.querySelector("header .logo")).whiteSpace,
           headerLinks: bounds("header .top-links a"),
           nav: bounds("header .top-links")[0],
           gameLinks: bounds("a.game-link"),
@@ -100,6 +102,13 @@ test("arcade: narrow header, links and game cards stay inside the viewport", asy
       if (width <= 560) {
         assert.ok(result.nav.top >= result.logo.bottom - 1,
           `${width}px: navigation should wrap below the brand without overlap`);
+        assert.equal(result.logoWhiteSpace, "nowrap", `${width}px: arcade brand should remain on one line`);
+        for (const link of result.headerLinks) {
+          assert.equal(link.whiteSpace, "nowrap",
+            `${width}px: navigation text must not wrap inside a link: ${link.text}`);
+          assert.ok(link.height >= 34,
+            `${width}px: navigation target is less than 34px tall: ${link.text}`);
+        }
       }
       t.diagnostic(`${width}px: no sideways scroll; 3 header links and 4 games fit.`);
     }
