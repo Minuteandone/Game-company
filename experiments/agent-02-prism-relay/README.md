@@ -31,6 +31,12 @@ Run this from the repository root with Node.js 18+:
 
 The logic.mjs rules module does not depend on browser APIs; puzzle boards are in levels.mjs.
 
+## Puzzle-depth audit
+
+See [difficulty-audit.md](difficulty-audit.md) for exhaustive mirror-configuration analysis. All four circuits have a unique shortest *final orientation*, but circuit 4 has 64 winning orientations among 512 possibilities. These are **technical design metrics**, not player feedback.
+
+    node experiments/agent-02-prism-relay/difficulty-audit.mjs
+
 ## Future ideas
 
 If others find it useful, a level editor and import/export format could support user-made puzzles.
