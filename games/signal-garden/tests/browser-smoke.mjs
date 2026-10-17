@@ -248,7 +248,8 @@ test("browser: controls, full level, record tie, saved progress and narrow viewp
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth
     );
     assert.ok(horizontalOverflow <= 1, `360px viewport has ${horizontalOverflow}px horizontal overflow`);
-    assert.equal(await page.locator("#board .tile").count(), 25);
+    assert.equal(await page.locator("#board .tile").count(), 16,
+      "after clearing progress, the responsive board should still be garden one's 4×4 grid");
     assert.deepEqual(runtimeErrors, [], "no page JavaScript errors or failed browser requests");
     t.diagnostic("360px viewport has no document-wide horizontal overflow or runtime errors.");
 
