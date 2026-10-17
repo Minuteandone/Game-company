@@ -143,6 +143,19 @@ There is no scoring reward for spreading a composition across more of the canvas
 
 So the score system currently pushes toward **early, dense clusters**, even though the visual framing can also suggest composing a garden across the space.
 
+A concrete 12-seed example fits comfortably inside the shipped constraints. A 4 × 3 layout with about 29 px between adjacent seeds spans roughly 87 × 58 px; its farthest pair is about 105 px apart, still inside the 118 px neighbor radius, while adjacent seeds remain beyond the 28 px minimum planting distance.
+
+Once all 12 are stage 2+, each seed can therefore have 11 scoring neighbors. At stage 4:
+
+```
+mature hit per seed = 20 + 11 × 4 = 64
+12-seed mature sweep = 12 × 64 = 768
+```
+
+The same 12 mutually connected stage-3+ plants can draw `12 × 11 / 2 = 66` visible pairwise links.
+
+For comparison, twelve isolated mature seeds would yield only `12 × 20 = 240` points per sweep. This compact example therefore produces more than three times the mature per-sweep score before considering earlier growth-phase bonuses.
+
 Visible links do not appear until both plants are stage 3+, while neighbor scoring can already begin from stage 2+. A player may therefore receive a density bonus before the visual link system explains that relationship.
 
 Useful human question:
