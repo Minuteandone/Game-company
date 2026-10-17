@@ -109,6 +109,14 @@ test("browser: pointer + keyboard planting, pause, resize, mute and reset", asyn
     await buttons.nth(1).click();
     assert.equal(await buttons.nth(1).getAttribute("aria-pressed"), "true");
     assert.equal(await page.locator("#voice-status").textContent(), "Selected: Reed");
+    await buttons.nth(0).focus();
+    await page.keyboard.press("Enter");
+    assert.equal(await buttons.nth(0).getAttribute("aria-pressed"), "true",
+      "a focused voice button must activate with Enter");
+    await buttons.nth(1).focus();
+    await page.keyboard.press("Space");
+    assert.equal(await buttons.nth(1).getAttribute("aria-pressed"), "true",
+      "a focused voice button must activate with Space");
     await page.keyboard.press("3");
     assert.equal(await buttons.nth(2).getAttribute("aria-pressed"), "true");
     assert.equal(await page.locator("#voice-status").textContent(), "Selected: Pluck");
@@ -124,7 +132,15 @@ test("browser: pointer + keyboard planting, pause, resize, mute and reset", asyn
     assert.equal(await page.locator("#mix").textContent(), "Garden mix: Bell 0 · Reed 0 · Pluck 1");
     await page.waitForTimeout(180);
     assert.ok(await numericText(page, "#time") < 60);
-    t.diagnostic("Pointer planting starts the garden and advances the timer.");
+    // Space on a focused voice button must select it, not pause the running garden.
+    await buttons.nth(0).focus();
+    const beforeButtonSpace = await numericText(page, "#time");
+    await page.keyboard.press("Space");
+    assert.equal(await buttons.nth(0).getAttribute("aria-pressed"), "true");
+    await page.waitForTimeout(260);
+    assert.ok(await numericText(page, "#time") < beforeButtonSpace - 0.1,
+      "Space activating a voice button must not pause the garden timer");
+    t.diagnostic("Pointer planting starts the garden; focused voice buttons keep Enter/Space semantics.");
 
     // Reset before testing the keyboard path.
     await page.keyboard.press("r");
