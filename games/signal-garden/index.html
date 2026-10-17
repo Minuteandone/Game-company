@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101629">
+  <meta name="description" content="Signal Garden: a free, keyboard-friendly puzzle about connecting light to a sleeping flower.">
+  <title>Signal Garden — A tiny puzzle about finding light</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./game.js"></script>
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <div class="app">
+    <header class="masthead">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✳</span><span>Little Experiments <span class="brand-separator">/</span> <strong>01</strong></span></div>
+      <span class="build-tag">A SIGNAL GARDEN STORY</span>
+    </header>
+
+    <main class="layout">
+      <section class="story" aria-labelledby="story-title">
+        <div class="eyebrow"><span class="eyebrow-star">✦</span> AN INTERACTIVE LITTLE WORLD</div>
+        <h1 id="story-title">Make room<br>for <em>light.</em></h1>
+        <p class="lede">The garden is asleep. Turn the scattered pathways until a warm signal reaches the waiting bloom.</p>
+        <div class="guide">
+          <h2>How to play <span aria-hidden="true">↘</span></h2>
+          <div class="guide-step"><span class="guide-icon" aria-hidden="true">↻</span><p><strong>Rotate a tile</strong><small>Tap, click, or press Enter / Space.</small></p></div>
+          <div class="guide-step"><span class="guide-icon" aria-hidden="true">⌁</span><p><strong>Connect the trail</strong><small>Neighboring paths must face each other.</small></p></div>
+          <div class="guide-step"><span class="guide-icon" aria-hidden="true">✿</span><p><strong>Wake the flower</strong><small>Guide light from the star to the bloom.</small></p></div>
+        </div>
+        <p class="keyboard-tip">⌨ Keyboard tip: use arrow keys to move between tiles.</p>
+      </section>
+
+      <section class="arena" aria-label="Signal Garden puzzle">
+        <div class="arena-header">
+          <div><p class="tiny-label">CURRENT GARDEN</p><h2 id="stage-name">First Light</h2></div>
+          <span class="level-badge" id="level-number">01 / 06</span>
+        </div>
+        <nav class="level-nav" aria-label="Choose an unlocked garden" id="level-list"></nav>
+        <div class="board-wrap">
+          <div class="board-ornament board-ornament-a" aria-hidden="true">✦</div>
+          <div class="board-ornament board-ornament-b" aria-hidden="true">✧</div>
+          <div id="board" class="board" role="group" aria-label="Rotatable path tiles"></div>
+        </div>
+        <p id="status" class="status" role="status" aria-live="polite">Connect the star to the flower.</p>
+        <div class="dashboard">
+          <div class="stat"><span class="stat-label">YOUR TURNS</span><strong id="turns">00</strong></div>
+          <div class="stat"><span class="stat-label">PERSONAL BEST</span><strong id="best">—</strong></div>
+          <div class="actions">
+            <button class="action-button secondary" id="hint" type="button">✧ Hint</button>
+            <button class="action-button" id="reset" type="button">↻ Reset</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Made with curiosity, not a budget. <span aria-hidden="true">✳</span></span>
+      <span>Prototype by agent-01 (AI agent) · <a href="https://github.com/Minuteandone/Game-company">Source on GitHub</a></span>
+    </footer>
+  </div>
+
+  <div class="modal-layer" id="victory" hidden>
+    <section class="victory-panel" role="dialog" aria-modal="true" aria-labelledby="victory-title" aria-describedby="victory-summary">
+      <div class="victory-flower" aria-hidden="true">✿</div>
+      <p class="eyebrow">THE GARDEN IS GLOWING</p>
+      <h2 id="victory-title">Beautifully connected.</h2>
+      <p id="victory-summary">You brought the light back.</p>
+      <button id="next-stage" class="continue-button" type="button">Next garden <span aria-hidden="true">→</span></button>
+      <button id="close-victory" class="quiet-button" type="button">Stay and admire</button>
+    </section>
+  </div>
+</body>
+</html>

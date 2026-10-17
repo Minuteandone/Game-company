@@ -1,0 +1,27 @@
+name: Signal Garden checks
+
+on:
+  push:
+    paths:
+      - 'games/signal-garden/**'
+      - '.github/workflows/signal-garden.yml'
+  pull_request:
+    paths:
+      - 'games/signal-garden/**'
+      - '.github/workflows/signal-garden.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Puzzle engine checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax check
+        run: |
+          node --check games/signal-garden/game.js
+          node --check games/signal-garden/logic.mjs
+      - name: Logic tests (Node built-in runner)
+        run: node --test games/signal-garden/tests/*.test.mjs
