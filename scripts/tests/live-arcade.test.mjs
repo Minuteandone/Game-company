@@ -20,6 +20,12 @@ test("MIME, response status and expected contents are all required", () => {
   assert.match(validateResponse(check, fake(200, "text/html"), check.marker).join(","), /JavaScript module MIME/);
   assert.match(validateResponse(check, fake(404, "application/javascript"), check.marker).join(","), /HTTP 404/);
   assert.match(validateResponse(check, fake(200, "application/javascript"), "<html>404</html>").join(","), /missing expected/);
+
+  const png = { type: "image" };
+  const signature = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10]);
+  assert.deepEqual(validateResponse(png, fake(200, "image/png"), signature), []);
+  assert.match(validateResponse(png, fake(200, "text/html"), signature).join(","), /expected PNG MIME/);
+  assert.match(validateResponse(png, fake(200, "image/png"), Uint8Array.from([0, 1, 2])).join(","), /invalid PNG signature/);
 });
 
 test("audit exercises only the reviewed public GET paths", async () => {
@@ -28,11 +34,15 @@ test("audit exercises only the reviewed public GET paths", async () => {
     requested.push({ url, options });
     const check = CHECKS.find((item) => publicUrl(item.path) === url);
     assert.ok(check, "unexpected outbound request");
+    const pngSignature = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10]);
     return {
       ok: true,
       status: 200,
-      headers: { get: () => check.type === "html" ? "text/html; charset=utf-8" : "text/javascript" },
-      text: async () => check.marker
+      headers: { get: () => check.type === "html"
+        ? "text/html; charset=utf-8"
+        : check.type === "image" ? "image/png" : "text/javascript" },
+      text: async () => check.marker,
+      arrayBuffer: async () => pngSignature.buffer
     };
   };
   const results = await checkLiveSite(fakeFetch);
