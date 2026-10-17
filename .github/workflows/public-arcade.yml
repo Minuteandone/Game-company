@@ -58,6 +58,8 @@ jobs:
           node scripts/validate-static.mjs
       - name: Build static-only arcade
         run: node scripts/build-public-arcade.mjs
+      - name: Validate packaged site's local references
+        run: (cd _site && node ../scripts/validate-static.mjs)
       - name: Validate selected public assets and Pages gating
         run: node --test scripts/tests/public-arcade.test.mjs scripts/tests/pages-probe.test.mjs
       - name: Downloadable preview artifact (no Pages setup needed)
