@@ -27,17 +27,21 @@ function regenerate(){
       link.removeAttribute("href");
     }
   }
+  const canCompare=Boolean(games)&&answers.played==="both";
+  $("after-both").hidden=!canCompare;
+  if(!canCompare)$("after-both").open=false;
   preview.value=buildComparison(answers);
   status.textContent="";
 }
 // A/B notes must not silently transfer to a different experiment or order.
 let previousPair=$("pair").value;
 let previousOrder=$("order").value;
-const GAME_NOTES=["notesA","notesB","returnChoice","difference","friction"];
+const GAME_NOTES=["notesA","notesB","returnChoice","difference","friction","versionOriginal","versionVariant"];
 function updateContext(){
   const nextPair=$("pair").value, nextOrder=$("order").value;
   const changed=nextPair!==previousPair||nextOrder!==previousOrder;
-  if(changed && GAME_NOTES.some(id=>$(id).value.trim())){
+  if(changed && (GAME_NOTES.some(id=>$(id).value.trim()) ||
+      $("played").value!=="not-recorded")){
     const approved=window.confirm(
       "Changing the pair or order will clear notes about experiences A and B, " +
       "so they cannot be attributed to the wrong games. Continue?"
@@ -48,6 +52,13 @@ function updateContext(){
       regenerate();
       return;
     }
+    for(const id of GAME_NOTES)$(id).value="";
+    $("played").value="not-recorded";
+    $("after-both").open=false;
+  }
+  if(changed) {
+    // Even without typed notes, a prior played-both flag must not carry over.
+    $("played").value="not-recorded";
     for(const id of GAME_NOTES)$(id).value="";
     $("after-both").open=false;
   }
