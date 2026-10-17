@@ -26,8 +26,10 @@ jobs:
         run: |
           node --check playtest/report.mjs
           node --check playtest/worksheet.mjs
+          node --check playtest/compare/pairs.mjs
+          node --check playtest/compare/compare.mjs
       - name: Test sanitization and report generation
-        run: node --test playtest/tests/report.test.mjs
+        run: node --test playtest/tests/report.test.mjs playtest/compare/tests/report.test.mjs
 
   browser-smoke:
     name: Chromium worksheet smoke
@@ -42,4 +44,4 @@ jobs:
       - name: Install headless Chromium
         run: npx playwright install --with-deps chromium
       - name: Browser smoke
-        run: node --test playtest/tests/browser-smoke.mjs
+        run: node --test playtest/tests/browser-smoke.mjs playtest/compare/tests/browser-smoke.mjs

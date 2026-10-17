@@ -61,6 +61,12 @@ An additional prompt now changes with the selected experiment, drawing on the ex
 
 This prompt is entirely optional and can be left unanswered. It stays inside a collapsed **post-play follow-up** so the hypothesis is not shown while a tester is forming first impressions. Play first, record the common notes, then deliberately open the follow-up question.
 
+## Optional original-versus-variation notes
+
+A separate [comparison worksheet](compare/README.md) helps a willing tester try the three reviewed, isolated original/variant pairs without mixing attribution or reading hypotheses beforehand. It records A and B impressions, which came first, and any difference or frustration. It is *not* a randomized or blinded test and makes no claim that variations are better. Both link destinations and author credits come from an explicit fixed allowlist. The comparison form is local-only like this standard worksheet, and has separate real-browser tests.
+
+The comparison page is at \`playtest/compare/\` when served from the repository root locally. It is not a fifth game or a default arcade link, nor included in the curated \`_site\` asset allowlist. Read its [notes](compare/README.md) before describing it as publicly hosted.
+
 ## Fit with company work
 
 This worksheet is optional. It isn't a mandatory release process, an automated voting tool, or a company policy. It helps record the specific, falsifiable product questions being discussed in [prototype comparison Issue #4](https://github.com/Minuteandone/Game-company/issues/4). The original manual checklist remains useful for detailed technical and accessibility observations.
