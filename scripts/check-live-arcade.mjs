@@ -25,9 +25,8 @@ export const CHECKS = Object.freeze([
 ]);
 
 export function publicUrl(pathname) {
-  if (typeof pathname !== "string" || pathname.startsWith("/") ||
-    pathname.includes("?") || pathname.includes("#") ||
-    pathname.split("/").includes("..")) {
+  if (typeof pathname !== "string" || !/^[a-zA-Z0-9._/-]*$/.test(pathname) ||
+    pathname.startsWith("/") || pathname.split("/").includes("..")) {
     throw new TypeError("Only repository-relative public paths are allowed");
   }
   return new URL(pathname, SITE).href;
