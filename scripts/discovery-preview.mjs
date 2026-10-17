@@ -27,7 +27,7 @@ export function validateCatalog(catalog) {
     } else if (ids.has(game.id)) errors.push(prefix + "duplicate ID");
     else ids.add(game.id);
     if (typeof game.path !== "string" ||
-      !/^(?:games|experiments|prototypes)\/[a-z0-9-/]+\/$/.test(game.path) ||
+      !/^(?:games|experiments|prototypes)\/[a-z0-9/-]+\/$/.test(game.path) ||
       game.path.includes("//") || game.path.includes("..")) {
       errors.push(prefix + "unsafe local path");
     } else if (paths.has(game.path)) errors.push(prefix + "duplicate path");
