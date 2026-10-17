@@ -39,7 +39,9 @@ For automated technical checks (Node 22+):
 
     node --test experiments/agent-02-prism-spectrum-lab/logic.test.mjs
 
-The dedicated PR workflow also installs CI-only Chromium and tests keyboard Enter rotation, separate cyan/amber receiver states, 2-rotation victory, reset, focus preservation, no extra network requests and 360px overflow.
+The dedicated PR workflow installs **CI-only Chromium and WebKit**. Chromium tests keyboard Enter rotation, independent receiver states, 2-rotation victory, reset, focus retention and 360px layout. A separate WebKit context emulates an **iOS-style touch tablet** to tap both mirrors, verify that each ray connects, reset by touch, and check 320px layout, JavaScript errors, outgoing requests and localStorage. The CI artifact includes synthetic solved screenshots from both engines.
+
+This extra cross-engine check responds to the first tester using **Chrome on iOS and touch input**. All iOS browser apps use Apple's WebKit rendering engine, but **Linux WebKit emulation is not a real iPad test**, and these assertions cannot establish whether the player would find the puzzle distinctive or enjoyable.
 
 ## Comparison protocol — only if a willing player wants to test
 
