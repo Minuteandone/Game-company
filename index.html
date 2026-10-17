@@ -101,6 +101,12 @@
       .run { grid-template-columns: 1fr; padding: 25px; }
       .top-links { gap: 14px; }
     }
+    /* Give the full brand and navigation separate lines when space is tight.
+       Never force a horizontal scroll just to reach the Games or GitHub links. */
+    @media (max-width: 560px) {
+      .topbar { flex-wrap: wrap; justify-content: flex-start; gap: 9px; padding: 14px 0; }
+      .top-links { width: 100%; flex-wrap: wrap; gap: 8px 18px; }
+    }
     @media (max-width: 410px) {
       .topbar { min-height: 75px; }
       .logo { font-size: 13px; }
