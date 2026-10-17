@@ -8,7 +8,7 @@ import http from "node:http";
 import path from "node:path";
 import { readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { chromium } from "playwright";
+import { chromium, webkit } from "playwright";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const PAGE = "experiments/agent-02-prism-spectrum-lab/";
@@ -99,6 +99,78 @@ test("Forked Spectrum: keyboard splits, solves, resets and remains narrow-safe",
     assert.deepEqual(errors, [], "no JavaScript runtime errors");
     assert.deepEqual(outgoing, [], "no outside-network requests");
     await page.close();
+  } finally {
+    if (browser) await browser.close();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
+
+
+test("Forked Spectrum: WebKit tablet touch reaches both receivers and resets", async () => {
+  const server = await serverOnRandomPort();
+  let browser;
+  try {
+    browser = await webkit.launch({ headless: true });
+    const context = await browser.newContext({
+      viewport: { width: 820, height: 1180 },
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      reducedMotion: "reduce"
+    });
+    const page = await context.newPage();
+    const errors = [], unexpected = [];
+    page.on("pageerror", error => errors.push(error.message));
+    page.on("console", message => {
+      if (message.type() === "error") errors.push(message.text());
+    });
+    page.on("request", request => {
+      const allowed = "http://127.0.0.1:" + server.address().port + "/";
+      if (request.method() !== "GET" || !request.url().startsWith(allowed)) {
+        unexpected.push(request.method() + " " + request.url());
+      }
+    });
+    const loaded = await page.goto("http://127.0.0.1:" + server.address().port + "/" + PAGE);
+    assert.equal(loaded.status(), 200);
+    assert.equal(await page.locator("#cells .mirror").count(), 3);
+    assert.equal(await page.locator("#cyan-state").textContent(), "Not connected");
+    assert.equal(await page.locator("#amber-state").textContent(), "Not connected");
+    assert.match(await page.locator("#controls").textContent(), /cyan travels north and amber travels south/i);
+
+    // Actual emulated touch events, not .click(). The reporter's Chrome on iOS
+    // uses WebKit underneath, though emulation is not equivalent to real iPad.
+    const cyan = page.locator('#cells .mirror[data-x="3"][data-y="1"]');
+    const amber = page.locator('#cells .mirror[data-x="3"][data-y="5"]');
+    await cyan.tap();
+    assert.equal(await page.locator("#cyan-state").textContent(), "Connected");
+    assert.equal(await page.locator("#amber-state").textContent(), "Not connected");
+    assert.equal(await page.locator("#rotations").textContent(), "Rotations: 1");
+    await amber.tap();
+    assert.equal(await page.locator("#cyan-state").textContent(), "Connected");
+    assert.equal(await page.locator("#amber-state").textContent(), "Connected");
+    assert.match(await page.locator("#status").textContent(), /Both rays connected in 2 rotations/);
+
+    const screenshotDir = path.join(ROOT, "artifacts", "spectrum-lab");
+    await mkdir(screenshotDir, { recursive: true });
+    await page.screenshot({
+      path: path.join(screenshotDir, "webkit-tablet-touch-solved.png"),
+      animations: "disabled", fullPage: true
+    });
+
+    await page.locator("#reset").tap();
+    assert.equal(await page.locator("#rotations").textContent(), "Rotations: 0");
+    assert.equal(await page.locator("#cyan-state").textContent(), "Not connected");
+    assert.equal(await page.locator("#amber-state").textContent(), "Not connected");
+    await page.setViewportSize({ width: 320, height: 740 });
+    await page.evaluate(() => new Promise(resolve =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    assert.ok(overflow <= 1, "320px WebKit horizontal overflow: " + overflow);
+    assert.deepEqual(errors, [], "no WebKit JS/console errors");
+    assert.deepEqual(unexpected, [], "no non-GET or off-origin requests");
+    assert.equal(await page.evaluate(() => localStorage.length), 0, "no persistent save data");
+    await context.close();
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));
