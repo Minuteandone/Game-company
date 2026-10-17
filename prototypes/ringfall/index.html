@@ -92,6 +92,7 @@
   <div class="hud">
     <div class="pill">Score <span id="score">0</span></div>
     <div class="pill">Core <span id="energy">● ● ●</span></div>
+    <div class="pill" id="state">Live · P pause</div>
   </div>
   <div id="overlay">
     <div class="card">
@@ -102,7 +103,7 @@
         <span><i class="tri"></i> avoid triangles</span>
       </div>
       <button id="start">Start run</button>
-      <p class="small">A/D or ←/→ · mouse/touch also works · Space restarts</p>
+      <p class="small">A/D or ←/→ · mouse/touch also works · P pauses · Space restarts</p>
     </div>
   </div>
 </div>
@@ -117,9 +118,12 @@
   const startButton = document.getElementById("start");
   const scoreEl = document.getElementById("score");
   const energyEl = document.getElementById("energy");
+  const stateEl = document.getElementById("state");
+  const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
 
   let W = 0, H = 0, DPR = 1, cx = 0, cy = 0;
   let running = false;
+  let paused = false;
   let last = performance.now();
   let elapsed = 0;
   let spawnClock = 0;
@@ -160,6 +164,7 @@
   function reset() {
     score = 0;
     energy = 3;
+    paused = false;
     elapsed = 0;
     spawnClock = 0;
     particles.length = 0;
@@ -167,6 +172,7 @@
     angle = -Math.PI / 2;
     scoreEl.textContent = "0";
     energyEl.textContent = "● ● ●";
+    stateEl.textContent = "Live · P pause";
     running = true;
     overlay.style.display = "none";
     last = performance.now();
@@ -174,6 +180,8 @@
 
   function gameOver() {
     running = false;
+    paused = false;
+    stateEl.textContent = "Run over";
     overlay.style.display = "grid";
     overlay.querySelector("h1").textContent = "RUN OVER";
     overlay.querySelector("p").innerHTML = `Final score: <strong>${score}</strong>. The ring always wants another round.`;
@@ -182,7 +190,7 @@
 
   function damage() {
     energy -= 1;
-    shake = 12;
+    shake = reduceMotion ? 0 : 12;
     energyEl.textContent = Array.from({ length: 3 }, (_, i) => i < energy ? "●" : "○").join(" ");
     if (energy <= 0) gameOver();
   }
@@ -203,7 +211,8 @@
   }
 
   function burst(a, r, hazard) {
-    for (let i = 0; i < 10; i++) {
+    const count = reduceMotion ? 3 : 10;
+    for (let i = 0; i < count; i++) {
       sparks.push({
         x: cx + Math.cos(a) * r,
         y: cy + Math.sin(a) * r,
@@ -216,7 +225,7 @@
   }
 
   function update(dt) {
-    if (!running) return;
+    if (!running || paused) return;
     elapsed += dt;
     shake *= Math.pow(.03, dt);
 
@@ -383,7 +392,19 @@
       ctx.fillStyle = "rgba(235,241,255,.52)";
       ctx.font = "600 12px system-ui, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("CATCH CIRCLES · AVOID TRIANGLES", cx, cy + ring + 44);
+      ctx.fillText(paused ? "PAUSED · PRESS P TO RESUME" : "CATCH CIRCLES · AVOID TRIANGLES", cx, cy + ring + 44);
+    }
+
+    if (paused && running) {
+      ctx.fillStyle = "rgba(5,7,12,.58)";
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = "#f4f7ff";
+      ctx.font = "800 28px system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("PAUSED", cx, cy - 4);
+      ctx.fillStyle = "rgba(235,241,255,.72)";
+      ctx.font = "500 14px system-ui, sans-serif";
+      ctx.fillText("Press P to resume", cx, cy + 24);
     }
 
     ctx.restore();
@@ -407,10 +428,21 @@
   window.addEventListener("resize", resize);
   window.addEventListener("keydown", e => {
     keys.add(e.code);
-    if (["ArrowLeft", "ArrowRight", "Space"].includes(e.code)) e.preventDefault();
+    if (["ArrowLeft", "ArrowRight", "Space", "KeyP"].includes(e.code)) e.preventDefault();
+    if (["ArrowLeft", "ArrowRight", "KeyA", "KeyD"].includes(e.code)) pointerAngle = null;
+    if (e.code === "KeyP" && running) {
+      paused = !paused;
+      stateEl.textContent = paused ? "Paused · P resume" : "Live · P pause";
+    }
     if (e.code === "Space" && !running) reset();
   });
   window.addEventListener("keyup", e => keys.delete(e.code));
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden && running && !paused) {
+      paused = true;
+      stateEl.textContent = "Paused · P resume";
+    }
+  });
   canvas.addEventListener("pointermove", setPointer);
   canvas.addEventListener("pointerdown", e => {
     setPointer(e);
