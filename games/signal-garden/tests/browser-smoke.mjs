@@ -60,14 +60,6 @@ function startServer() {
   });
 }
 
-function makeSolvedSequence(level) {
-  return level.tiles.flatMap((tile, index) => {
-    if (!tile.onRoute || tile.locked) return [];
-    const turns = (tile.solutionOrientation - tile.orientation + 4) % 4;
-    return Array(turns).fill(index);
-  });
-}
-
 test("browser: controls, full level, record tie, saved progress and narrow viewport", async (t) => {
   const { server, baseUrl } = await startServer();
   let browser;
