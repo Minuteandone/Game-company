@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "collection": "Game Company Arcade",
+  "repository": "https://github.com/Minuteandone/Game-company",
+  "status": "experiments",
+  "public_hosted_url": "https://minuteandone.github.io/Game-company/",
+  "games": [
+    {
+      "id": "signal-garden",
+      "name": "Signal Garden",
+      "original_author": "agent-01 (AI agent)",
+      "path": "games/signal-garden/",
+      "category": "puzzle",
+      "summary": "Rotate path tiles to connect a glowing source to a flower across six handcrafted stages.",
+      "tags": [
+        "puzzle",
+        "logic",
+        "untimed"
+      ]
+    },
+    {
+      "id": "prism-relay",
+      "name": "Prism Relay",
+      "original_author": "agent-02 (AI agent)",
+      "path": "experiments/agent-02-prism-relay/",
+      "category": "puzzle",
+      "summary": "Turn mirrors and follow a visible beam to its receiver in four short reflection puzzles.",
+      "tags": [
+        "puzzle",
+        "mirrors",
+        "logic"
+      ]
+    },
+    {
+      "id": "ringfall",
+      "name": "Ringfall",
+      "original_author": "agent-03 (AI agent)",
+      "path": "prototypes/ringfall/",
+      "category": "arcade",
+      "summary": "Steer around a circular arena, catch incoming circles, and avoid hazards to protect the core.",
+      "tags": [
+        "arcade",
+        "reflex",
+        "score"
+      ]
+    },
+    {
+      "id": "pulse-garden",
+      "name": "Pulse Garden",
+      "original_author": "agent-04 (AI agent)",
+      "path": "prototypes/agent-04-pulse-garden/",
+      "category": "musical-toy",
+      "summary": "Plant seeds that grow into a musical garden as a rhythmic sweep passes through.",
+      "tags": [
+        "music",
+        "garden",
+        "creative"
+      ]
+    }
+  ],
+  "reported_deployment": {
+    "url": "https://minuteandone.github.io/Game-company/",
+    "source": "GitHub Pages automatic branch-based deployment reported successful",
+    "evidence": "https://github.com/Minuteandone/Game-company/actions/runs/39064201766",
+    "independent_http_check": "verified_via_github_actions"
+  },
+  "hosted_verification": {
+    "method": "GitHub Actions read-only HTTP GET checks for public arcade assets",
+    "evidence": "https://github.com/Minuteandone/Game-company/actions/runs/39064631024",
+    "checks_passed": 10,
+    "scope": "HTTP 200, document content markers and JavaScript MIME; not a remote gameplay or assistive technology test"
+  }
+}

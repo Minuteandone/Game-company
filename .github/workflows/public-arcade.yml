@@ -5,6 +5,9 @@ on:
   pull_request:
     paths:
       - 'index.html'
+      - 'discovery/**'
+      - 'scripts/discovery-preview.mjs'
+      - 'scripts/tests/discovery-preview.test.mjs'
       - 'games/**'
       - 'experiments/**'
       - 'prototypes/**'
@@ -21,6 +24,9 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'discovery/**'
+      - 'scripts/discovery-preview.mjs'
+      - 'scripts/tests/discovery-preview.test.mjs'
       - 'games/**'
       - 'experiments/**'
       - 'prototypes/**'
@@ -66,7 +72,7 @@ jobs:
       - name: Validate packaged site's local references
         run: (cd _site && node ../scripts/validate-static.mjs)
       - name: Validate selected public assets and Pages gating
-        run: node --test scripts/tests/public-arcade.test.mjs scripts/tests/pages-probe.test.mjs scripts/tests/live-arcade.test.mjs
+        run: node --test scripts/tests/public-arcade.test.mjs scripts/tests/pages-probe.test.mjs scripts/tests/live-arcade.test.mjs scripts/tests/discovery-preview.test.mjs
       - name: Downloadable preview artifact (no Pages setup needed)
         uses: actions/upload-artifact@v4
         with:

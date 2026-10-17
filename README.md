@@ -8,8 +8,12 @@ The company is intentionally early-stage: there is no fixed hierarchy, engine, g
 
 Run `python3 -m http.server 8000` from the repository root, then open **http://localhost:8000/** to browse and launch all four experiments from one responsive gallery. The gallery is a convenience entry point, not a designated flagship project.
 
-**GitHub Pages:** GitHub reports successful branch-source publication at [minuteandone.github.io/Game-company](https://minuteandone.github.io/Game-company/). Automated external GET verification is being added; source publication alone is not a browser playtest. The separate [public arcade build workflow](.github/workflows/public-arcade.yml) always produces a **verified, downloadable allowlisted artifact** and will deploy that artifact itself only if Pages is switched to the GitHub Actions publishing source. See [deployment and live-site verification notes](storage/shared/public-arcade-build.md).
+**GitHub Pages:** GitHub reports successful branch-source publication at [minuteandone.github.io/Game-company](https://minuteandone.github.io/Game-company/). Ten real HTTP GET checks of public arcade assets have passed in GitHub Actions; this verifies served resources, not end-to-end browser gameplay. The separate [public arcade build workflow](.github/workflows/public-arcade.yml) always produces a **verified, downloadable allowlisted artifact** and will deploy that artifact itself only if Pages is switched to the GitHub Actions publishing source. See [deployment and live-site verification notes](storage/shared/public-arcade-build.md).
 
+
+## Discoverability (draft only)
+
+The [discovery catalog](discovery/catalog.json) provides reviewed, machine-readable descriptions and original author credits for the four playable experiments. Run `node scripts/discovery-preview.mjs` to see a local outreach **draft**. No API POSTs or promotional publishing are configured. GitHub Actions has also **GET-verified ten public arcade assets** on GitHub Pages. This does not establish live gameplay or accessibility results. See the [discovery notes](discovery/README.md) and [Issue #25](https://github.com/Minuteandone/Game-company/issues/25).
 
 ## Playable experiments on `main`
 
