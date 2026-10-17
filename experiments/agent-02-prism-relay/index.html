@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1423">
+  <meta name="description" content="Prism Relay: a free four-level mirror puzzle playable in your browser.">
+  <title>Prism Relay · agent-02 prototype</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./game.mjs"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-symbol" aria-hidden="true">✧</span><span>PRISM<span class="brand-light">RELAY</span></span></div>
+      <span class="prototype-label">EXPERIMENT 02 <span aria-hidden="true">✦</span> NO INSTALL REQUIRED</span>
+    </header>
+    <main class="layout">
+      <section class="play-area" aria-labelledby="game-heading">
+        <div class="eyebrow"><span class="eyebrow-line"></span> LIGHT PUZZLE / FOUR CIRCUITS</div>
+        <h1 id="game-heading">Find a path<br><em>through the dark.</em></h1>
+        <p class="intro">Rotate the mirrors. Bend the beam. Connect the source to the glowing receiver.</p>
+        <div class="board-card">
+          <div class="board-topline"><span><span class="dot dot-source"></span> EMITTER</span><span><span class="dot dot-target"></span> RECEIVER</span></div>
+          <div class="board-frame"><div id="board" class="board" role="group" aria-label="Mirror puzzle board"></div></div>
+          <div class="board-bottomline"><span id="beam-state">SIGNAL INTERRUPTED</span><span>↗ ROTATE TO REDIRECT</span></div>
+        </div>
+        <p id="status" class="status" role="status" aria-live="polite">Select a mirror to begin.</p>
+      </section>
+      <aside class="control-panel" aria-label="Game controls">
+        <div class="panel-heading"><span class="panel-kicker">CURRENT CIRCUIT</span><span id="level-index" class="level-index">01 / 04</span></div>
+        <h2 id="level-title">A Turn of Light</h2>
+        <p id="level-subtitle" class="level-subtitle">One mirror makes all the difference.</p>
+        <div class="stats"><div><span>ROTATIONS</span><strong id="moves">0</strong></div><div><span>BEST</span><strong id="best">—</strong></div><div><span>PAR</span><strong id="par">1</strong></div></div>
+        <div class="controls-row"><button id="reset" class="button secondary" type="button">↺ Restart</button><button id="hint" class="button secondary" type="button">✧ Hint</button></div>
+        <div class="controls-row"><button id="prev" class="button ghost" type="button">← Previous</button><button id="next" class="button primary" type="button">Next circuit →</button></div>
+        <button id="sound" class="sound-toggle" type="button" aria-pressed="false">♫ Sound: off</button>
+        <div class="divider"></div>
+        <div class="panel-kicker">CIRCUIT SELECT</div>
+        <div id="level-picker" class="level-picker" role="group" aria-label="Choose unlocked circuit"></div>
+        <div class="divider"></div>
+        <div class="how-to"><h3>HOW TO PLAY</h3><p><strong>Click or tap</strong> any bright mirror to turn it 90°.</p><p><strong>Keyboard:</strong> Tab to a mirror, Enter/Space to rotate. Press <kbd>R</kbd> to restart, <kbd>H</kbd> for a hint, or <kbd>N</kbd> for the next unlocked circuit.</p><p>Your best scores and unlocked levels are saved only in this browser.</p></div>
+      </aside>
+    </main>
+    <footer><span>MADE BY <strong>agent-02 (AI agent)</strong> · GAME COMPANY</span><span>A SMALL GAME ABOUT FINDING ANOTHER WAY</span></footer>
+  </div>
+</body>
+</html>
