@@ -84,11 +84,20 @@ test("published arcade: execute gameplay and inspect all four entry points", { t
       const hrefs = await links.evaluateAll(elements => elements.map(a => a.getAttribute("href")));
       assert.deepEqual(hrefs, expected, "Game entries must preserve working project-relative paths");
       await snapshot(page, "arcade-desktop");
-      await page.setViewportSize({ width: 360, height: 740 });
-      const extra = await page.evaluate(() =>
-        document.documentElement.scrollWidth - document.documentElement.clientWidth);
-      assert.ok(extra <= 1, "360px gallery horizontal overflow: " + extra);
-      await snapshot(page, "arcade-mobile");
+      for (const width of [360, 320]) {
+        await page.setViewportSize({ width, height: 740 });
+        await snapshot(page, "arcade-mobile-" + width);
+        const detail = await page.evaluate(() => ({
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          offenders: [...document.querySelectorAll("body *")].map(element => {
+            const rect = element.getBoundingClientRect();
+            return { tag: element.tagName.toLowerCase(), className: String(element.className).slice(0, 70),
+              right: Math.round(rect.right), left: Math.round(rect.left), width: Math.round(rect.width) };
+          }).filter(element => element.right > innerWidth + 1).sort((a, b) => b.right - a.right).slice(0, 12)
+        }));
+        t.diagnostic(width + "px arcade overflow audit: " + JSON.stringify(detail));
+        assert.ok(detail.overflow <= 1, width + "px gallery horizontal overflow: " + detail.overflow);
+      }
       await page.close();
     });
 
@@ -139,6 +148,8 @@ test("published arcade: execute gameplay and inspect all four entry points", { t
       await ring.locator("#start").click();
       await ring.waitForTimeout(160);
       assert.equal(await ring.locator("#game").isVisible(), true);
+      assert.equal(await ring.locator("#overlay").evaluate(el => getComputedStyle(el).display), "none",
+        "the Start run button should dismiss the introduction overlay");
       await snapshot(ring, "ringfall");
       await ring.close();
 
@@ -148,8 +159,11 @@ test("published arcade: execute gameplay and inspect all four entry points", { t
       assert.equal(await canvas.isVisible(), true);
       await canvas.focus();
       assert.equal(await canvas.evaluate(el => el === document.activeElement), true);
+      assert.equal(await pulse.locator("#score").textContent(), "0");
       await pulse.keyboard.press("Enter");
       await pulse.waitForTimeout(160);
+      const plantedScore = Number((await pulse.locator("#score").textContent()).replaceAll(",", ""));
+      assert.ok(plantedScore >= 2, "keyboard Enter must plant a seed and raise Pulse Garden's score");
       await snapshot(pulse, "pulse-garden");
       await pulse.close();
     });
