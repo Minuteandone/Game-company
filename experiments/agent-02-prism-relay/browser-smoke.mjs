@@ -218,3 +218,94 @@ test("browser: solve, unlock, persist and remain usable at narrow width", async 
     await new Promise(resolve => server.close(resolve));
   }
 });
+
+
+test("browser: confirm clears only Prism Relay data; cancel preserves it", async (t) => {
+  const { server, url } = await startServer();
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext({ viewport: { width: 360, height: 740 }, reducedMotion: "reduce" });
+    const page = await context.newPage();
+    const errors = [];
+    page.on("pageerror", error => errors.push(error.message));
+
+    assert.equal((await page.goto(url)).status(), 200);
+    await page.evaluate(() => localStorage.setItem("unrelated-game-key", "keep"));
+    const solution = solvePuzzle(LEVELS[0].grid);
+    for (const { x, y } of solution) {
+      await page.locator('#board .mirror[data-x="' + x + '"][data-y="' + y + '"]').click();
+    }
+    assert.equal(await page.locator("#level-picker .level-choice:not(:disabled)").count(), 2);
+    assert.equal(await page.locator("#best").textContent(), String(solution.length));
+    const saveKey = "game-company-agent-02-prism-relay-v1";
+    const saved = await page.evaluate(key => localStorage.getItem(key), saveKey);
+    assert.ok(saved?.includes('"unlocked":1'));
+
+    page.once("dialog", async dialog => {
+      assert.match(dialog.message(), /Clear Prism Relay's saved level unlocks/);
+      await dialog.dismiss();
+    });
+    await page.locator("#clear-progress").click();
+    assert.equal(await page.locator("#level-picker .level-choice:not(:disabled)").count(), 2);
+    assert.equal(await page.evaluate(key => localStorage.getItem(key), saveKey), saved);
+    t.diagnostic("Cancelling the native confirmation preserves saved unlocks and best score.");
+
+    page.once("dialog", async dialog => { await dialog.accept(); });
+    await page.locator("#clear-progress").click();
+    assert.equal(await page.locator("#level-picker .level-choice:not(:disabled)").count(), 1);
+    assert.equal(await page.locator("#level-index").textContent(), "01 / 04");
+    assert.equal(await page.locator("#best").textContent(), "—");
+    assert.equal(await page.locator("#moves").textContent(), "0");
+    assert.equal(await page.evaluate(key => localStorage.getItem(key), saveKey), null);
+    assert.equal(await page.evaluate(() => localStorage.getItem("unrelated-game-key")), "keep");
+    assert.match(await page.locator("#status").textContent(), /Saved Prism Relay progress cleared/);
+    t.diagnostic("Confirmation resets session and removes only Prism Relay's storage key.");
+
+    await page.reload();
+    assert.equal(await page.locator("#level-picker .level-choice:not(:disabled)").count(), 1);
+    assert.equal(await page.locator("#best").textContent(), "—");
+    assert.equal(await page.evaluate(() => localStorage.getItem("unrelated-game-key")), "keep");
+
+    for (const { x, y } of solution) {
+      await page.locator('#board .mirror[data-x="' + x + '"][data-y="' + y + '"]').click();
+    }
+    assert.ok(await page.evaluate(key => localStorage.getItem(key), saveKey));
+    assert.deepEqual(errors, []);
+    await context.close();
+  } finally {
+    if (browser) await browser.close();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
+
+test("browser: storage denial warns that previous progress may return after reload", async () => {
+  const { server, url } = await startServer();
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext();
+    await context.addInitScript(() => {
+      const original = Storage.prototype.removeItem;
+      Storage.prototype.removeItem = function(key) {
+        if (key === "game-company-agent-02-prism-relay-v1") throw new Error("storage removal denied");
+        return original.call(this, key);
+      };
+    });
+    const page = await context.newPage();
+    await page.goto(url);
+    for (const { x, y } of solvePuzzle(LEVELS[0].grid)) {
+      await page.locator('#board .mirror[data-x="' + x + '"][data-y="' + y + '"]').click();
+    }
+    page.once("dialog", async dialog => { await dialog.accept(); });
+    await page.locator("#clear-progress").click();
+    assert.equal(await page.locator("#level-picker .level-choice:not(:disabled)").count(), 1);
+    assert.match(await page.locator("#status").textContent(), /browser storage blocked deletion/i);
+    await page.reload();
+    assert.equal(await page.locator("#level-picker .level-choice:not(:disabled)").count(), 2);
+    await context.close();
+  } finally {
+    if (browser) await browser.close();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
