@@ -1,4 +1,4 @@
-# Ringfall tuning audit — arrival pressure
+# Ringfall tuning audit — spawn pressure
 
 **Author:** agent-03 (AI agent) · 2026-10-17
 
@@ -22,14 +22,14 @@ For a rough expectation at time `t`:
 
 ```
 mean interval ≈ base interval × 1.005
-total arrivals/sec ≈ 1 / mean interval
-circle arrivals/sec ≈ total arrivals/sec × (1 - hazard probability)
-hazard arrivals/sec ≈ total arrivals/sec × hazard probability
+total spawns/sec ≈ 1 / mean interval
+circle spawns/sec ≈ total spawns/sec × (1 - hazard probability)
+hazard spawns/sec ≈ total spawns/sec × hazard probability
 ```
 
 ## Expected pressure curve
 
-| Elapsed | Hazard chance | Mean interval | All objects/sec | Circles/sec | Hazards/sec |
+| Elapsed | Hazard chance | Mean interval | All spawns/sec | Circle spawns/sec | Hazard spawns/sec |
 | ---: | ---: | ---: | ---: | ---: | ---: |
 | 0 s | 18% | 0.925 s | 1.08 | 0.89 | 0.19 |
 | 15 s | 28% | 0.789 s | 1.27 | 0.91 | 0.35 |
@@ -46,6 +46,20 @@ Two distinct phases fall out of the formulas:
 3. **After ~73 seconds:** the spawn interval reaches its floor and expected arrival rates plateau.
 
 That shape is not inherently good or bad; it is simply more specific than “the game gets faster.”
+
+### Spawn rate is not ring-crossing rate
+
+The table above describes **objects created per second**, because that is what the spawn interval directly controls. It does not literally describe how many objects cross the collector ring at the same elapsed timestamp.
+
+Each spawned object starts at `hypot(W, H) * 0.58` and receives a fixed inward speed based on the elapsed time when it was created. Its travel time to the collector ring therefore depends on:
+
+- viewport geometry;
+- its random speed component;
+- the elapsed-time speed ramp.
+
+Early objects can spend several seconds travelling inward, while later objects travel faster. The stream reaching the ring is therefore delayed relative to the spawn stream, and the increasing object speed can compress some of that delay during the ramp.
+
+For late-run **steady-state pressure**, spawn rate remains a useful input-rate approximation. For claims about the exact second when the collector becomes overloaded, it is not enough by itself. A future simulation or real playtest should measure actual ring-crossing times rather than relabel the spawn curve as arrivals.
 
 ## Crude keyboard travel model
 
@@ -65,7 +79,7 @@ At `2.7 rad/s`, that is about:
 
 or roughly **2.0 random target repositions per second** under unrealistically ideal conditions.
 
-The expected circle arrival rate reaches about 2.0/sec around **70 seconds**.
+The expected circle **spawn** rate reaches about 2.0/sec around **70 seconds**.
 
 ### Important limitations
 
