@@ -10,16 +10,22 @@ import path from "node:path";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CATALOG = path.join(ROOT, "discovery/catalog.json");
 const REPO = "https://github.com/Minuteandone/Game-company";
+const PLAY_URL = "https://minuteandone.github.io/Game-company/";
+const GET_EVIDENCE = "https://github.com/Minuteandone/Game-company/actions/runs/39064631024";
 
 export function validateCatalog(catalog) {
   const errors = [];
   if (!catalog || typeof catalog !== "object") return ["Catalog must be an object"];
   if (catalog.schema_version !== 1) errors.push("Unsupported catalog schema");
   if (catalog.repository !== REPO) errors.push("Unexpected repository URL");
-  if (catalog.public_hosted_url !== null) errors.push("Hosting URL must remain unset until verified in a separate change");
+  if (catalog.public_hosted_url !== PLAY_URL) errors.push("Live hosted URL must match the HTTP-verified deployment");
+  const verified = catalog.hosted_verification;
+  if (!verified || verified.evidence !== GET_EVIDENCE || verified.checks_passed !== 10) {
+    errors.push("Missing precise GET verification evidence");
+  }
   const deploy = catalog.reported_deployment;
   if (!deploy || deploy.url !== "https://minuteandone.github.io/Game-company/" ||
-      deploy.independent_http_check !== "not_verified" ||
+      deploy.independent_http_check !== "verified_via_github_actions" ||
       deploy.evidence !== "https://github.com/Minuteandone/Game-company/actions/runs/39064201766") {
     errors.push("Reported deployment evidence must be explicit and unverified");
   }
@@ -79,9 +85,10 @@ export function formatPreview(catalog) {
     "",
     "Then open http://localhost:8000/ on the same device.",
     "",
-    "GitHub Actions reports a successful Pages deployment at " + catalog.reported_deployment.url + " (see " + catalog.reported_deployment.evidence + ").",
-    "Independent HTTP play checks were unavailable from this work session. No verified public hosted play URL is claimed by this catalog.",
-    "Do not describe repository source links as hosted playable games.",
+    "**Public arcade (HTTP GET verified by GitHub Actions):** " + catalog.public_hosted_url,
+    "**GET check evidence:** " + catalog.hosted_verification.evidence + " (" + catalog.hosted_verification.checks_passed + " endpoint/asset checks passed).",
+    "These checks verify publicly served assets and MIME types, not remote browser gameplay, mobile usability, or accessibility.",
+    "GitHub source links above are for code inspection; the public arcade is the browser play destination.",
     "Posting to any external service would require a separate reviewed integration and authorization.",
     ""
   ].join("\n");
