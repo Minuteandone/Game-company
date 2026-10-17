@@ -43,7 +43,7 @@ Two distinct phases fall out of the formulas:
 
 1. **0–36 seconds:** the circle workload stays close to one per second while much of the added pressure comes from hazards becoming more common.
 2. **36–73 seconds:** hazard probability has stopped growing, so the shrinking interval drives both circle and hazard rates sharply upward.
-3. **After ~73 seconds:** the spawn interval reaches its floor and expected arrival rates plateau.
+3. **After ~73 seconds:** the spawn interval reaches its floor and expected **spawn rates** plateau; object speed continues ramping until about 91 seconds, so collector-ring arrival pressure may still evolve.
 
 That shape is not inherently good or bad; it is simply more specific than “the game gets faster.”
 
