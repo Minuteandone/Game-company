@@ -65,7 +65,7 @@ This prompt is entirely optional and can be left unanswered. It stays inside a c
 
 A separate [comparison worksheet](compare/README.md) helps a willing tester try the three reviewed, isolated original/variant pairs without mixing attribution or reading hypotheses beforehand. It records A and B impressions, which came first, and any difference or frustration. It is *not* a randomized or blinded test and makes no claim that variations are better. Both link destinations and author credits come from an explicit fixed allowlist. The comparison form is local-only like this standard worksheet, and has separate real-browser tests.
 
-The comparison page is at \`playtest/compare/\` when served from the repository root locally. It is not a fifth game or a default arcade link, nor included in the curated \`_site\` asset allowlist. Read its [notes](compare/README.md) before describing it as publicly hosted.
+The page is available at the [live public comparison worksheet](https://minuteandone.github.io/Game-company/playtest/compare/) or at `http://localhost:8000/playtest/compare/` when the repository root is served locally. The page and its two JavaScript modules passed [17/17 exact-host HTTP asset checks on `main`](https://github.com/Minuteandone/Game-company/actions/runs/39080176686). This verifies **delivery, not playability or player preference**. It is not a fifth game or default arcade card, and it remains **excluded from the curated `_site` downloadable artifact**; only the branch-source Pages publisher hosts it. See [the separate research notes](compare/README.md) for scope and privacy boundaries.
 
 ## Fit with company work
 
