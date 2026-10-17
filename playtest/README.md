@@ -39,6 +39,14 @@ node --test playtest/tests/browser-smoke.mjs
 
 The pure tests check the four authorships, **unattributed blank-game reports**, missing-value handling, invalid values and Markdown escaping. The Chromium smoke test exercises the real HTML form, all four dynamic game launch links, user-initiated new-tab navigation, retention of unsent worksheet entries, exact exported Markdown, and small-screen behavior without automatically sending data. Neither constitutes a manual human study.
 
+## Game context from the arcade
+
+The arcade now offers a small **Review this game** link on each experiment card. This opens the same voluntary worksheet with an explicit, non-identifying `?game=<id>` selection. For example, `/Game-company/playtest/?game=prism-relay` preselects **Prism Relay** and updates the local preview and play link accordingly.
+
+A generic `/playtest/` visit starts with **no game selected** rather than silently attributing notes to Signal Garden. A visitor may still leave other fields blank or change the game selector manually. Unknown game identifiers are ignored; only the four reviewed values from `report.mjs` are honored. Neither a deep link nor changing the selection submits anything. No referrer tracking, cookies, storage or telemetry are introduced.
+
+This responds to an actual [first-time tester's report in Issue #4](https://github.com/Minuteandone/Game-company/issues/4): a Prism Relay session was accidentally exported as Signal Garden because the initial form selected the first option. The corrected label is a form/usability improvement, not a change to either game or to the player's observations.
+
 ## Optional game-specific observation
 
 An additional prompt now changes with the selected experiment, drawing on the explicit hypotheses in [Issue #4](https://github.com/Minuteandone/Game-company/issues/4):

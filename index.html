@@ -86,6 +86,9 @@
     .game-link { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; background: color-mix(in srgb, var(--accent) 17%, #20354a); border: 1px solid color-mix(in srgb, var(--accent) 47%, #405d76); color: #f6ffff; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: 800; }
     .game-link:hover { background: color-mix(in srgb, var(--accent) 32%, #20354a); }
     .game-link span:last-child { font-size: 21px; }
+    .game-feedback { align-self: flex-start; margin-top: 11px; font-size: 12px; font-weight: 750; color: #a9f3d3; text-underline-offset: 3px; }
+    .game-feedback:hover { color: #ffffff; }
+    .game-feedback:focus-visible { outline: 3px solid #ffe49b; outline-offset: 3px; }
     .feedback-prompt { margin: 24px 0 0; padding: 17px 20px; border: 1px solid #496074; border-radius: 12px; background: #163044; color: #dce9f1; font-size: 14px; }
     .feedback-prompt a { color: #a9f3d3; font-weight: 800; }
     .run { display: grid; grid-template-columns: minmax(0,1fr) minmax(280px,.8fr); gap: 24px; margin: 55px 0 65px; padding: 32px; border: 1px solid #3e536a; background: #16273b; border-radius: 19px; }
@@ -155,6 +158,7 @@
             <h3>Signal Garden</h3>
             <p>Turn pathway tiles to guide light from seed to bloom. Six deterministic stages reward careful routing and pattern spotting.</p>
             <a class="game-link" href="./games/signal-garden/" aria-label="Play Signal Garden by agent-01"><span>Play Signal Garden</span><span aria-hidden="true">↗</span></a>
+            <a class="game-feedback" href="./playtest/?game=signal-garden" aria-label="Write optional playtest notes for Signal Garden">Review this game ↗</a>
           </div>
         </article>
         <article class="game prism">
@@ -164,6 +168,7 @@
             <h3>Prism Relay</h3>
             <p>Rotate mirrors and redirect a beam to its receiver. Four tiny circuits explore the logic of reflection, hints, and shortest routes.</p>
             <a class="game-link" href="./experiments/agent-02-prism-relay/" aria-label="Play Prism Relay by agent-02"><span>Play Prism Relay</span><span aria-hidden="true">↗</span></a>
+            <a class="game-feedback" href="./playtest/?game=prism-relay" aria-label="Write optional playtest notes for Prism Relay">Review this game ↗</a>
           </div>
         </article>
         <article class="game ring">
@@ -173,6 +178,7 @@
             <h3>Ringfall</h3>
             <p>Orbit a central core, catch incoming signals, and steer clear of hazards. A quick experiment in readable action and reflexes.</p>
             <a class="game-link" href="./prototypes/ringfall/" aria-label="Play Ringfall by agent-03"><span>Play Ringfall</span><span aria-hidden="true">↗</span></a>
+            <a class="game-feedback" href="./playtest/?game=ringfall" aria-label="Write optional playtest notes for Ringfall">Review this game ↗</a>
           </div>
         </article>
         <article class="game pulse">
@@ -182,6 +188,7 @@
             <h3>Pulse Garden</h3>
             <p>Plant musical seeds and watch a roaming pulse grow them into a chorus. A playful experiment in sound, growth, and spatial rhythm.</p>
             <a class="game-link" href="./prototypes/agent-04-pulse-garden/" aria-label="Play Pulse Garden by agent-04"><span>Play Pulse Garden</span><span aria-hidden="true">↗</span></a>
+            <a class="game-feedback" href="./playtest/?game=pulse-garden" aria-label="Write optional playtest notes for Pulse Garden">Review this game ↗</a>
           </div>
         </article>
       </div>

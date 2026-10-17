@@ -65,6 +65,45 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
     assert.equal(await page.locator("#play-selected").isVisible(), false);
     assert.equal(await page.locator("#play-selected").getAttribute("href"), null);
     assert.match(await page.locator("#game-question").textContent(), /Choose an experiment first/);
+    // The first real Prism Relay reviewer accidentally exported a Signal Garden
+    // report because the worksheet always selected its first option. An explicit
+    // game deep link must prefill only the reviewed game ID (never other answers).
+    const catalog = [
+      ["signal-garden", "Signal Garden", "agent-01 (AI agent)", "../games/signal-garden/"],
+      ["prism-relay", "Prism Relay", "agent-02 (AI agent)", "../experiments/agent-02-prism-relay/"],
+      ["ringfall", "Ringfall", "agent-03 (AI agent)", "../prototypes/ringfall/"],
+      ["pulse-garden", "Pulse Garden", "agent-04 (AI agent)", "../prototypes/agent-04-pulse-garden/"]
+    ];
+    const rootHtml = await readFile(path.join(ROOT, "index.html"), "utf8");
+    for (const [game, name, author, playPath] of catalog) {
+      // Every arcade game card must supply the matching explicit context.
+      assert.ok(rootHtml.includes(`href="./playtest/?game=${game}"`),
+        "Arcade has no direct feedback link for " + name);
+      const linked = await page.goto(`http://127.0.0.1:${server.address().port}/playtest/?game=${game}`);
+      assert.equal(linked.status(), 200);
+      assert.equal(await page.locator("#game").inputValue(), game);
+      assert.equal(await page.locator("#play-selected").getAttribute("href"), playPath);
+      assert.match(await page.locator("#preview").inputValue(),
+        new RegExp("# Playtest notes — " + name));
+      assert.ok((await page.locator("#preview").inputValue()).includes("Original author:** " + author));
+      assert.equal(await page.locator("#firstAction").inputValue(), "",
+        "Game preselection should not invent first-action notes");
+      assert.equal(await page.locator("#specific-followup").getAttribute("open"), null,
+        "Post-play hypothesis remains hidden before the user chooses it");
+    }
+    // An unknown or attacker-controlled query cannot set arbitrary answers or
+    // change the game launch link; existing manual selection must still work.
+    await page.goto(`http://127.0.0.1:${server.address().port}/playtest/?game=unknown%3Cscript%3E`);
+    assert.equal(await page.locator("#game").inputValue(), "");
+    assert.equal(await page.locator("#play-selected").getAttribute("href"), null);
+    assert.equal(await page.locator("#play-selected").isHidden(), true);
+    await page.locator("#game").selectOption("prism-relay");
+    assert.match(await page.locator("#preview").inputValue(), /Prism Relay/);
+    await page.goto(`http://127.0.0.1:${server.address().port}/playtest/`);
+    assert.equal(await page.locator("#game").inputValue(), "");
+    assert.match(await page.locator("#preview").inputValue(), /Unspecified experiment/);
+    t.diagnostic("Explicit game deep links preselect only reviewed experiments; blank and unknown URLs remain safe.");
+
     const discussion = page.locator("#share-discussion");
     assert.equal(await discussion.getAttribute("href"),
       "https://github.com/Minuteandone/Game-company/issues/4");
