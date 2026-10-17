@@ -67,7 +67,12 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
     await page.locator("#firstAction").fill("I tried the arrow keys before reading the help.");
     await page.locator("#enjoyment").selectOption("4");
     await page.locator("#improvement").fill("Show a clearer bloom target.");
+    assert.equal(await page.locator("#specific-followup").getAttribute("open"), null);
+    assert.equal(await page.locator("#specific").isVisible(), false,
+      "game-specific hypothesis should not be visible before the tester opens the post-play follow-up");
     assert.match(await page.locator("#game-question").textContent(), /deliberate placement decisions/i);
+    await page.locator("#specific-followup summary").click();
+    assert.equal(await page.locator("#specific").isVisible(), true);
     await page.locator("#specific").fill("I mostly waited after planting six seeds.");
     const generated = await page.locator("#preview").inputValue();
     assert.match(generated, /Pulse Garden/);
