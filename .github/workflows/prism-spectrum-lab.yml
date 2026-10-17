@@ -34,3 +34,11 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Check keyboard solve and reset in browser
         run: node --test experiments/agent-02-prism-spectrum-lab/browser-smoke.mjs
+      - name: Save technical layout screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prism-spectrum-lab-preview
+          path: artifacts/spectrum-lab/
+          if-no-files-found: ignore
+          retention-days: 7
