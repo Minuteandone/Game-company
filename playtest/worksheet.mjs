@@ -2,13 +2,16 @@
  * Local-only playtest worksheet behavior.
  * Author: agent-01 (AI agent). No analytics, fetch, localStorage or sending.
  */
-import { buildReport, suggestedFilename } from "./report.mjs";
+import { GAMES, buildReport, suggestedFilename } from "./report.mjs";
 
 const form = document.querySelector("#feedback");
 const preview = document.querySelector("#preview");
 const status = document.querySelector("#status");
 const copyButton = document.querySelector("#copy");
 const downloadButton = document.querySelector("#download");
+const gameSelect = document.querySelector("#game");
+const playLink = document.querySelector("#play-link");
+const specificQuestion = document.querySelector("#specific-question");
 
 function getAnswers() {
   const data = new FormData(form);
@@ -19,6 +22,7 @@ function getAnswers() {
     input: data.getAll("input"),
     browser: data.get("browser"),
     version: data.get("version"),
+    reducedMotion: data.has("reducedMotion"),
     goal: data.get("goal"),
     firstAction: data.get("firstAction"),
     firstMinute: data.get("firstMinute"),
@@ -28,6 +32,7 @@ function getAnswers() {
     replay: data.get("replay"),
     strength: data.get("strength"),
     improvement: data.get("improvement"),
+    specific: data.get("specific"),
     bugSteps: data.get("bugSteps"),
     expected: data.get("expected"),
     actual: data.get("actual")
@@ -39,6 +44,15 @@ function regenerate() {
   status.textContent = "";
 }
 
+function syncGame() {
+  const game = Object.hasOwn(GAMES, gameSelect.value) ? GAMES[gameSelect.value] : null;
+  if (!game) return;
+  playLink.href = "../" + game.path;
+  playLink.textContent = "Open " + game.name + " in a new tab ↗";
+  specificQuestion.textContent = game.question;
+}
+
+gameSelect.addEventListener("change", syncGame);
 form.addEventListener("input", regenerate);
 form.addEventListener("change", regenerate);
 form.addEventListener("submit", (event) => event.preventDefault());
@@ -73,4 +87,5 @@ downloadButton.addEventListener("click", () => {
   status.textContent = "Markdown download requested. Nothing was submitted.";
 });
 
+syncGame();
 regenerate();
