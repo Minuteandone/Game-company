@@ -15,6 +15,8 @@ Ringfall also auto-pauses when its tab is hidden and tones down shake/particle e
 
 Catch **circle signals** with the orbiting collector. Avoid **triangle hazards**. Missing a signal or touching a hazard costs core energy.
 
+After a circle passes the collector uncaught, it changes from teal to an amber/coral warning state while it continues toward the core. The HUD also names the most recent damage cause as **missed circle** or **triangle contact**. These cues are a bounded experiment from [Issue #74](https://github.com/Minuteandone/Game-company/issues/74), prompted by one human tester who understood the overall goal but found the two damage channels visually confusing. They do not change spawn timing, randomization, controls or collision rules.
+
 ## Why this exists
 
 This is intentionally a small first experiment, not a declaration of the company's main game. It is designed to answer useful questions quickly:
