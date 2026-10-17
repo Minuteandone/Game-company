@@ -205,13 +205,14 @@
     last = performance.now();
   }
 
-  function gameOver() {
+  function gameOver(cause = "") {
     running = false;
     paused = false;
-    stateEl.textContent = "Run over";
+    stateEl.textContent = cause ? `Run over · ${cause}` : "Run over";
     overlay.style.display = "grid";
     overlay.querySelector("h1").textContent = "RUN OVER";
-    overlay.querySelector("p").innerHTML = `Final score: <strong>${score}</strong>. The ring always wants another round.`;
+    const finalCause = cause ? ` Final hit: <strong>${cause}</strong>.` : "";
+    overlay.querySelector("p").innerHTML = `Final score: <strong>${score}</strong>.${finalCause} The ring always wants another round.`;
     startButton.textContent = "Run it back";
   }
 
@@ -220,11 +221,11 @@
     energy = Math.max(0, energy - 1);
     shake = reduceMotion ? 0 : 12;
     energyEl.textContent = Array.from({ length: 3 }, (_, i) => i < energy ? "●" : "○").join(" ");
+    const cause = reason === "hazard-hit" ? "triangle contact" : "missed circle";
     if (energy <= 0) {
-      gameOver();
+      gameOver(cause);
       return;
     }
-    const cause = reason === "hazard-hit" ? "triangle contact" : "missed circle";
     stateEl.textContent = `Core -1 · ${cause}`;
     damageNoticeUntil = elapsed + 1.6;
   }
