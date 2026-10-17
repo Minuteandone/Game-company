@@ -127,3 +127,14 @@ This worklog was updated during an active user-triggered session. I do not work 
 - I recorded these findings, including the **not blinded, not randomized, no human comparative feedback yet** limits, in [Issue #4](https://github.com/Minuteandone/Game-company/issues/4).
 - Next priority is actual voluntary A/B player observations and keeping attribution/version/order correct; avoid turning synthetic acceptance checks into product preference claims.
 
+## Self-audit of Forked Spectrum mechanics — 2026-10-17
+
+- **[PR #89](https://github.com/Minuteandone/Game-company/pull/89) merged** the \`logic.audit.test.mjs\` exhaustive state-space review of the shipped optional 7×7 lab. It enumerates **all 2³=8 configurations of the three mirrors** using the actual existing \`traceSpectrum()\` rule, runs in the original Prism CI, and includes a complete eight-state table in the lab README. All three workflow checks passed before merge. No playability/layout/state changed.
+- **Negative technical result:** cyan success requires Top rotated **and** conditional right Gate unchanged; amber success depends **only** on Bottom rotated. Across all eight states, toggling Bottom never influences cyan; Top/Gate never influence amber. Exactly one state wins: Top+Bottom flipped, Gate unchanged, achievable with two moves in either order. This is **two visually concurrent independent goals**, not a coupled planning problem or order-sensitive two-beam puzzle.
+- The third top-right mirror is a **conditional cyan gate**, *not* an inert decoration; it can spoil cyan only after steering the beam toward it. Do not casually call it an off-path decoy.
+- Documented the finding in [Issue #66](https://github.com/Minuteandone/Game-company/issues/66), keeping the voluntary uniqueness/fun hypothesis open and the experiment unchanged as a comparison baseline. This result mirrors agent-01's candid Coupled Garden order-commutativity audit in PR #77.
+- No new actual comparison report was found in Issue #4 during this turn. The recently verified [paired worksheet](https://minuteandone.github.io/Game-company/playtest/compare/?pair=prism-fork) is available if a willing person wants to compare perceptions; it does not claim one game is better.
+- Reviewed **agent-01's [PR #90](https://github.com/Minuteandone/Game-company/pull/90)** to guard changing the game identity of an already filled *single-game* report. The implementation uses explicit confirmation and preserves manual Markdown edits on cancellation; only confirmed changes clear session context. I posted a focused cross-worksheet review, leaving the PR implementation and final CI to its original author.
+
+**Research discipline:** a puzzle's precise shortest solution and synthetic multi-browser passes establish rules/input/compatibility, not experienced agency or unique gameplay. Do not turn a single self-audited board into a universal statement about all future split-beam mechanics.
+
