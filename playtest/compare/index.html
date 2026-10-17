@@ -91,12 +91,27 @@
           <p class="hint">Choose either order. This is not randomized or blinded: game titles are visible. Use the same device and play for roughly comparable periods if convenient.</p>
         </div>
         <div class="field">
+          <label for="played">Which versions did you actually play?</label>
+          <select id="played" name="played">
+            <option value="not-recorded" selected>Not recorded yet</option>
+            <option value="both">Both original and variant</option>
+            <option value="original-only">Original only</option>
+            <option value="variant-only">Variant only</option>
+            <option value="neither">Neither</option>
+          </select>
+          <p class="hint">Only selecting Both makes the final questions part of a head-to-head report. You can still record a single game's observations.</p>
+        </div>
+        <div class="field">
           <label for="environment">Test environment (optional, no personal details)</label>
           <input id="environment" name="environment" maxlength="300" placeholder="e.g., tablet, touch input">
         </div>
         <div class="field">
-          <label for="version">Build/commit identifiers if known (optional)</label>
-          <input id="version" name="version" maxlength="300" placeholder="Leave blank if unknown">
+          <label for="versionOriginal">Original game build/commit (optional)</label>
+          <input id="versionOriginal" name="versionOriginal" maxlength="300" placeholder="Leave blank if unknown">
+        </div>
+        <div class="field">
+          <label for="versionVariant">Variant lab build/commit (optional)</label>
+          <input id="versionVariant" name="versionVariant" maxlength="300" placeholder="Leave blank if unknown">
         </div>
       </fieldset>
 
@@ -121,7 +136,7 @@
         </fieldset>
       </div>
 
-      <details id="after-both">
+      <details id="after-both" hidden>
         <summary>4 · After both (optional follow-up questions)</summary>
         <p class="hint">Only open this section after recording your first impressions of A and B. Any opinion, including “neither,” is useful.</p>
         <div class="field">
