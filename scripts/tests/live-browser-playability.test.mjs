@@ -21,7 +21,7 @@ const SITE = "https://minuteandone.github.io/Game-company/";
 const SITE_ORIGIN = new URL(SITE).origin;
 const OUT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../artifacts/live-browser");
 
-function captureSafety(page, exceptions) {
+async function captureSafety(page, exceptions) {
   const issues = [];
   page.on("pageerror", e => issues.push("Runtime: " + e.message));
   page.on("console", m => {
@@ -31,7 +31,7 @@ function captureSafety(page, exceptions) {
       issues.push("Console: " + m.text());
     }
   });
-  page.route("**/*", route => {
+  await page.route("**/*", route => {
     const request = route.request();
     const url = request.url();
     const method = request.method();
@@ -48,7 +48,7 @@ function captureSafety(page, exceptions) {
 }
 async function visit(context, pathname, exceptions) {
   const page = await context.newPage();
-  captureSafety(page, exceptions);
+  await captureSafety(page, exceptions);
   const url = new URL(pathname, SITE).href;
   assert.ok(url.startsWith(SITE), "Only the published arcade origin and prefix may be tested");
   const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 35000 });
