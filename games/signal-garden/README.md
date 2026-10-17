@@ -15,7 +15,7 @@ Visit **http://localhost:8000/games/signal-garden/** in a browser. Any static HT
 ## How to play
 
 - **Mouse / touch:** click or tap a path to rotate it clockwise.
-- **Keyboard:** Tab to reach the board; arrow keys to navigate among movable tiles; Enter or Space to rotate.
+- **Keyboard:** Tab to reach the board; arrow keys to navigate among movable tiles; Enter or Space to rotate. Tile accessible names include grid position, path shape, opening directions (north/east/south/west), and powered state, updating after rotations. This provides essential puzzle information without relying solely on color/visual paths, but has not yet been verified through a manual screen-reader playtest.
 - **Goal:** connect the ✦ source to the ✿ flower. Connections only carry light when adjacent arms point toward each other.
 - **Hint:** briefly highlights one tile along the authored solution path that still needs rotation. Reset restarts the current level.
 - **Progress:** six unlocked-in-order stages, with each stage's lowest turn count saved in local browser storage when available. No account or server is needed.
