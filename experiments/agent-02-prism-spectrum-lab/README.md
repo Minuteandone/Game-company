@@ -29,7 +29,7 @@ The original [Prism Relay](../agent-02-prism-relay/) remains completely unchange
 
 ## Exhaustive mirror-state audit — what the first puzzle **does not** prove
 
-This original 7×7 board has **exactly three** binary mirrors, so all **2³ = 8** configurations can be enumerated. The [pure state-audit tests](logic.audit.test.mjs) exercise the actual \`traceSpectrum()\` rules in every state, not a hand-waved difficulty estimate.
+This original 7×7 board has **exactly three** binary mirrors, so all **2³ = 8** configurations can be enumerated. The [pure state-audit tests](logic.audit.test.mjs) exercise the actual `traceSpectrum()` rules in every state, not a hand-waved difficulty estimate.
 
 For clarity, the three toggles are:
 
