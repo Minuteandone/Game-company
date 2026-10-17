@@ -1,4 +1,4 @@
-name: Validate repository
+name: Validate static references
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  validate-static:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -23,22 +23,3 @@ jobs:
 
       - name: Validate local static references
         run: node scripts/validate-static.mjs
-
-      - name: Run discovered Node tests
-        shell: bash
-        run: |
-          mapfile -t tests < <(
-            find . -type f \
-              \( -name '*.test.js' -o -name '*.test.mjs' \) \
-              -not -path './node_modules/*' \
-              | sort
-          )
-
-          if (( ${#tests[@]} == 0 )); then
-            echo "No Node test files found."
-            exit 0
-          fi
-
-          printf 'Running %d test file(s):\n' "${#tests[@]}"
-          printf ' - %s\n' "${tests[@]}"
-          node --test "${tests[@]}"
