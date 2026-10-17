@@ -77,6 +77,9 @@ test("browser: start, pause, mixed input, reduced motion and narrow viewport", a
     assert.equal(await page.locator("#state").getAttribute("role"), "status");
     assert.equal(await page.locator("#score").textContent(), "0");
     assert.equal((await page.locator("#energy").textContent()).replace(/\s+/g, " ").trim(), "● ● ●");
+    const introText = await page.locator("#overlay").textContent();
+    assert.match(introText, /misses hit core/i);
+    assert.match(introText, /contact hurts/i);
     assert.equal(
       await page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches),
       true,
@@ -132,6 +135,83 @@ test("browser: start, pause, mixed input, reduced motion and narrow viewport", a
     t.diagnostic("Ringfall can return to the public/local arcade with a project-relative link.");
 
     await context.close();
+  } finally {
+    if (browser) await browser.close();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
+
+
+test("browser: damage status distinguishes missed circles from triangle contact", async (t) => {
+  const { server, url } = await startServer();
+  let browser;
+
+  try {
+    browser = await chromium.launch({ headless: true });
+
+    const circleContext = await browser.newContext({
+      viewport: { width: 600, height: 600 },
+      reducedMotion: "reduce"
+    });
+    await circleContext.addInitScript(() => {
+      Math.random = () => 0.5;
+    });
+    const circlePage = await circleContext.newPage();
+    await circlePage.goto(url);
+    await circlePage.locator("#start").click();
+
+    await circlePage.waitForFunction(
+      () => document.querySelector("#state")?.textContent?.includes("missed circle"),
+      null,
+      { timeout: 9000 }
+    );
+    assert.match(await circlePage.locator("#state").textContent(), /Core -1 · missed circle/);
+    assert.notEqual(
+      (await circlePage.locator("#energy").textContent()).replace(/\s+/g, " ").trim(),
+      "● ● ●",
+      "an uncaught circle should visibly drain core energy"
+    );
+    await circlePage.waitForFunction(
+      () => document.querySelector("#state")?.textContent === "Run over · missed circle",
+      null,
+      { timeout: 9000 }
+    );
+    assert.match(await circlePage.locator("#overlay .card > p:not(.small)").textContent(), /Final hit: missed circle/i);
+    await circleContext.close();
+    t.diagnostic("Deterministic uncaught circles preserve missed-circle cause through game over.");
+
+    const hazardContext = await browser.newContext({
+      viewport: { width: 600, height: 600 },
+      reducedMotion: "reduce"
+    });
+    await hazardContext.addInitScript(() => {
+      const sequence = [0.05, 0.75, 0.5, 0.5, 0.5];
+      let index = 0;
+      Math.random = () => sequence[index++ % sequence.length];
+    });
+    const hazardPage = await hazardContext.newPage();
+    await hazardPage.goto(url);
+    await hazardPage.locator("#start").click();
+
+    await hazardPage.waitForFunction(
+      () => document.querySelector("#state")?.textContent?.includes("triangle contact"),
+      null,
+      { timeout: 8000 }
+    );
+    assert.match(await hazardPage.locator("#state").textContent(), /Core -1 · triangle contact/);
+    assert.notEqual(
+      (await hazardPage.locator("#energy").textContent()).replace(/\s+/g, " ").trim(),
+      "● ● ●",
+      "collector contact with a triangle should visibly drain core energy"
+    );
+    await hazardPage.waitForFunction(
+      () => document.querySelector("#state")?.textContent === "Run over · triangle contact",
+      null,
+      { timeout: 9000 }
+    );
+    assert.match(await hazardPage.locator("#overlay .card > p:not(.small)").textContent(), /Final hit: triangle contact/i);
+    await hazardContext.close();
+    t.diagnostic("Deterministic triangle collisions preserve contact cause through game over.");
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));
