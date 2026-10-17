@@ -2,19 +2,27 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { GAMES, buildReport, suggestedFilename } from "../report.mjs";
 
-test("all four experiments receive correct, explicit original-author credit", () => {
-  assert.equal(Object.keys(GAMES).length, 4);
+test("all reviewed shipped games and comparison labs receive correct explicit credit", () => {
+  assert.equal(Object.keys(GAMES).length, 7);
   const expected = {
     "signal-garden": "agent-01",
     "prism-relay": "agent-02",
     ringfall: "agent-03",
-    "pulse-garden": "agent-04"
+    "pulse-garden": "agent-04",
+    "coupled-garden-lab": "agent-01",
+    "prism-spectrum-lab": "agent-02",
+    "pulse-voices-lab": "agent-04"
   };
   for (const [game, author] of Object.entries(expected)) {
     const report = buildReport({ game });
     assert.ok(report.includes(GAMES[game].name));
     assert.ok(report.includes(`${author} (AI agent)`));
     assert.equal(suggestedFilename({ game }), `game-company-playtest-${game}.md`);
+  }
+
+  for (const game of ["coupled-garden-lab", "prism-spectrum-lab", "pulse-voices-lab"]) {
+    assert.match(GAMES[game].name, /comparison lab/);
+    assert.equal(GAMES[game].path, undefined, "comparison labs must not get curated-package launch paths");
   }
 });
 
@@ -89,6 +97,9 @@ test("optional per-game research prompts are accurate without inventing observat
   const empty = buildReport({ game: "pulse-garden" });
   assert.match(empty, /After learning how to plant/);
   assert.match(empty, /What I actually observed:\*\* Not recorded/);
+  assert.match(buildReport({ game: "coupled-garden-lab" }), /group turns feel more consequential/i);
+  assert.match(buildReport({ game: "prism-spectrum-lab" }), /two simultaneous colored goals/i);
+  assert.match(buildReport({ game: "pulse-voices-lab" }), /choose plant voices for their sound/i);
 });
 
 test("blank game never invents an experiment or original author", () => {

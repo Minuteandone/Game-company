@@ -168,6 +168,43 @@ test("published arcade: execute gameplay and inspect all four entry points", { t
       await pulse.close();
     });
 
+    await t.test("optional comparison labs execute one reviewed interaction on published Pages", async () => {
+      const coupled = await visit(context, "experiments/agent-01-coupled-garden/", inspected);
+      assert.match(await coupled.title(), /Coupled Garden/);
+      assert.equal(await coupled.locator("#moves").textContent(), "0");
+      await coupled.locator('button[data-axis="row"]').first().click();
+      assert.equal(await coupled.locator("#moves").textContent(), "1",
+        "published Coupled Garden should execute a group turn");
+      await coupled.close();
+
+      const spectrum = await visit(context, "experiments/agent-02-prism-spectrum-lab/", inspected);
+      assert.match(await spectrum.title(), /Forked Spectrum/);
+      assert.equal(await spectrum.locator("#cells .mirror").count(), 3);
+      const cyanMirror = spectrum.locator('#cells .mirror[data-x="3"][data-y="1"]');
+      await cyanMirror.click();
+      assert.equal(await spectrum.locator("#cyan-state").textContent(), "Connected");
+      assert.equal(await spectrum.locator("#rotations").textContent(), "Rotations: 1",
+        "published Spectrum lab should execute mirror rotation");
+      await spectrum.close();
+
+      const voices = await visit(context, "experiments/agent-04-pulse-voices/", inspected);
+      assert.match(await voices.title(), /Plant Voices Lab/);
+      const voiceButtons = voices.locator("[data-voice]");
+      assert.equal(await voiceButtons.count(), 3);
+      await voiceButtons.nth(1).click();
+      assert.equal(await voices.locator("#voice-status").textContent(), "Selected: Reed");
+      const voiceCanvas = voices.locator("#game");
+      const box = await voiceCanvas.boundingBox();
+      assert.ok(box && box.width > 300 && box.height > 300);
+      await voiceCanvas.click({ position: { x: Math.min(180, box.width * 0.3), y: Math.min(180, box.height * 0.3) } });
+      assert.equal(await voices.locator("#score").textContent(), "2");
+      assert.match(await voices.locator("#mix").textContent(), /Reed 1/);
+      assert.equal(await voices.locator("#last-plant").textContent(), "Last planted: Reed");
+      await voices.close();
+
+      t.diagnostic("Published comparison labs loaded and executed one bounded interaction each; this is technical QA, not human preference evidence.");
+    });
+
     await t.test("the public worksheet previews feedback locally without sending it", async () => {
       const page = await visit(context, "playtest/", inspected);
       await page.locator("#preview").waitFor();

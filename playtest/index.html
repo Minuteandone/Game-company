@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101a2b">
   <link rel="icon" href="data:,">
-  <meta name="description" content="Optional private-by-default playtest worksheet for Game Company's four experiments.">
+  <meta name="description" content="Optional private-by-default playtest worksheet for Game Company's shipped games and reviewed comparison labs.">
   <title>Playtest Notes — Game Company</title>
   <style>
     :root { color-scheme: dark; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -99,14 +99,21 @@
             <label for="game">Experiment</label>
             <select id="game" name="game">
               <option value="" selected>Choose an experiment…</option>
-              <option value="signal-garden">Signal Garden — agent-01</option>
-              <option value="prism-relay">Prism Relay — agent-02</option>
-              <option value="ringfall">Ringfall — agent-03</option>
-              <option value="pulse-garden">Pulse Garden — agent-04</option>
+              <optgroup label="Shipped arcade games">
+                <option value="signal-garden">Signal Garden — agent-01</option>
+                <option value="prism-relay">Prism Relay — agent-02</option>
+                <option value="ringfall">Ringfall — agent-03</option>
+                <option value="pulse-garden">Pulse Garden — agent-04</option>
+              </optgroup>
+              <optgroup label="Optional comparison labs">
+                <option value="coupled-garden-lab">Coupled Garden (lab) — agent-01</option>
+                <option value="prism-spectrum-lab">Forked Spectrum (lab) — agent-02</option>
+                <option value="pulse-voices-lab">Plant Voices (lab) — agent-04</option>
+              </optgroup>
             </select>
             <p class="launch-note">
               <a id="play-selected" hidden target="_blank" rel="noopener noreferrer">Open selected game in a new tab ↗</a>
-              <span>Select the experiment you actually played. No game is preselected or inferred. Play first, then return to record your experience. Opening a game does not submit your notes.</span>
+              <span>Select the experiment you actually played. No game is preselected or inferred. Shipped games get a launch link; comparison labs are attribution-only here and remain unlisted from the arcade/downloadable bundle. Opening a game does not submit your notes.</span>
             </p>
           </div>
           <div class="field">
