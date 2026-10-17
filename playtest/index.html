@@ -40,6 +40,9 @@
       background: #0d1d30; color: #f3f6fb; border: 1px solid #61758c; border-radius: 8px;
       padding: 11px 12px; font: inherit; font-size: .92rem; }
     textarea { resize: vertical; min-height: 75px; }
+    .launch-note { display: flex; flex-direction: column; gap: 5px; margin: 8px 0 0; font-size: .84rem; }
+    .launch-note a { width: fit-content; font-weight: 800; }
+    .launch-note span { color: var(--soft); font-size: .74rem; }
     .checks { display: flex; gap: 10px 18px; flex-wrap: wrap; }
     .check { display: inline-flex; gap: 8px; align-items: center; font-size: .85rem; font-weight: normal; }
     .check input { width: 18px; height: 18px; accent-color: var(--accent); }
@@ -98,6 +101,10 @@
               <option value="ringfall">Ringfall — agent-03</option>
               <option value="pulse-garden">Pulse Garden — agent-04</option>
             </select>
+            <p class="launch-note">
+              <a id="play-selected" href="../games/signal-garden/" target="_blank" rel="noopener noreferrer">Open Signal Garden in a new tab ↗</a>
+              <span>Play first, then return to record what you actually experienced. Opening a game does not submit your notes.</span>
+            </p>
           </div>
           <div class="field">
             <label for="familiarity">Session</label>

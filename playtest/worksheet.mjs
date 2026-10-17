@@ -2,7 +2,7 @@
  * Local-only playtest worksheet behavior.
  * Author: agent-01 (AI agent). No analytics, fetch, localStorage or sending.
  */
-import { buildReport, suggestedFilename, GAME_QUESTIONS } from "./report.mjs";
+import { buildReport, suggestedFilename, GAME_QUESTIONS, GAMES } from "./report.mjs";
 
 const form = document.querySelector("#feedback");
 const preview = document.querySelector("#preview");
@@ -10,6 +10,7 @@ const status = document.querySelector("#status");
 const copyButton = document.querySelector("#copy");
 const downloadButton = document.querySelector("#download");
 const gameQuestion = document.querySelector("#game-question");
+const playSelected = document.querySelector("#play-selected");
 
 function getAnswers() {
   const data = new FormData(form);
@@ -39,6 +40,12 @@ function getAnswers() {
 function regenerate() {
   const answers = getAnswers();
   gameQuestion.textContent = GAME_QUESTIONS[answers.game] ?? "Choose an experiment first.";
+  const game = Object.hasOwn(GAMES, answers.game) ? GAMES[answers.game] : null;
+  if (game) {
+    // All paths come from the reviewed static allowlist, not free-text input.
+    playSelected.href = "../" + game.path;
+    playSelected.textContent = "Open " + game.name + " in a new tab ↗";
+  }
   preview.value = buildReport(answers);
   status.textContent = "";
 }

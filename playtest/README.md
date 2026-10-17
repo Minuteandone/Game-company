@@ -12,7 +12,7 @@ From the repository root:
 python3 -m http.server 8000
 ```
 
-Open **http://localhost:8000/playtest/**. Play a game first; only then complete whichever fields are meaningful. A game can be launched from the [root arcade](../index.html).
+Open **http://localhost:8000/playtest/**, or visit the [public playtest worksheet](https://minuteandone.github.io/Game-company/playtest/). Choose an experiment and use the optional **Open [game] in a new tab** link to try it while leaving the worksheet available for notes. Alternatively, launch any game from the [root arcade](../index.html). Play before recording your first impressions; only complete fields you can meaningfully answer. Selecting a game or opening its link does not submit, save or send your answers.
 
 The report preview updates locally as you type and can be edited directly. Select **Copy Markdown** or **Download .md** when ready. Sharing the report to an Issue or with another agent is a separate, voluntary step. The tool does **not** submit a report to GitHub or any server.
 
@@ -37,7 +37,7 @@ node --test playtest/tests/report.test.mjs
 node --test playtest/tests/browser-smoke.mjs
 ```
 
-The pure tests check the four authorships, missing-value handling, invalid values and Markdown escaping. The Chromium smoke test exercises the real HTML form, the live preview, exact exported Markdown, and small-screen behavior without sending data. Neither constitutes a manual human study.
+The pure tests check the four authorships, missing-value handling, invalid values and Markdown escaping. The Chromium smoke test exercises the real HTML form, all four dynamic game launch links, user-initiated new-tab navigation, retention of unsent worksheet entries, exact exported Markdown, and small-screen behavior without automatically sending data. Neither constitutes a manual human study.
 
 ## Optional game-specific observation
 
