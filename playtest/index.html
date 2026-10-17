@@ -43,6 +43,11 @@
     .checks { display: flex; gap: 10px 18px; flex-wrap: wrap; }
     .check { display: inline-flex; gap: 8px; align-items: center; font-size: .85rem; font-weight: normal; }
     .check input { width: 18px; height: 18px; accent-color: var(--accent); }
+    .launch { display: inline-block; margin-top: 8px; font-size: .84rem; font-weight: 750; }
+    details.followup { border: 1px solid var(--border); border-radius: 16px; background: var(--panel);
+      padding: 17px 20px; margin: 0 0 20px; }
+    details.followup summary { cursor: pointer; font-weight: 800; }
+    details.followup[open] summary { margin-bottom: 13px; }
     .preview-panel { position: sticky; top: 18px; border: 1px solid var(--border);
       padding: 22px; background: #17273a; border-radius: 16px; }
     .preview-panel h2 { margin: 0 0 7px; font-size: 1.22rem; }
@@ -94,6 +99,7 @@
               <option value="ringfall">Ringfall — agent-03</option>
               <option value="pulse-garden">Pulse Garden — agent-04</option>
             </select>
+            <a class="launch" id="play-link" href="../games/signal-garden/" target="_blank" rel="noopener">Open Signal Garden in a new tab ↗</a>
           </div>
           <div class="field">
             <label for="familiarity">Session</label>
@@ -121,6 +127,9 @@
               <label class="check"><input type="checkbox" name="input" value="Touch">Touch</label>
               <label class="check"><input type="checkbox" name="input" value="Other">Other</label>
             </div>
+          </div>
+          <div class="field">
+            <label class="check"><input type="checkbox" name="reducedMotion">I actually tested with reduced-motion enabled</label>
           </div>
           <div class="field">
             <label for="browser">Browser/version (optional)</label>
@@ -189,8 +198,18 @@
           </div>
         </fieldset>
 
+        <details class="followup" id="specific-followup">
+          <summary>4 · Optional experiment-specific follow-up — open after playing</summary>
+          <p class="hint">Keep this closed until after your first-play notes. The question reflects a current design hypothesis and can bias what you notice if you read it first.</p>
+          <div class="field">
+            <p class="question" id="specific-question">If you played levels 1–4, which felt hardest, and why? Did later levels actually feel harder?</p>
+            <label for="specific">Your observation</label>
+            <textarea id="specific" name="specific" maxlength="2000" rows="3"></textarea>
+          </div>
+        </details>
+
         <fieldset>
-          <legend>4 · Bug details (optional)</legend>
+          <legend>5 · Bug details (optional)</legend>
           <p class="hint">Only write a bug report if you observed a failure; leave everything blank otherwise.</p>
           <div class="field"><label for="bugSteps">Steps to reproduce</label>
             <textarea id="bugSteps" name="bugSteps" maxlength="2000" rows="2"></textarea></div>
@@ -214,7 +233,7 @@
         <p id="status" role="status" aria-live="polite"></p>
       </aside>
     </div>
-    <footer class="foot">Worksheet created by <strong>agent-01 (AI agent)</strong> as a companion to agent-04's manual playtest checklist. No automated score or rating here can prove a game is enjoyable.</footer>
+    <footer class="foot">Worksheet created by <strong>agent-01 (AI agent)</strong> as a companion to agent-04's manual playtest checklist. Selected-game launch and post-play hypothesis prompts adapt ideas from <strong>agent-02 (AI agent)</strong>'s Playtest Notebook branch; integration by <strong>agent-03 (AI agent)</strong>. No automated score or rating here can prove a game is enjoyable.</footer>
   </main>
 </body>
 </html>
