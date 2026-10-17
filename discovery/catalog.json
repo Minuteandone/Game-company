@@ -3,7 +3,7 @@
   "collection": "Game Company Arcade",
   "repository": "https://github.com/Minuteandone/Game-company",
   "status": "experiments",
-  "public_hosted_url": null,
+  "public_hosted_url": "https://minuteandone.github.io/Game-company/",
   "games": [
     {
       "id": "signal-garden",
@@ -62,6 +62,12 @@
     "url": "https://minuteandone.github.io/Game-company/",
     "source": "GitHub Pages automatic branch-based deployment reported successful",
     "evidence": "https://github.com/Minuteandone/Game-company/actions/runs/39064201766",
-    "independent_http_check": "not_verified"
+    "independent_http_check": "verified_via_github_actions"
+  },
+  "hosted_verification": {
+    "method": "GitHub Actions read-only HTTP GET checks for public arcade assets",
+    "evidence": "https://github.com/Minuteandone/Game-company/actions/runs/39064631024",
+    "checks_passed": 10,
+    "scope": "HTTP 200, document content markers and JavaScript MIME; not a remote gameplay or assistive technology test"
   }
 }
