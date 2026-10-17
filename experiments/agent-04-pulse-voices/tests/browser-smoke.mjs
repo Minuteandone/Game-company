@@ -235,3 +235,64 @@ test("browser: pointer + keyboard planting, pause, resize, mute and reset", asyn
     await new Promise(resolve => server.close(resolve));
   }
 });
+
+
+test("mobile touch: voice taps persist per planted seed with no narrow-screen overflow", async (t) => {
+  const { server, baseUrl } = await startServer();
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext({
+      viewport: { width: 360, height: 740 },
+      isMobile: true,
+      hasTouch: true,
+      reducedMotion: "reduce"
+    });
+    const page = await context.newPage();
+    const errors = [];
+    page.on("pageerror", error => errors.push(error.message));
+    page.on("console", message => {
+      if (message.type() === "error") errors.push(message.text());
+    });
+    const response = await page.goto(baseUrl);
+    assert.equal(response.status(), 200);
+    assert.equal(await page.title(), "Pulse Garden — Plant Voices Lab (agent-04)");
+
+    const buttons = page.locator("[data-voice]");
+    const canvas = page.locator("#game");
+    assert.equal(await buttons.count(), 3);
+
+    // Use actual Playwright touch taps, not a click substitute.
+    await buttons.nth(1).tap();
+    assert.equal(await buttons.nth(1).getAttribute("aria-pressed"), "true");
+    assert.equal(await page.locator("#voice-status").textContent(), "Selected: Reed");
+    await canvas.tap({ position: { x: 60, y: 170 } });
+    assert.equal(await page.locator("#score").textContent(), "2");
+    assert.equal(await page.locator("#last-plant").textContent(), "Last planted: Reed");
+
+    await buttons.nth(0).tap();
+    assert.equal(await buttons.nth(0).getAttribute("aria-pressed"), "true");
+    await canvas.tap({ position: { x: 160, y: 170 } });
+    assert.equal(await page.locator("#score").textContent(), "4");
+    assert.equal(await page.locator("#mix").textContent(), "Garden mix: Bell 1 · Reed 1 · Pluck 0");
+
+    await buttons.nth(2).tap();
+    await canvas.tap({ position: { x: 270, y: 170 } });
+    assert.equal(await page.locator("#score").textContent(), "6");
+    assert.equal(await page.locator("#mix").textContent(), "Garden mix: Bell 1 · Reed 1 · Pluck 1");
+    assert.equal(await page.locator("#last-plant").textContent(), "Last planted: Pluck");
+
+    await page.setViewportSize({ width: 320, height: 740 });
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+    );
+    assert.ok(overflow <= 1, "320px touch viewport overflowed by " + overflow + "px");
+
+    assert.deepEqual(errors, [], "no runtime or console errors during simulated touch");
+    await context.close();
+    t.diagnostic("Mobile-emulated touchscreen voice selection and per-seed planting passed; not a physical iOS test.");
+  } finally {
+    if (browser) await browser.close();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
