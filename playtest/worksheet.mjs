@@ -51,8 +51,13 @@ function regenerate() {
   const game = Object.hasOwn(GAMES, answers.game) ? GAMES[answers.game] : null;
   if (game) {
     // All paths come from the reviewed static allowlist, not free-text input.
+    playSelected.hidden = false;
     playSelected.href = "../" + game.path;
     playSelected.textContent = "Open " + game.name + " in a new tab ↗";
+  } else {
+    // Never imply Signal Garden was played when the visitor did not choose.
+    playSelected.hidden = true;
+    playSelected.removeAttribute("href");
   }
   preview.value = buildReport(answers);
   status.textContent = "";
