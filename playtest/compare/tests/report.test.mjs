@@ -44,9 +44,11 @@ test("user notes are quoted and HTML escapes stay in the report", () => {
     notesA:"# False heading\n<script>alert('x')</script>",
     friction:"[fake link](https://example.com)\n> fabricated quote",played:"both"});
   assert.match(content,/> # False heading/);
-  assert.match(content,/&lt;script&gt;/);
+  assert.match(content,/\\<script\\>/);
   assert.doesNotMatch(content,/<script>/);
-  assert.match(content,/> &gt; fabricated quote/);
+  assert.match(content,/> \\> fabricated quote/);
+  assert.doesNotMatch(content,/https:\/\/example\.com/);
+  assert.match(content,/link omitted; describe it in words/);
 });
 
 
@@ -67,6 +69,23 @@ test("one-game or unknown-completion reports cannot claim head-to-head preferenc
   const missing=buildComparison({pair:"not-known",played:"both",returnChoice:"A fake preference"});
   assert.match(missing,/Incomplete/);
   assert.doesNotMatch(missing,/A fake preference/);
+});
+
+test("raw URLs, Markdown links and contact-like text cannot create active public links",()=>{
+  const report=buildComparison({
+    pair:"prism-fork",played:"both",
+    notesA:"https://example.com/private",
+    notesB:"[personal](https://example.com/contact)",
+    friction:"www.example.org @someone person@example.com",
+    returnChoice:"# Spoofed field\n**Winner: lab**"
+  });
+  assert.doesNotMatch(report,/https?:\/\/example\.com/i);
+  assert.doesNotMatch(report,/www\.example\.org/);
+  assert.doesNotMatch(report,/person@example\.com/);
+  assert.match(report,/link omitted; describe it in words/);
+  assert.match(report,/address omitted/);
+  assert.match(report,/> # Spoofed field/);
+  assert.doesNotMatch(report,/^\*\*Winner: lab\*\*$/m);
 });
 
 test("every comparison game is an actual checked-in playable page",async()=>{
