@@ -103,6 +103,9 @@ button.tile:active { transform: scale(.95); }
 .action-button:hover { background: #42536c; }
 .action-button.secondary { background: transparent; border-color: #3c5a5a; color: var(--mint); }
 .action-button.secondary:hover { background: rgba(164,240,198,.1); }
+.progress-note { color: #a5b7ca; font-size: .71rem; line-height: 1.55; margin: 18px 0 0; }
+.clear-progress { border: 0; padding: 5px 4px; margin-left: 4px; color: var(--mint); background: transparent; text-decoration: underline; text-underline-offset: 3px; font-size: inherit; }
+.clear-progress:hover { color: #e1ffe9; }
 .footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; border-top: 1px solid var(--line); padding: 25px 0 37px; font-size: .72rem; color: #8999ac; }
 .footer a { color: #b2d8c7; }
 .modal-layer { position: fixed; inset: 0; z-index: 9; display: grid; place-items: center; padding: 20px; background: rgba(6,11,22,.78); backdrop-filter: blur(9px); }
