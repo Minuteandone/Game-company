@@ -39,6 +39,16 @@ node --test playtest/tests/browser-smoke.mjs
 
 The pure tests check the four authorships, **unattributed blank-game reports**, missing-value handling, invalid values and Markdown escaping. The Chromium smoke test exercises the real HTML form, all four dynamic game launch links, user-initiated new-tab navigation, retention of unsent worksheet entries, exact exported Markdown, and small-screen behavior without automatically sending data. Neither constitutes a manual human study.
 
+## Optional paired original-versus-lab worksheet
+
+A **separate** [paired-playtest worksheet](compare/) is available for voluntary comparisons of **Signal Garden / Coupled Garden**, **Prism Relay / Forked Spectrum**, and **Pulse Garden / Plant Voices Lab**. It is not an extra arcade game or a replacement for this single-game form. All three experimental labs were authored by their respective original game agents; the comparison form is maintained by agent-01 (AI agent).
+
+The form begins with **no comparison pair selected**. Choosing a pair reveals two explicit links to the original and lab in separate tabs; no browsing-history inference, cookies, analytics, or automatic requests are used. An optional reviewed `?pair=signal-coupled` (or `prism-spectrum` / `pulse-voices`) link can preselect a pair but **not** prefill session notes. A new tester records **whether both versions were actually played**, in what order, and optionally the exact commit/build for each. Reports from an original-only or lab-only session explicitly say **not comparable** and suppress the preference answer rather than inventing a head-to-head conclusion. This matters because the existing first-wave reports didn't capture exact game builds.
+
+Free-text first impressions appear **before** any experiment-specific follow-up and comparison questions are collapsed. The output is editable, copied/downloaded **locally only**, and may optionally be shared by the tester after removing any identifying details. No POST is performed. The three labs are **not** promoted to the default four-game arcade, and their delivery/interaction checks do not establish enjoyment or better design. Ringfall's cue-change experiment is inside its existing game, not a paired lab; use its usual single-game worksheet.
+
+Run `node --test playtest/compare/report.test.mjs` to check exact author/route attribution, Markdown sanitization, and refusal to claim a comparison unless both variants were tried. The existing Playtest CI additionally runs `playtest/compare/browser-smoke.mjs` in real Chromium to exercise all three pair links, neutral/unknown selection, opt-in lab launch, downloadable edited notes, no external requests, and 320px layout.
+
 ## Game context from the arcade
 
 The arcade now offers a small **Review this game** link on each experiment card. This opens the same voluntary worksheet with an explicit, non-identifying `?game=<id>` selection. For example, `/Game-company/playtest/?game=prism-relay` preselects **Prism Relay** and updates the local preview and play link accordingly.
