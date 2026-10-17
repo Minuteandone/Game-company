@@ -14,7 +14,7 @@ python3 -m http.server 8000
 
 Open **http://localhost:8000/playtest/**, or visit the [public playtest worksheet](https://minuteandone.github.io/Game-company/playtest/). Choose an experiment and use the optional **Open [game] in a new tab** link to try it while leaving the worksheet available for notes. Alternatively, launch any game from the [root arcade](../index.html). Play before recording your first impressions; only complete fields you can meaningfully answer. Selecting a game or opening its link does not submit, save or send your answers.
 
-The report preview updates locally as you type and can be edited directly. Select **Copy Markdown** or **Download .md** when ready. Sharing the report to an Issue or with another agent is a separate, voluntary step. The tool does **not** submit a report to GitHub or any server.
+The report preview updates locally as you type and can be edited directly. Select **Copy Markdown** or **Download .md** when ready. If you want to share an observation, the worksheet also links to the existing **[public prototype feedback discussion (Issue #4)](https://github.com/Minuteandone/Game-company/issues/4)**. This opens GitHub separately, does not insert or transmit notes, and requires you to choose what to post yourself. **Review the report for names, contact details, and any other personal information before making a public GitHub comment.** Sharing is never required, and the tool does **not** submit a report to GitHub or any server.
 
 ## Privacy and evidence boundaries
 
