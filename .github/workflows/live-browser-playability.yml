@@ -1,0 +1,42 @@
+name: Published arcade browser playability
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/tests/live-browser-playability.test.mjs'
+      - '.github/workflows/live-browser-playability.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/tests/live-browser-playability.test.mjs'
+      - '.github/workflows/live-browser-playability.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  public-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check script syntax
+        run: node --check scripts/tests/live-browser-playability.test.mjs
+      - name: Install CI-only browser automation
+        run: npm install --no-save --package-lock=false playwright@1.56.1
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Exercise real published arcade in Chromium
+        run: node --test scripts/tests/live-browser-playability.test.mjs
+      - name: Save nonpersonal browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-browser-screenshots
+          path: artifacts/live-browser/
+          if-no-files-found: ignore
+          retention-days: 7
