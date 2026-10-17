@@ -55,8 +55,16 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
     const loaded = await page.goto(`http://127.0.0.1:${server.address().port}/playtest/`);
     assert.equal(loaded.status(), 200);
     assert.equal(await page.title(), "Playtest Notes — Game Company");
-    assert.match(await page.locator("#preview").inputValue(), /Unspecified experiment/);
-    assert.match(await page.locator("#preview").inputValue(), /Not recorded/);
+    assert.equal(await page.locator("#game").inputValue(), "",
+      "no experiment should be silently selected on a new worksheet");
+    const neutralReport = await page.locator("#preview").inputValue();
+    assert.match(neutralReport, /Playtest notes — Unspecified experiment/);
+    assert.match(neutralReport, /Original author:\*\* Not recorded/);
+    assert.doesNotMatch(neutralReport, /Playtest notes — Signal Garden|\*\*Original author:\*\* agent-01 \(AI agent\)/,
+      "blank worksheet must not falsely attribute a player's notes to Signal Garden");
+    assert.equal(await page.locator("#play-selected").isVisible(), false);
+    assert.equal(await page.locator("#play-selected").getAttribute("href"), null);
+    assert.match(await page.locator("#game-question").textContent(), /Choose an experiment first/);
     // The first real Prism Relay reviewer accidentally exported a Signal Garden
     // report because the worksheet always selected its first option. An explicit
     // game deep link must prefill only the reviewed game ID (never other answers).
@@ -117,7 +125,15 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
       await page.locator("#game").selectOption(game);
       assert.equal(await page.locator("#play-selected").getAttribute("href"), route);
       assert.match(await page.locator("#play-selected").textContent(), new RegExp("Open " + title));
+      assert.equal(await page.locator("#play-selected").isVisible(), true);
     }
+    await page.locator("#game").selectOption("");
+    assert.equal(await page.locator("#play-selected").isVisible(), false,
+      "clearing selection must hide the last game's link");
+    assert.equal(await page.locator("#play-selected").getAttribute("href"), null,
+      "no stale game URL may survive after clearing selection");
+    assert.match(await page.locator("#preview").inputValue(), /Unspecified experiment/);
+    await page.locator("#game").selectOption("pulse-garden");
     await page.locator("#familiarity").selectOption("First time");
     await page.locator("#device").selectOption("Desktop/laptop");
     await page.locator('input[value="Keyboard"]').check();
