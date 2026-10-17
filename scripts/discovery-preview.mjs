@@ -27,7 +27,7 @@ export function validateCatalog(catalog) {
   if (!deploy || deploy.url !== "https://minuteandone.github.io/Game-company/" ||
       deploy.independent_http_check !== "verified_via_github_actions" ||
       deploy.evidence !== "https://github.com/Minuteandone/Game-company/actions/runs/39064201766") {
-    errors.push("Reported deployment evidence must be explicit and unverified");
+    errors.push("Reported deployment evidence must match verified source");
   }
   if (!Array.isArray(catalog.games) || catalog.games.length === 0) return [...errors, "No games supplied"];
   const ids = new Set(), paths = new Set();
