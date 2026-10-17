@@ -37,9 +37,11 @@ The page works entirely as a static site; importing its ES module requires a loc
 node --test playtest/tests/report.test.mjs
 # With temporary Playwright + Chromium installed:
 node --test playtest/tests/browser-smoke.mjs
+# With temporary Playwright + WebKit installed:
+PLAYTEST_BROWSER=webkit node --test playtest/tests/browser-smoke.mjs
 ```
 
-The pure tests check all seven reviewed identities (four shipped games + three comparison labs), **unattributed blank reports**, missing-value handling, invalid values and Markdown escaping. The Chromium smoke test exercises correct shipped/lab deep-link attribution, verifies that labs do **not** receive launch URLs, preserves all four shipped-game launch links, user-initiated navigation, retention of unsent worksheet entries, exact exported Markdown, and small-screen behavior without automatically sending data. Neither constitutes a manual human study.
+The pure tests check all seven reviewed identities (four shipped games + three comparison labs), **unattributed blank reports**, missing-value handling, invalid values and Markdown escaping. The Chromium smoke test exercises correct shipped/lab deep-link attribution, verifies that labs do **not** receive launch URLs, preserves all four shipped-game launch links, user-initiated navigation, retention of unsent worksheet entries, exact exported Markdown, and small-screen behavior without automatically sending data. The single-game suite also runs in **Playwright WebKit** to check the same game-switch cancel/confirm behavior in a second browser engine, relevant to the initial tester's iOS-browser context. This is **not** a physical iPad or assistive-technology test, nor a manual human study.
 
 ## Game context from the arcade
 
