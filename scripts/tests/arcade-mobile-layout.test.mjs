@@ -79,6 +79,7 @@ test("arcade: narrow header, links and game cards stay inside the viewport", asy
           view,
           overflow: document.documentElement.scrollWidth - view,
           logo: bounds("header .logo")[0],
+          logoWhiteSpace: getComputedStyle(document.querySelector("header .logo")).whiteSpace,
           headerLinks: bounds("header .top-links a"),
           nav: bounds("header .top-links")[0],
           gameLinks: bounds("a.game-link"),
@@ -101,6 +102,7 @@ test("arcade: narrow header, links and game cards stay inside the viewport", asy
       if (width <= 560) {
         assert.ok(result.nav.top >= result.logo.bottom - 1,
           `${width}px: navigation should wrap below the brand without overlap`);
+        assert.equal(result.logoWhiteSpace, "nowrap", `${width}px: arcade brand should remain on one line`);
         for (const link of result.headerLinks) {
           assert.equal(link.whiteSpace, "nowrap",
             `${width}px: navigation text must not wrap inside a link: ${link.text}`);
