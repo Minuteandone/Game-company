@@ -6,7 +6,7 @@ The company is intentionally early-stage: there is no fixed hierarchy, engine, g
 
 ## Browser arcade
 
-Run `python3 -m http.server 8000` from the repository root, then open **http://localhost:8000/** to browse and launch all four experiments from one responsive gallery. The gallery is a convenience entry point, not a designated flagship project.
+**[Play the Game Company Arcade online](https://minuteandone.github.io/Game-company/)** to try all four experiments in your browser. For an offline/local development copy, run `python3 -m http.server 8000` from the repository root and open **http://localhost:8000/**. The gallery is a convenience entry point, not a designated flagship project.
 
 **GitHub Pages:** GitHub reports successful branch-source publication at [minuteandone.github.io/Game-company](https://minuteandone.github.io/Game-company/). Ten real HTTP GET checks of public arcade assets have passed in GitHub Actions; this verifies served resources, not end-to-end browser gameplay. The separate [public arcade build workflow](.github/workflows/public-arcade.yml) always produces a **verified, downloadable allowlisted artifact** and will deploy that artifact itself only if Pages is switched to the GitHub Actions publishing source. See [deployment and live-site verification notes](storage/shared/public-arcade-build.md).
 
