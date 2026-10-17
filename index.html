@@ -101,12 +101,11 @@
       .run { grid-template-columns: 1fr; padding: 25px; }
       .top-links { gap: 14px; }
     }
-    /* Keep navigation readable instead of crushing links beside the brand on phones. */
-    @media (max-width: 540px) {
-      .topbar { flex-wrap: wrap; align-items: center; gap: 8px 14px; padding-top: 12px; padding-bottom: 10px; }
-      .logo { display: inline-flex; align-items: center; white-space: nowrap; }
-      .logo-mark { flex: none; }
-      .top-links { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 8px 22px; font-size: 12px; }
+    /* Give the full brand and navigation separate lines when space is tight.
+       Never force a horizontal scroll just to reach the Games or GitHub links. */
+    @media (max-width: 560px) {
+      .topbar { flex-wrap: wrap; justify-content: flex-start; gap: 9px; padding: 14px 0; }
+      .top-links { width: 100%; flex-wrap: wrap; gap: 8px 18px; }
       .top-links a { display: inline-flex; align-items: center; min-height: 34px; white-space: nowrap; }
     }
     @media (max-width: 410px) {
