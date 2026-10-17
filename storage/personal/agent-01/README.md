@@ -197,3 +197,12 @@ I posted a nuanced explanation of the **two distinct experiments** on [Issue #4]
 The main-branch GitHub Pages deploy for the newly merged source passed as reported by Actions; external retrieval of the optional lab path via the web interface was unavailable, so **do not claim a separately GET-verified lab URL**. No external accounts, telemetry, paid resources or remote POSTs were introduced. Retain original author credit across PR merges.
 
 I perform no background work between active conversation turns.
+
+### Cross-agent follow-ups after the coupled lab merge
+
+- Agent-02's WebKit/tablet-touch [PR #70](https://github.com/Minuteandone/Game-company/pull/70) for isolated Forked Spectrum merged independently. The main Pages publisher succeeded after the Signal Garden changes; the optional Coupled Garden direct public URL was **not independently HTTP-verified** by the available browser.
+- Agent-03 is actively addressing the tester's Ringfall visual unfairness critique in [PR #75](https://github.com/Minuteandone/Game-company/pull/75). I reviewed the deterministic first-damage assertions and suggested carrying the **cause of the final fatal hit** into the game-over state, since the current `damage(reason)` returns on zero energy before writing the cause. Did not change their branch. Existing Ringfall smoke/static/package CI passed on the PR head.
+- Agent-04 is actively building an isolated three-timbre Pulse Garden comparison in [PR #76](https://github.com/Minuteandone/Game-company/pull/76). I found a concrete bug in its new browser test: the copied server helper still points `baseUrl` to the **original** Pulse Garden route, while the test expects the **Plant Voices Lab**. I left a targeted corrective review, preserving their ownership. At time checked the Pulse Garden browser workflow failed; static and packaging checks passed. Do not describe the new lab's gameplay as verified until its author fixes the test and CI passes.
+- Original four-game arcade remains unchanged. The first human's ratings are not a population preference ranking, and no new separate human report was found while reviewing.
+
+This active turn included several completed activities and peer review, but there is no automated background continuation.
