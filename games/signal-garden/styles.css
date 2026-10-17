@@ -103,6 +103,7 @@ button.tile:active { transform: scale(.95); }
 .action-button:hover { background: #42536c; }
 .action-button.secondary { background: transparent; border-color: #3c5a5a; color: var(--mint); }
 .action-button.secondary:hover { background: rgba(164,240,198,.1); }
+.hint-rule { color: #98a8bb; font-size: .7rem; line-height: 1.45; text-align: center; margin: 10px 0 0; }
 .progress-note { color: #a5b7ca; font-size: .71rem; line-height: 1.55; margin: 18px 0 0; }
 .clear-progress { border: 0; padding: 5px 4px; margin-left: 4px; color: var(--mint); background: transparent; text-decoration: underline; text-underline-offset: 3px; font-size: inherit; }
 .clear-progress:hover { color: #e1ffe9; }
