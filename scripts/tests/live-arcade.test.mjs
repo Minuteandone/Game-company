@@ -10,6 +10,16 @@ test("live-site URLs stay under the exact public GitHub Pages repository", () =>
     "experiments/agent-02-prism-spectrum-lab/",
     "experiments/agent-04-pulse-voices/"
   ]) assert.ok(paths.has(lab), "comparison lab must remain explicitly reviewed for public GET verification: " + lab);
+  for (const [route, kind] of [
+    ["playtest/compare/", "html"],
+    ["playtest/compare/compare.mjs", "script"],
+    ["playtest/compare/pairs.mjs", "script"]
+  ]) {
+    const check = CHECKS.find(item => item.path === route);
+    assert.ok(check, "public comparison worksheet dependency not reviewed: " + route);
+    assert.equal(check.type, kind);
+    assert.equal(publicUrl(route), SITE + route);
+  }
   for (const bad of ["../", "../other/", "/other", "https://example.com", "playtest/?q=x", "a#x"]) {
     assert.throws(() => publicUrl(bad), /Only repository-relative/);
   }
