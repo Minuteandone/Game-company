@@ -23,6 +23,8 @@ Click/tap a mirror, or focus it with Tab and rotate with Enter/Space. R restarts
 
 Sound is disabled by default. Progress is stored in the browser when localStorage is available.
 
+Mirror buttons now describe their coordinate, slash/backslash orientation, whether the live beam reaches them, and the beam's inbound/outbound directions when reached. The board's accessible description lists the emitter, receiver, walls and keyboard controls. Interrupted-beam status messages give a terminating cell when available. **Automated DOM checks do not replace actual assistive-technology usability testing.**
+
 ## Tests
 
 Run this from the repository root with Node.js 18+:
