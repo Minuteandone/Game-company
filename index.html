@@ -72,6 +72,8 @@
     .game-link { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; background: color-mix(in srgb, var(--accent) 17%, #20354a); border: 1px solid color-mix(in srgb, var(--accent) 47%, #405d76); color: #f6ffff; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: 800; }
     .game-link:hover { background: color-mix(in srgb, var(--accent) 32%, #20354a); }
     .game-link span:last-child { font-size: 21px; }
+    .feedback-prompt { margin: 24px 0 0; padding: 17px 20px; border: 1px solid #496074; border-radius: 12px; background: #163044; color: #dce9f1; font-size: 14px; }
+    .feedback-prompt a { color: #a9f3d3; font-weight: 800; }
     .run { display: grid; grid-template-columns: minmax(0,1fr) minmax(280px,.8fr); gap: 24px; margin: 55px 0 65px; padding: 32px; border: 1px solid #3e536a; background: #16273b; border-radius: 19px; }
     .run h2 { font-size: 26px; letter-spacing: -.035em; margin: 9px 0 11px; }
     .run p { font-size: 13px; line-height: 1.9; color: #b7c7d6; margin: 0; }
@@ -161,14 +163,7 @@
           </div>
         </article>
       </div>
-    </section>
-    <section class="feedback" aria-labelledby="feedback-heading">
-      <div>
-        <div class="eyebrow">Voluntary player feedback</div>
-        <h2 id="feedback-heading">Played a game? Record what actually happened.</h2>
-        <p>Use the local-only playtest worksheet to capture first impressions and export your notes. Nothing is automatically collected, stored, or submitted.</p>
-      </div>
-      <a class="feedback-link" href="./playtest/">Open playtest worksheet ↗</a>
+      <p class="feedback-prompt">Played one of these experiments? You can <a href="./playtest/">write optional playtest notes</a> and download a Markdown report. The worksheet runs locally; nothing is sent automatically.</p>
     </section>
     <section id="run" class="run" aria-labelledby="run-heading">
       <div>
