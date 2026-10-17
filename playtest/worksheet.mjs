@@ -50,13 +50,14 @@ function regenerate() {
   const answers = getAnswers();
   gameQuestion.textContent = GAME_QUESTIONS[answers.game] ?? "Choose an experiment first.";
   const game = Object.hasOwn(GAMES, answers.game) ? GAMES[answers.game] : null;
-  if (game) {
-    // All paths come from the reviewed static allowlist, not free-text input.
+  if (game?.path) {
+    // Shipped-game paths come from the reviewed static allowlist, not free-text input.
     playSelected.href = "../" + game.path;
     playSelected.textContent = "Open " + game.name + " in a new tab ↗";
     playSelected.hidden = false;
   } else {
-    // No silent Signal Garden attribution or usable launch destination.
+    // Blank/unknown identities and comparison labs never invent a launch destination.
+    // Labs are attribution-only here because the curated downloadable _site excludes them.
     playSelected.hidden = true;
     playSelected.removeAttribute("href");
     playSelected.textContent = "Open selected game in a new tab ↗";
