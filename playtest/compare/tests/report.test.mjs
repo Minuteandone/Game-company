@@ -1,5 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { access } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { PAIRS,getPair,orderedGames,buildComparison,comparisonFilename } from "../pairs.mjs";
 
 test("three reviewed pairs have stable author credits", () => {
@@ -44,4 +47,14 @@ test("user notes are quoted and HTML escapes stay in the report", () => {
   assert.match(content,/&lt;script&gt;/);
   assert.doesNotMatch(content,/<script>/);
   assert.match(content,/> &gt; fabricated quote/);
+});
+
+
+test("every comparison game is an actual checked-in playable page",async()=>{
+  const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../../..");
+  for(const pair of Object.values(PAIRS)){
+    for(const game of [pair.original,pair.variant]){
+      await access(path.join(ROOT,game.path,"index.html"));
+    }
+  }
 });
