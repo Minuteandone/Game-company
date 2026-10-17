@@ -106,6 +106,10 @@ test("browser: start, pause, mixed input, reduced motion and narrow viewport", a
     t.diagnostic("Pointer then keyboard input produced no runtime failure.");
 
     await page.setViewportSize({ width: 360, height: 640 });
+    await page.waitForFunction(() => {
+      const rect = document.getElementById("game").getBoundingClientRect();
+      return Math.abs(rect.width - 360) <= 1 && Math.abs(rect.height - 640) <= 1;
+    });
     const narrow = await canvas.boundingBox();
     assert.ok(narrow);
     assert.ok(Math.abs(narrow.width - 360) <= 1, `canvas width was ${narrow.width}`);
