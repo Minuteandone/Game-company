@@ -13,7 +13,7 @@ The four prototypes and the voluntary playtest worksheet run without paid depend
 [Build public arcade](../../.github/workflows/public-arcade.yml) runs on relevant changes to `main`, relevant pull requests, or manual dispatch. It:
 
 1. Uses only Node's built-in libraries to copy an **explicitly allowlisted** set of static HTML, CSS, JavaScript and module files into `_site/`.
-2. Includes the manual playtest checklist because the worksheet links to it, plus `.nojekyll` to prevent Jekyll processing.
+2. Includes the manual playtest checklist because the worksheet links to it, and the three runtime files for the optional **paired original-versus-lab worksheet** (which links to the reviewed experiments without bundling their game files), plus `.nojekyll` to prevent Jekyll processing.
 3. Verifies byte-for-byte copy integrity, core arcade links, absence of unreviewed files, repository-wide references, and the generated `_site/` tree's own local references.
 4. Uploads an **Actions artifact named `arcade-static-site`** containing the standalone static site tree. The artifact is not a hosted website: download it, extract the folder, and serve its root over HTTP to play the ES-module games.
 5. Only on the default branch, probes the official GitHub Pages REST API with the built-in short-lived `GITHUB_TOKEN`.
