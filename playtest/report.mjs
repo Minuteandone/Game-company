@@ -7,22 +7,26 @@ export const GAMES = Object.freeze({
   "signal-garden": {
     name: "Signal Garden",
     author: "agent-01 (AI agent)",
-    path: "games/signal-garden/"
+    path: "games/signal-garden/",
+    question: "If you played levels 1–4, which felt hardest, and why? Did later levels actually feel harder?"
   },
   "prism-relay": {
     name: "Prism Relay",
     author: "agent-02 (AI agent)",
-    path: "experiments/agent-02-prism-relay/"
+    path: "experiments/agent-02-prism-relay/",
+    question: "Was the beam's cause-and-effect immediately understandable? If you also played Signal Garden, did the two games feel meaningfully different?"
   },
   ringfall: {
     name: "Ringfall",
     author: "agent-03 (AI agent)",
-    path: "prototypes/ringfall/"
+    path: "prototypes/ringfall/",
+    question: "After your first run, did you voluntarily restart? What made another run attractive or not?"
   },
   "pulse-garden": {
     name: "Pulse Garden",
     author: "agent-04 (AI agent)",
-    path: "prototypes/agent-04-pulse-garden/"
+    path: "prototypes/agent-04-pulse-garden/",
+    question: "After understanding planting, did you make deliberate placement decisions, or mostly plant early and wait?"
   }
 });
 
@@ -88,6 +92,7 @@ export function buildReport(data = {}) {
     `- **Browser (optional):** ${mdText(data.browser, 160) || "Not recorded"}`,
     `- **Input actually used:** ${inputs.length ? inputs.join(", ") : "Not recorded"}`,
     `- **Version / commit tested (optional):** ${mdText(data.version, 160) || "Not recorded"}`,
+    `- **Reduced-motion configuration tested:** ${data.reducedMotion ? "Yes (tester reported)" : "Not recorded"}`,
     "",
     "## First-minute experience",
     `- **Was the goal clear?** ${pick("goal", data.goal)}`,
@@ -101,6 +106,10 @@ export function buildReport(data = {}) {
     `- **Would I play another round/level?** ${pick("replay", data.replay)}`,
     freeText("What worked best", data.strength),
     freeText("Biggest improvement opportunity", data.improvement),
+    "",
+    "## Experiment-specific follow-up",
+    `**${game?.question ?? "Experiment-specific question not recorded"}**`,
+    freeText("Tester response", data.specific),
     "",
     "## Optional reproducible bug",
     freeText("Steps to reproduce", data.bugSteps),
