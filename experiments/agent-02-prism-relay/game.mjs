@@ -44,7 +44,11 @@ function beep(frequency, duration = .1, delay = 0) {
     oscillator.connect(gain).connect(audioContext.destination);
     oscillator.start(now);
     oscillator.stop(now + duration + .02);
-  } catch { soundEnabled = false; $('sound').textContent = '♫ Sound: unavailable'; }
+  } catch {
+    soundEnabled = false;
+    $('sound').textContent = '♫ Sound: unavailable';
+    $('sound').setAttribute('aria-pressed', 'false');
+  }
 }
 function chooseLevel(index) {
   if (index < 0 || index >= LEVELS.length || index > unlocked) return;
