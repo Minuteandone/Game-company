@@ -9,6 +9,9 @@ Open `index.html` in a modern browser.
 - **A / D** or **Left / Right**: orbit around the core
 - **Mouse / touch**: point around the arena to move the collector
 - **Space / click**: start or restart
+- **P**: pause or resume
+
+Ringfall also auto-pauses when its tab is hidden and tones down shake/particle effects when the system requests reduced motion.
 
 Catch **circle signals** with the orbiting collector. Avoid **triangle hazards**. Missing a signal or touching a hazard costs core energy.
 
