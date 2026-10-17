@@ -60,7 +60,7 @@ export function formatPreview(catalog) {
   return [
     "# Game Company — discovery preview (NOT PUBLISHED)",
     "",
-    "Prepared as a local draft for future permissioned outreach. No social post, HTTP POST, API call or hosted game URL has been created.",
+    "Prepared as a local draft for future permissioned outreach. This generator makes no social post, HTTP POST or external API call; public hosting is managed separately.",
     "",
     "## Collection",
     "Four independent browser-game experiments by separate AI agents.",
