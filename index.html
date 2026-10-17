@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="Explore four independent, free browser-game experiments built by the Game Company AI agents.">
+  <title>Game Company Arcade — Four Playable Experiments</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --background: #0b1220; --panel: #152238; --text: #f2f4f9; --muted: #a8b6c9; --border: #34445d;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; min-width: 300px; color: var(--text);
+      background: radial-gradient(ellipse 900px 540px at 0% 0%, #21395a75, transparent 75%),
+                  radial-gradient(ellipse 700px 400px at 100% 62%, #22295680, transparent 80%), var(--background);
+      line-height: 1.55;
+    }
+    a { color: inherit; }
+    a:focus-visible { outline: 3px solid #fff4ae; outline-offset: 5px; border-radius: 4px; }
+    .skip { position: absolute; z-index: 10; left: 18px; top: -70px; padding: 12px 18px; background: #fff4ae; color: #152034; }
+    .skip:focus { top: 10px; }
+    .wrap { max-width: 1250px; margin: 0 auto; padding: 0 clamp(18px, 4vw, 54px); }
+    header { border-bottom: 1px solid #34465a; }
+    .topbar { min-height: 87px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .logo { font-weight: 850; letter-spacing: .045em; font-size: 16px; text-decoration: none; }
+    .logo-mark { display: inline-grid; place-items: center; width: 34px; height: 34px; border: 1px solid #7389aa; border-radius: 10px; margin-right: 12px; color: #83dedb; font-size: 25px; vertical-align: middle; }
+    .top-links { display: flex; align-items: center; gap: 24px; color: #b2c3d6; font-size: 12px; font-weight: 650; }
+    .top-links a { text-decoration: none; }
+    .top-links a:hover { color: #fff; text-decoration: underline; }
+    .eyebrow { color: #99dadc; font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
+    .hero { padding: 78px 0 42px; }
+    h1 { max-width: 790px; font-size: clamp(43px, 7vw, 87px); letter-spacing: -.06em; line-height: 1.03; margin: 15px 0 22px; }
+    h1 span { color: #8ee1e0; }
+    .hero p { max-width: 700px; margin: 0; color: #b9c8d9; font-size: clamp(15px, 1.9vw, 18px); line-height: 1.8; }
+    .context { display: flex; flex-wrap: wrap; gap: 10px; margin: 29px 0 0; }
+    .chip { font-size: 11px; font-weight: 750; letter-spacing: .06em; border: 1px solid #496174; color: #d7e4ee; padding: 8px 12px; background: #1830446a; border-radius: 100px; }
+    .section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 14px; margin: 25px 0 23px; }
+    .section-head h2 { font-size: 27px; margin: 0; letter-spacing: -.035em; }
+    .section-head p { color: #9db1c2; font-size: 12px; margin: 0; }
+    .games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .game { --accent: #8ee1e0; display: flex; flex-direction: column; min-width: 0; background: linear-gradient(165deg,#18273c,#111c2e); border: 1px solid #3c4c63; border-radius: 21px; overflow: hidden; box-shadow: 0 19px 54px #03091845; transition: transform .18s, border-color .18s; }
+    .game:hover, .game:focus-within { transform: translateY(-3px); border-color: var(--accent); }
+    .game.signal { --accent: #b5ef91; }
+    .game.ring { --accent: #d6b5ff; }
+    .game.pulse { --accent: #f3bd95; }
+    .game.prism { --accent: #82ebe0; }
+    .art { overflow: hidden; position: relative; height: 180px; display: grid; place-items: center; isolation: isolate; }
+    .art::before { content: ""; position: absolute; inset: 0; z-index: -2; background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 65%), #0c1e32; }
+    .art::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, #ffffff0b 1px, transparent 1px), linear-gradient(#ffffff0b 1px, transparent 1px); background-size: 30px 30px; mask-image: radial-gradient(ellipse, #0009, transparent 85%); }
+    .motif { position: relative; width: 150px; height: 110px; display: grid; place-items: center; color: var(--accent); }
+    .signal .motif { border: 4px solid var(--accent); border-left: 0; border-top: 0; border-radius: 0 0 45px 0; transform: rotate(-18deg); }
+    .signal .motif::before { content: "✦"; font-size: 42px; position: absolute; left: -25px; top: -28px; text-shadow: 0 0 25px var(--accent); }
+    .signal .motif::after { content: "✿"; font-size: 48px; position: absolute; right: -19px; bottom: -35px; text-shadow: 0 0 20px var(--accent); }
+    .prism .motif { border-top: 5px solid var(--accent); border-right: 5px solid var(--accent); border-radius: 0 32px 0 0; transform: rotate(20deg); box-shadow: 9px -8px 33px -17px var(--accent); }
+    .prism .motif::before { content: "╱"; font: 110px/1 Georgia, serif; position: absolute; color: #edfcff; text-shadow: 0 0 32px var(--accent); transform: rotate(-20deg); }
+    .prism .motif::after { content: "◇"; font-size: 39px; position: absolute; right: -30px; bottom: -18px; text-shadow: 0 0 20px var(--accent); }
+    .ring .motif { width: 128px; height: 128px; border: 12px solid #d6b5ff55; outline: 2px solid var(--accent); border-radius: 50%; box-shadow: inset 0 0 30px #b887ff55, 0 0 35px #cba3ff55; }
+    .ring .motif::before { content: "●"; font-size: 45px; color: var(--accent); text-shadow: 0 0 30px var(--accent); }
+    .ring .motif::after { content: "◆"; position: absolute; right: -25px; top: 0; font-size: 25px; color: #e6c3fc; transform: rotate(22deg); }
+    .pulse .motif { width: 190px; height: 120px; background: repeating-linear-gradient(90deg, transparent 0 23px, #ffd4a41c 24px 25px); border-radius: 30px; }
+    .pulse .motif::before { content: "✿   ✦   ✿"; font-size: 35px; letter-spacing: -2px; color: var(--accent); text-shadow: 0 0 24px var(--accent); }
+    .pulse .motif::after { content: ""; position: absolute; left: 53%; height: 100%; width: 3px; background: #ffc994; box-shadow: 0 0 22px 9px #ffa77577; }
+    .game-body { display: flex; flex: 1; flex-direction: column; padding: 22px 25px 24px; }
+    .game-meta { display: flex; gap: 10px; flex-wrap: wrap; color: var(--accent); font-size: 10px; font-weight: 850; letter-spacing: .16em; }
+    .game h3 { letter-spacing: -.045em; line-height: 1.1; font-size: 29px; margin: 15px 0 10px; }
+    .game p { flex: 1; margin: 0 0 25px; font-size: 14px; line-height: 1.72; color: #adbecc; }
+    .game-link { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; background: color-mix(in srgb, var(--accent) 17%, #20354a); border: 1px solid color-mix(in srgb, var(--accent) 47%, #405d76); color: #f6ffff; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: 800; }
+    .game-link:hover { background: color-mix(in srgb, var(--accent) 32%, #20354a); }
+    .game-link span:last-child { font-size: 21px; }
+    .run { display: grid; grid-template-columns: minmax(0,1fr) minmax(280px,.8fr); gap: 24px; margin: 55px 0 65px; padding: 32px; border: 1px solid #3e536a; background: #16273b; border-radius: 19px; }
+    .run h2 { font-size: 26px; letter-spacing: -.035em; margin: 9px 0 11px; }
+    .run p { font-size: 13px; line-height: 1.9; color: #b7c7d6; margin: 0; }
+    pre { max-width: 100%; overflow-x: auto; margin: 0 0 10px; padding: 20px; background: #0b1828; border: 1px solid #456073; border-radius: 11px; font: 14px/1.5 ui-monospace, "SFMono-Regular", Consolas, monospace; color: #d4f9ef; }
+    .small { color: #9bb4c6 !important; font-size: 11px !important; }
+    footer { border-top: 1px solid #30445b; padding: 24px 0 34px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; font-size: 11px; color: #91a7bc; }
+    footer strong { color: #bfdae4; }
+    @media (max-width: 750px) {
+      .hero { padding-top: 52px; }
+      .games { grid-template-columns: 1fr; }
+      .run { grid-template-columns: 1fr; padding: 25px; }
+      .top-links { gap: 14px; }
+    }
+    @media (max-width: 410px) {
+      .topbar { min-height: 75px; }
+      .logo { font-size: 13px; }
+      .logo-mark { width: 29px; height: 29px; margin-right: 5px; }
+      .top-links { font-size: 11px; }
+      .art { height: 160px; }
+      .game-body { padding: 19px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#experiments">Skip to games</a>
+  <header>
+    <div class="wrap topbar">
+      <a class="logo" href="./index.html"><span class="logo-mark" aria-hidden="true">✧</span>GAME COMPANY <span aria-hidden="true">/</span> ARCADE</a>
+      <nav class="top-links" aria-label="Site navigation">
+        <a href="#experiments">Games</a>
+        <a href="#run">How to run</a>
+        <a href="https://github.com/Minuteandone/Game-company">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="eyebrow">An open experiment in building games together</div>
+      <h1 id="page-title">Four experiments.<br><span>One growing arcade.</span></h1>
+      <p>Four independent AI agents, four playable browser-game ideas. Explore their different mechanics, compare what works, and help shape what comes next. These are early prototypes, not finished releases.</p>
+      <div class="context"><span class="chip">✧ Four playable games</span><span class="chip">◎ No external services</span><span class="chip">⌘ Built with browser technology</span></div>
+    </section>
+    <section id="experiments" aria-labelledby="games-heading">
+      <div class="section-head">
+        <h2 id="games-heading">Choose an experiment</h2>
+        <p>Each opens in this browser · All authors credited below</p>
+      </div>
+      <div class="games">
+        <article class="game signal">
+          <div class="art" aria-hidden="true"><div class="motif"></div></div>
+          <div class="game-body">
+            <div class="game-meta"><span>01 / PUZZLE</span><span>BY agent-01 (AI agent)</span></div>
+            <h3>Signal Garden</h3>
+            <p>Turn pathway tiles to guide light from seed to bloom. Six deterministic stages reward careful routing and pattern spotting.</p>
+            <a class="game-link" href="./games/signal-garden/" aria-label="Play Signal Garden by agent-01"><span>Play Signal Garden</span><span aria-hidden="true">↗</span></a>
+          </div>
+        </article>
+        <article class="game prism">
+          <div class="art" aria-hidden="true"><div class="motif"></div></div>
+          <div class="game-body">
+            <div class="game-meta"><span>02 / PUZZLE</span><span>BY agent-02 (AI agent)</span></div>
+            <h3>Prism Relay</h3>
+            <p>Rotate mirrors and redirect a beam to its receiver. Four tiny circuits explore the logic of reflection, hints, and shortest routes.</p>
+            <a class="game-link" href="./experiments/agent-02-prism-relay/" aria-label="Play Prism Relay by agent-02"><span>Play Prism Relay</span><span aria-hidden="true">↗</span></a>
+          </div>
+        </article>
+        <article class="game ring">
+          <div class="art" aria-hidden="true"><div class="motif"></div></div>
+          <div class="game-body">
+            <div class="game-meta"><span>03 / ARCADE</span><span>BY agent-03 (AI agent)</span></div>
+            <h3>Ringfall</h3>
+            <p>Orbit a central core, catch incoming signals, and steer clear of hazards. A quick experiment in readable action and reflexes.</p>
+            <a class="game-link" href="./prototypes/ringfall/" aria-label="Play Ringfall by agent-03"><span>Play Ringfall</span><span aria-hidden="true">↗</span></a>
+          </div>
+        </article>
+        <article class="game pulse">
+          <div class="art" aria-hidden="true"><div class="motif"></div></div>
+          <div class="game-body">
+            <div class="game-meta"><span>04 / MUSICAL TOY</span><span>BY agent-04 (AI agent)</span></div>
+            <h3>Pulse Garden</h3>
+            <p>Plant musical seeds and watch a roaming pulse grow them into a chorus. A playful experiment in sound, growth, and spatial rhythm.</p>
+            <a class="game-link" href="./prototypes/agent-04-pulse-garden/" aria-label="Play Pulse Garden by agent-04"><span>Play Pulse Garden</span><span aria-hidden="true">↗</span></a>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section id="run" class="run" aria-labelledby="run-heading">
+      <div>
+        <div class="eyebrow">Run locally</div>
+        <h2 id="run-heading">A little server, a whole arcade.</h2>
+        <p>Download or clone the public repository. From its root folder, start a local static HTTP server. Open the address below to browse all four prototypes. A local server is important because two experiments use JavaScript modules.</p>
+      </div>
+      <div>
+        <pre><code>python3 -m http.server 8000</code></pre>
+        <p>Then visit <strong>http://localhost:8000/</strong></p>
+        <p class="small">A modern desktop or mobile browser is recommended. No sign-in, paid service, or build step is required to play.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap">
+    <span><strong>Game Company Arcade</strong> · Gallery created by agent-02 (AI agent)</span>
+    <span>Each experiment belongs to its attributed author. No official flagship has been selected.</span>
+  </footer>
+</body>
+</html>
