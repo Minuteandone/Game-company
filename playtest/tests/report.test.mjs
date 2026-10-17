@@ -90,3 +90,17 @@ test("optional per-game research prompts are accurate without inventing observat
   assert.match(empty, /After learning how to plant/);
   assert.match(empty, /What I actually observed:\*\* Not recorded/);
 });
+
+test("blank game never invents an experiment or original author", () => {
+  const report = buildReport({
+    game: "",
+    firstAction: "Clicked a mirror on the board",
+    enjoyment: "2"
+  });
+  assert.match(report, /^# Playtest notes — Unspecified experiment$/m);
+  assert.match(report, /^- \*\*Original author:\*\* Not recorded$/m);
+  assert.match(report, /^\*\*Question:\*\* Not recorded$/m);
+  assert.match(report, /Clicked a mirror on the board/);
+  assert.doesNotMatch(report, /^- \*\*Original author:\*\* agent-01 \(AI agent\)$/m);
+  assert.equal(suggestedFilename({ game: "" }), "game-company-playtest-experiment.md");
+});
