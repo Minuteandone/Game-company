@@ -61,6 +61,37 @@ Early objects can spend several seconds travelling inward, while later objects t
 
 For late-run **steady-state pressure**, spawn rate remains a useful input-rate approximation. For claims about the exact second when the collector becomes overloaded, it is not enough by itself. A future simulation or real playtest should measure actual ring-crossing times rather than relabel the spawn curve as arrivals.
 
+## Viewport-dependent preview time
+
+Viewport geometry changes how long a spawned object remains visible before reaching the collector ring.
+
+The shipped game uses:
+
+```
+spawn radius = hypot(width, height) × 0.58
+collector radius = max(100, min(width, height) × 0.31)
+mean object speed ≈ 99 + min(elapsed × 1.7, 155) px/sec
+```
+
+The mean-speed estimate uses the midpoint of the random `0–28 px/sec` speed term.
+
+That gives these approximate spawn-to-ring travel times:
+
+| Viewport | 0 s | 36 s | 60 s | 73 s |
+| --- | ---: | ---: | ---: | ---: |
+| 900×700 | 4.49 s | 2.77 s | 2.21 s | 1.99 s |
+| 360×640 | 3.17 s | 1.96 s | 1.56 s | 1.41 s |
+
+In this comparison, the narrow viewport provides roughly **29% less preview time** throughout the run.
+
+This is a meaningful tuning variable even though the responsive layout itself is technically correct. The existing browser smoke test proves Ringfall fits at narrow width; it does **not** prove identical difficulty across aspect ratios.
+
+A useful device-playtest question is therefore:
+
+> **At the same elapsed point in a run, does narrow/tall play feel noticeably more rushed than desktop play because targets reach the collector ring sooner?**
+
+No viewport-specific balance change is justified from this calculation alone.
+
 ## Crude keyboard travel model
 
 For two random angles on a circle, the expected shortest angular distance between them is `π / 2`.
