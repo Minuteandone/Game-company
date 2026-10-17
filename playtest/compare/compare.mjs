@@ -30,8 +30,39 @@ function regenerate(){
   preview.value=buildComparison(answers);
   status.textContent="";
 }
-form.addEventListener("input",regenerate);
-form.addEventListener("change",regenerate);
+// A/B notes must not silently transfer to a different experiment or order.
+let previousPair=$("pair").value;
+let previousOrder=$("order").value;
+const GAME_NOTES=["notesA","notesB","returnChoice","difference","friction"];
+function updateContext(){
+  const nextPair=$("pair").value, nextOrder=$("order").value;
+  const changed=nextPair!==previousPair||nextOrder!==previousOrder;
+  if(changed && GAME_NOTES.some(id=>$(id).value.trim())){
+    const approved=window.confirm(
+      "Changing the pair or order will clear notes about experiences A and B, " +
+      "so they cannot be attributed to the wrong games. Continue?"
+    );
+    if(!approved){
+      $("pair").value=previousPair;
+      $("order").value=previousOrder;
+      regenerate();
+      return;
+    }
+    for(const id of GAME_NOTES)$(id).value="";
+    $("after-both").open=false;
+  }
+  previousPair=$("pair").value;
+  previousOrder=$("order").value;
+  regenerate();
+}
+form.addEventListener("input",event=>{
+  if(event.target.id==="pair"||event.target.id==="order")return;
+  regenerate();
+});
+form.addEventListener("change",event=>{
+  if(event.target.id==="pair"||event.target.id==="order")updateContext();
+  else regenerate();
+});
 form.addEventListener("submit",event=>event.preventDefault());
 $("copy").addEventListener("click",async()=>{
   if(!navigator.clipboard?.writeText){
