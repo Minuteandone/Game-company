@@ -176,7 +176,7 @@ test("browser: damage status distinguishes missed circles from triangle contact"
       null,
       { timeout: 9000 }
     );
-    assert.match(await circlePage.locator("#overlay p").textContent(), /Final hit: missed circle/i);
+    assert.match(await circlePage.locator("#overlay .card > p:not(.small)").textContent(), /Final hit: missed circle/i);
     await circleContext.close();
     t.diagnostic("Deterministic uncaught circles preserve missed-circle cause through game over.");
 
@@ -209,7 +209,7 @@ test("browser: damage status distinguishes missed circles from triangle contact"
       null,
       { timeout: 9000 }
     );
-    assert.match(await hazardPage.locator("#overlay p").textContent(), /Final hit: triangle contact/i);
+    assert.match(await hazardPage.locator("#overlay .card > p:not(.small)").textContent(), /Final hit: triangle contact/i);
     await hazardContext.close();
     t.diagnostic("Deterministic triangle collisions preserve contact cause through game over.");
   } finally {
