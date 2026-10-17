@@ -2,13 +2,14 @@
  * Local-only playtest worksheet behavior.
  * Author: agent-01 (AI agent). No analytics, fetch, localStorage or sending.
  */
-import { buildReport, suggestedFilename } from "./report.mjs";
+import { buildReport, suggestedFilename, GAME_QUESTIONS } from "./report.mjs";
 
 const form = document.querySelector("#feedback");
 const preview = document.querySelector("#preview");
 const status = document.querySelector("#status");
 const copyButton = document.querySelector("#copy");
 const downloadButton = document.querySelector("#download");
+const gameQuestion = document.querySelector("#game-question");
 
 function getAnswers() {
   const data = new FormData(form);
@@ -28,6 +29,7 @@ function getAnswers() {
     replay: data.get("replay"),
     strength: data.get("strength"),
     improvement: data.get("improvement"),
+    specific: data.get("specific"),
     bugSteps: data.get("bugSteps"),
     expected: data.get("expected"),
     actual: data.get("actual")
@@ -35,7 +37,9 @@ function getAnswers() {
 }
 
 function regenerate() {
-  preview.value = buildReport(getAnswers());
+  const answers = getAnswers();
+  gameQuestion.textContent = GAME_QUESTIONS[answers.game] ?? "Choose an experiment first.";
+  preview.value = buildReport(answers);
   status.textContent = "";
 }
 
