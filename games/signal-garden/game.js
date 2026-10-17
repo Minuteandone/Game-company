@@ -85,8 +85,15 @@ function makeTileElement(tile, index, powered) {
   element.dataset.index = String(index);
   const row = Math.floor(index / currentBoard.size) + 1;
   const col = index % currentBoard.size + 1;
-  const label = `Row ${row}, column ${col}: ${powered ? "glowing " : ""}${TILE_NAMES[tile.type]}`;
-  element.setAttribute("aria-label", isLocked ? label : label + ". Rotate clockwise.");
+  // The connector directions are essential game state, not just decoration.
+  // Include them in each tile's accessible name so the network can be
+  // reasoned about without relying exclusively on its visual segments.
+  const openings = tileConnections(tile).map((direction) => DIRECTION_NAMES[direction]);
+  const openingNames = openings.length === 1
+    ? openings[0]
+    : openings.slice(0, -1).join(", ") + " and " + openings.at(-1);
+  const label = `Row ${row}, column ${col}: ${TILE_NAMES[tile.type]}. Openings ${openingNames}. ${powered ? "Glowing" : "Not glowing"}.`;
+  element.setAttribute("aria-label", isLocked ? label : label + " Rotate clockwise.");
   if (isLocked) element.setAttribute("role", "img");
 
   for (const direction of tileConnections(tile)) {

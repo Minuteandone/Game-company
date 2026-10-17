@@ -86,11 +86,41 @@ test("browser: controls, full level, record tie, saved progress and narrow viewp
     assert.equal(await page.locator("#victory").isVisible(), false);
     t.diagnostic("Initial garden rendered: 16 tiles and six level selectors.");
 
+    // Match every tile's accessible description against the shipped rules.
+    // Direction and power are essential puzzle information, not decoration.
+    const descriptions = await page.evaluate(async () => {
+      const { createBoard, tileConnections, tracePower } = await import("/games/signal-garden/logic.mjs");
+      const board = createBoard(0);
+      const { powered } = tracePower(board.tiles, board.size);
+      const names = ["north", "east", "south", "west"];
+      return board.tiles.map((tile, index) => {
+        const directions = tileConnections(tile).map((direction) => names[direction]);
+        const joined = directions.length === 1
+          ? directions[0]
+          : directions.slice(0, -1).join(", ") + " and " + directions.at(-1);
+        return { index, joined, powered: powered.has(index), locked: tile.locked };
+      });
+    });
+    for (const { index, joined, powered, locked } of descriptions) {
+      const tile = page.locator(`#board .tile[data-index="${index}"]`);
+      const label = await tile.getAttribute("aria-label");
+      assert.ok(label.includes(`Openings ${joined}.`),
+        `tile ${index} does not describe its real connector directions: ${label}`);
+      assert.ok(label.includes(powered ? "Glowing." : "Not glowing."),
+        `tile ${index} does not describe its powered state`);
+      assert.equal(label.includes("Rotate clockwise."), !locked);
+    }
+    t.diagnostic("Every tile exposes exact connector directions and power state through its accessible name.");
+
     const movable = page.locator("#board button.tile");
     await movable.first().focus();
     const beforeFocus = await page.evaluate(() => Number(document.activeElement.dataset.index));
+    const beforeLabel = await page.locator(`#board button[data-index="${beforeFocus}"]`).getAttribute("aria-label");
     await page.keyboard.press("Enter");
     assert.equal(await page.locator("#turns").textContent(), "01", "Enter rotates a focused tile");
+    const afterLabel = await page.locator(`#board button[data-index="${beforeFocus}"]`).getAttribute("aria-label");
+    assert.notEqual(afterLabel, beforeLabel, "rotation must update the accessible opening directions");
+    assert.match(afterLabel, /Openings (north|east|south|west)/);
     await page.keyboard.press("ArrowRight");
     const afterFocus = await page.evaluate(() => Number(document.activeElement.dataset.index));
     assert.equal(afterFocus, beforeFocus + 1, "Right arrow navigates to the next movable tile");
@@ -141,6 +171,39 @@ test("browser: controls, full level, record tie, saved progress and narrow viewp
     assert.equal(await page.locator("#stage-name").textContent(), "The Detour");
     assert.equal(await page.locator("#level-list button").nth(1).isEnabled(), true);
     t.diagnostic("Replay tie, next-level unlock and localStorage persistence passed.");
+
+    // Complete garden two using keyboard Tab navigation + Enter exclusively.
+    // Unlike pointer-driven completion above, focus must find the real button.
+    const keyboardRotations = await page.evaluate(async () => {
+      const { createBoard } = await import("/games/signal-garden/logic.mjs");
+      return createBoard(1).tiles.flatMap((tile, index) => {
+        if (!tile.onRoute || tile.locked) return [];
+        return Array((tile.solutionOrientation - tile.orientation + 4) % 4).fill(index);
+      });
+    });
+    for (const index of keyboardRotations) {
+      if (await page.locator("#victory").isVisible()) break;
+      let reached = false;
+      for (let tab = 0; tab < 48; tab++) {
+        const focused = await page.evaluate(() => document.activeElement?.dataset?.index);
+        if (focused === String(index)) {
+          reached = true;
+          break;
+        }
+        await page.keyboard.press("Tab");
+      }
+      assert.ok(reached, `tile ${index} must be reachable via Tab`);
+      await page.keyboard.press("Enter");
+    }
+    assert.equal(await page.locator("#victory").isVisible(), true,
+      "garden two should be winnable with only Tab and Enter");
+    assert.equal(await page.evaluate(() => document.activeElement.id), "next-stage");
+    await page.keyboard.press("Shift+Tab");
+    assert.equal(await page.evaluate(() => document.activeElement.id), "close-victory");
+    await page.keyboard.press("Escape");
+    assert.equal(await page.locator("#victory").isVisible(), false);
+    assert.equal(await page.evaluate(() => document.activeElement.id), "reset");
+    t.diagnostic("Entire second garden solved by keyboard, and completion-dialog focus restored.");
 
     await page.setViewportSize({ width: 360, height: 740 });
     const horizontalOverflow = await page.evaluate(
