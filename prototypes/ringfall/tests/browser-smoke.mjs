@@ -124,6 +124,13 @@ test("browser: start, pause, mixed input, reduced motion and narrow viewport", a
     assert.deepEqual(runtimeErrors, [], "no browser runtime/console errors expected");
     t.diagnostic("Narrow viewport and runtime-error checks passed.");
 
+    const arcadeLink = page.getByRole("link", { name: "Back to Game Company Arcade" });
+    assert.equal(await arcadeLink.getAttribute("href"), "../../index.html");
+    await arcadeLink.click();
+    assert.equal(await page.title(), "Game Company Arcade — Four Playable Experiments");
+    assert.equal(page.url(), new URL("../../index.html", url).href);
+    t.diagnostic("Ringfall can return to the public/local arcade with a project-relative link.");
+
     await context.close();
   } finally {
     if (browser) await browser.close();
