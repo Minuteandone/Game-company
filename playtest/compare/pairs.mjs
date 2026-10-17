@@ -35,10 +35,17 @@ export function orderedGames(pairId, order = "original-first") {
 function safeNote(input) {
   const value = typeof input === "string" ? input.trim().slice(0,3000) : "";
   if (!value) return "> Not recorded";
-  // Quote user text to prevent fabricated headings/fields inside the report.
-  return value.replace(/\r\n?/g,"\n").replaceAll("&","&amp;")
-    .replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .split("\n").map(line => "> " + line).join("\n");
+  // Match the reviewed worksheet's Markdown escaping and raw URL stripping.
+  // Quote each line so even user-supplied headings cannot impersonate fields.
+  const safe = value.replace(/\r\n?/g,"\n")
+    .replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g," ")
+    .replace(/\\/g,"\\\\")
+    .replace(/([*_`\[\]<>|])/g,"\\$1")
+    .replace(/https?:\/\/\S+/gi,"[link omitted; describe it in words]")
+    .replace(/\bwww\.[^\s]+/gi,"[link omitted; describe it in words]")
+    .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi,"[address omitted]")
+    .replace(/@/g,"\\@");
+  return safe.split("\n").map(line=>"> "+line).join("\n");
 }
 
 const COMPLETION = Object.freeze({
