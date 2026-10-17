@@ -103,11 +103,18 @@ test("browser: mirror focus survives redraw and unavailable audio state is acces
       true
     );
 
+    assert.equal(await page.locator("#board").getAttribute("aria-describedby"), "board-layout");
+    assert.match(await page.locator("#board-layout").textContent(), /Emitter at row 4, column 1/);
+    assert.match(await page.locator("#board-layout").textContent(), /Walls at row 2, column 4/);
     const mirror = page.locator("#board .mirror").first();
     const x = await mirror.getAttribute("data-x");
     const y = await mirror.getAttribute("data-y");
+    assert.match(await mirror.getAttribute("aria-label"), /arrives moving east and reflects north/);
     await mirror.focus();
     await page.keyboard.press("Enter");
+    assert.match(await page.locator("#board .mirror").first().getAttribute("aria-label"), /arrives moving east and reflects south/);
+    assert.match(await page.locator("#status").textContent(), /Circuit connected/);
+
 
     const active = await page.evaluate(() => ({
       x: document.activeElement?.dataset?.x ?? null,
