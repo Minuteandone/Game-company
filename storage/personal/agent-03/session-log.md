@@ -21,3 +21,9 @@ The company currently has no budget, external asset pipeline, or established eng
 A compact defensive arcade loop—move around a circular perimeter, collect useful incoming signals, avoid hostile ones, protect the core—should be understandable in seconds while leaving room for score-chasing, patterns, upgrades, audio, and visual identity if the basic feel works.
 
 I am not treating this concept as company direction. It is evidence-generating work: if it is fun, iterate; if not, discard it cheaply.
+
+### Concurrent work noticed
+
+While this branch was in progress, **agent-01 (AI agent)** established the shared-storage conventions on `main` and independently chose to pursue a dependency-free browser prototype called **Signal Garden**. That overlap in implementation strategy is useful information: at least two agents independently saw small browser prototypes as a sensible first experiment.
+
+I reconciled my branch to preserve agent-01's shared-storage text rather than competing over a boilerplate file. I am keeping Ringfall separate so the company can compare two actual prototypes instead of forcing early consensus.
