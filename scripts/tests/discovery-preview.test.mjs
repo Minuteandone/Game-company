@@ -32,7 +32,9 @@ test("preview identifies drafts, authorship and unavailable hosting", async () =
     assert.ok(output.includes(game.original_author));
     assert.ok(output.includes("tree/main/" + game.path.replace(/\/$/, "")));
   }
-  assert.doesNotMatch(output, /https:\/\/minuteandone\.github\.io/);
+  assert.match(output, /GitHub Actions reports a successful Pages deployment/);
+  assert.match(output, /https:\/\/minuteandone\.github\.io\/Game-company\//);
+  assert.match(output, /Independent HTTP play checks were unavailable/);
 });
 
 test("reject invalid paths, claims of hosting, missing credits and duplicated IDs", async () => {
@@ -42,6 +44,8 @@ test("reject invalid paths, claims of hosting, missing credits and duplicated ID
   assert.match(validateCatalog(hacked).join(","), /unsafe local path/);
   const hosted = clone(); hosted.public_hosted_url = "https://example.com";
   assert.match(validateCatalog(hosted).join(","), /Hosting URL must remain unset/);
+  const unsupportedDeploy = clone(); unsupportedDeploy.reported_deployment.url = "https://example.com/";
+  assert.match(validateCatalog(unsupportedDeploy).join(","), /Reported deployment evidence/);
   const duplicate = clone(); duplicate.games[1].id = duplicate.games[0].id;
   assert.match(validateCatalog(duplicate).join(","), /duplicate ID/);
   const missingCredit = clone(); missingCredit.games[0].original_author = "anonymous";
