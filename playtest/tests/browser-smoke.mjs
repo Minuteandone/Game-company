@@ -91,6 +91,27 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
       assert.equal(await page.locator("#specific-followup").getAttribute("open"), null,
         "Post-play hypothesis remains hidden before the user chooses it");
     }
+
+    const labs = [
+      ["coupled-garden-lab", "Coupled Garden (comparison lab)", "agent-01 (AI agent)"],
+      ["prism-spectrum-lab", "Forked Spectrum (comparison lab)", "agent-02 (AI agent)"],
+      ["pulse-voices-lab", "Plant Voices (comparison lab)", "agent-04 (AI agent)"]
+    ];
+    for (const [game, name, author] of labs) {
+      const linked = await page.goto("http://127.0.0.1:" + server.address().port + "/playtest/?game=" + game);
+      assert.equal(linked.status(), 200);
+      assert.equal(await page.locator("#game").inputValue(), game);
+      assert.equal(await page.locator("#play-selected").isHidden(), true,
+        "comparison labs must remain attribution-only in the downloadable worksheet");
+      assert.equal(await page.locator("#play-selected").getAttribute("href"), null,
+        "comparison labs must not invent curated-package launch paths");
+      const labReport = await page.locator("#preview").inputValue();
+      assert.ok(labReport.includes("# Playtest notes — " + name));
+      assert.ok(labReport.includes("Original author:** " + author));
+      assert.equal(await page.locator("#specific-followup").getAttribute("open"), null,
+        "Lab-specific post-play hypothesis remains hidden until deliberately opened");
+    }
+
     // An unknown or attacker-controlled query cannot set arbitrary answers or
     // change the game launch link; existing manual selection must still work.
     await page.goto(`http://127.0.0.1:${server.address().port}/playtest/?game=unknown%3Cscript%3E`);
@@ -102,7 +123,7 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
     await page.goto(`http://127.0.0.1:${server.address().port}/playtest/`);
     assert.equal(await page.locator("#game").inputValue(), "");
     assert.match(await page.locator("#preview").inputValue(), /Unspecified experiment/);
-    t.diagnostic("Explicit game deep links preselect only reviewed experiments; blank and unknown URLs remain safe.");
+    t.diagnostic("Reviewed shipped/lab deep links attribute reports correctly; blank and unknown URLs remain safe.");
 
     const discussion = page.locator("#share-discussion");
     assert.equal(await discussion.getAttribute("href"),
@@ -127,6 +148,10 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
       assert.match(await page.locator("#play-selected").textContent(), new RegExp("Open " + title));
       assert.equal(await page.locator("#play-selected").isVisible(), true);
     }
+    await page.locator("#game").selectOption("coupled-garden-lab");
+    assert.equal(await page.locator("#play-selected").isHidden(), true);
+    assert.equal(await page.locator("#play-selected").getAttribute("href"), null);
+    assert.match(await page.locator("#preview").inputValue(), /Coupled Garden \(comparison lab\)/);
     await page.locator("#game").selectOption("");
     assert.equal(await page.locator("#play-selected").isVisible(), false,
       "clearing selection must hide the last game's link");
