@@ -138,6 +138,12 @@
 
   const TAU = Math.PI * 2;
 
+  // Keys may never receive keyup after the browser loses focus.
+  function clearHeldInput() {
+    keys.clear();
+    pointerAngle = null;
+  }
+
   function resize() {
     DPR = Math.min(window.devicePixelRatio || 1, 2);
     W = window.innerWidth;
@@ -162,6 +168,7 @@
   }
 
   function reset() {
+    clearHeldInput();
     score = 0;
     energy = 3;
     paused = false;
@@ -431,17 +438,21 @@
     keys.add(e.code);
     if (["ArrowLeft", "ArrowRight", "Space", "KeyP"].includes(e.code)) e.preventDefault();
     if (["ArrowLeft", "ArrowRight", "KeyA", "KeyD"].includes(e.code)) pointerAngle = null;
-    if (e.code === "KeyP" && running) {
+    if (e.code === "KeyP" && running && !e.repeat) {
       paused = !paused;
       stateEl.textContent = paused ? "Paused · P resume" : "Live · P pause";
     }
-    if (e.code === "Space" && !running) reset();
+    if (e.code === "Space" && !running && !e.repeat) reset();
   });
   window.addEventListener("keyup", e => keys.delete(e.code));
+  window.addEventListener("blur", clearHeldInput);
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden && running && !paused) {
-      paused = true;
-      stateEl.textContent = "Paused · P resume";
+    if (document.hidden) {
+      clearHeldInput();
+      if (running && !paused) {
+        paused = true;
+        stateEl.textContent = "Paused · P resume";
+      }
     }
   });
   canvas.addEventListener("pointermove", setPointer);
