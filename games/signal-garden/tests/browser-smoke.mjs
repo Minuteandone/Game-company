@@ -142,8 +142,12 @@ test(`browser (${selectedBrowser}): controls, full level, records, persistence a
     const hint = page.locator("#hint");
     assert.equal(await hint.isEnabled(), true);
     assert.equal((await hint.textContent()).trim(), "✧ Hint");
+    assert.equal(await hint.getAttribute("aria-describedby"), "hint-rule");
+    assert.match(await page.locator("#hint-rule").textContent(), /One exact hint per attempt/i);
     await hint.click();
-    assert.match(await page.locator("#status").textContent(), /Try rotating the highlighted tile/);
+    const hintStatus = await page.locator("#status").textContent();
+    assert.match(hintStatus, /Try rotating the highlighted tile/);
+    assert.match(hintStatus, /One hint used; Reset this garden to restore it/i);
     assert.equal(await page.locator(".tile.hint").count(), 1, "hint highlights one tile");
     assert.equal(await hint.isDisabled(), true, "exact hint is single-use within an attempt");
     assert.equal((await hint.textContent()).trim(), "✓ Hint used");
@@ -348,7 +352,9 @@ test(`mobile touch (${selectedBrowser}): real taps, reset, hint, and narrow-scre
     const mobileHint = page.locator("#hint");
     await mobileHint.tap();
     assert.equal(await page.locator(".tile.hint").count(), 1);
-    assert.match(await page.locator("#status").textContent(), /row \d+, column \d+/);
+    const mobileHintStatus = await page.locator("#status").textContent();
+    assert.match(mobileHintStatus, /row \d+, column \d+/);
+    assert.match(mobileHintStatus, /One hint used; Reset this garden to restore it/i);
     assert.equal(await mobileHint.isDisabled(), true,
       "touch hint should also be single-use within the current attempt");
     assert.equal((await mobileHint.textContent()).trim(), "✓ Hint used");

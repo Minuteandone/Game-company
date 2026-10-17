@@ -239,7 +239,7 @@ hintButton.addEventListener("click", () => {
     target.classList.add("hint");
     target.focus();
   }
-  showMessage(`Try rotating the highlighted tile at row ${row}, column ${col}.`);
+  showMessage(`Try rotating the highlighted tile at row ${row}, column ${col}. One hint used; Reset this garden to restore it.`);
 });
 
 resetButton.addEventListener("click", () => {

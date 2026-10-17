@@ -48,10 +48,11 @@
           <div class="stat"><span class="stat-label">YOUR TURNS</span><strong id="turns">00</strong></div>
           <div class="stat"><span class="stat-label">PERSONAL BEST</span><strong id="best">—</strong></div>
           <div class="actions">
-            <button class="action-button secondary" id="hint" type="button">✧ Hint</button>
+            <button class="action-button secondary" id="hint" type="button" aria-describedby="hint-rule">✧ Hint</button>
             <button class="action-button" id="reset" type="button">↻ Reset</button>
           </div>
         </div>
+        <p id="hint-rule" class="hint-rule">One exact hint per attempt. Reset this garden to restore it.</p>
         <p class="progress-note">
           Progress stays in this browser when storage is available.
           <button id="clear-progress" class="clear-progress" type="button">Clear saved progress</button>
