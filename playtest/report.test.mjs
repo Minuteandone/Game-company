@@ -29,7 +29,7 @@ test("report includes only explicitly reported configurations, observations and 
   assert.match(report, /keyboard, touch/);
   assert.doesNotMatch(report, /made-up/);
   assert.match(report, /Reduced-motion configuration tested:\*\* Yes \(tester reported\)/);
-  assert.match(report, /Voluntarily play another round or stage\?/);
+  assert.match(report, /voluntarily play another round or stage\?/);
   assert.match(report, /was \*\*written and shared voluntarily/);
   assert.match(report, /> Pressed Enter/);
 });
