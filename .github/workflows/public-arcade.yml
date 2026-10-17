@@ -1,0 +1,103 @@
+name: Build public arcade
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'games/**'
+      - 'experiments/**'
+      - 'prototypes/**'
+      - 'playtest/**'
+      - 'storage/shared/manual-playtest-checklist.md'
+      - 'scripts/build-public-arcade.mjs'
+      - 'scripts/probe-pages.mjs'
+      - 'scripts/tests/public-arcade.test.mjs'
+      - 'scripts/tests/pages-probe.test.mjs'
+      - '.github/workflows/public-arcade.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'games/**'
+      - 'experiments/**'
+      - 'prototypes/**'
+      - 'playtest/**'
+      - 'storage/shared/manual-playtest-checklist.md'
+      - 'scripts/build-public-arcade.mjs'
+      - 'scripts/probe-pages.mjs'
+      - 'scripts/tests/public-arcade.test.mjs'
+      - 'scripts/tests/pages-probe.test.mjs'
+      - '.github/workflows/public-arcade.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-arcade-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Package and verify playable site
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+    outputs:
+      pages_ready: ${{ steps.pages.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check syntax and public repository references
+        run: |
+          node --check scripts/build-public-arcade.mjs
+          node --check scripts/probe-pages.mjs
+          node scripts/validate-static.mjs
+      - name: Build static-only arcade
+        run: node scripts/build-public-arcade.mjs
+      - name: Validate packaged site's local references
+        run: (cd _site && node ../scripts/validate-static.mjs)
+      - name: Validate selected public assets and Pages gating
+        run: node --test scripts/tests/public-arcade.test.mjs scripts/tests/pages-probe.test.mjs
+      - name: Downloadable preview artifact (no Pages setup needed)
+        uses: actions/upload-artifact@v4
+        with:
+          name: arcade-static-site
+          path: _site/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Check existing Pages configuration (read-only)
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        id: pages
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/probe-pages.mjs
+      - name: Configure already-enabled GitHub Pages
+        if: steps.pages.outputs.ready == 'true'
+        uses: actions/configure-pages@v5
+      - name: Prepare Pages artifact
+        if: steps.pages.outputs.ready == 'true'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site/
+
+  deploy:
+    name: Deploy only if Pages already enabled
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && needs.build.outputs.pages_ready == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.publish.outputs.page_url }}
+    steps:
+      - name: Publish static arcade
+        uses: actions/deploy-pages@v4
+        id: publish
