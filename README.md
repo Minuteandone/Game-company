@@ -8,12 +8,12 @@ The company is intentionally early-stage: there is no fixed hierarchy, engine, g
 
 **[Play the Game Company Arcade online](https://minuteandone.github.io/Game-company/)** to try all four experiments in your browser. For an offline/local development copy, run `python3 -m http.server 8000` from the repository root and open **http://localhost:8000/**. The gallery is a convenience entry point, not a designated flagship project.
 
-**GitHub Pages:** GitHub reports successful branch-source publication at [minuteandone.github.io/Game-company](https://minuteandone.github.io/Game-company/). Ten real HTTP GET checks of public arcade assets have passed in GitHub Actions; this verifies served resources, not end-to-end browser gameplay. The separate [public arcade build workflow](.github/workflows/public-arcade.yml) always produces a **verified, downloadable allowlisted artifact** and will deploy that artifact itself only if Pages is switched to the GitHub Actions publishing source. See [deployment and live-site verification notes](storage/shared/public-arcade-build.md).
+**GitHub Pages:** GitHub reports successful branch-source publication at [minuteandone.github.io/Game-company](https://minuteandone.github.io/Game-company/). The read-only public smoke currently verifies **11 reviewed HTTP assets** with expected content/MIME, including the self-hosted share-preview PNG. A separate [published-site Chromium acceptance check](scripts/live-browser-playability.md) has also successfully executed representative gameplay, persistence, narrow-layout, navigation, and synthetic worksheet behavior against the actual Pages URL using exact-site GET-only traffic. These are technical delivery/runtime checks, **not** human playtesting, real-device ergonomics, or assistive-technology usability. The separate [public arcade build workflow](.github/workflows/public-arcade.yml) always produces a **verified, downloadable allowlisted artifact** and will deploy that artifact itself only if Pages is switched to the GitHub Actions publishing source. See [deployment and live-site verification notes](storage/shared/public-arcade-build.md).
 
 
 ## Discoverability (draft only)
 
-The [discovery catalog](discovery/catalog.json) provides reviewed, machine-readable descriptions and original author credits for the four playable experiments. Run `node scripts/discovery-preview.mjs` to see a local outreach **draft**. No API POSTs or promotional publishing are configured. GitHub Actions has also **GET-verified ten public arcade assets** on GitHub Pages. This does not establish live gameplay or accessibility results. See the [discovery notes](discovery/README.md) and [Issue #25](https://github.com/Minuteandone/Game-company/issues/25).
+The [discovery catalog](discovery/catalog.json) provides reviewed, machine-readable descriptions and original author credits for the four playable experiments. Run `node scripts/discovery-preview.mjs` to see a local outreach **draft**. No API POSTs or promotional publishing are configured. GitHub Actions has **GET-verified 11 reviewed public assets**, including the self-hosted 1200×630 share preview; the separate hosted-Chromium check verifies representative technical interaction without publishing or submitting data. Neither establishes player enjoyment or real assistive-technology usability. See the [discovery notes](discovery/README.md) and [Issue #25](https://github.com/Minuteandone/Game-company/issues/25).
 
 ## Playable experiments on `main`
 
@@ -35,7 +35,7 @@ Discussion: https://github.com/Minuteandone/Game-company/issues/4
 
 ## Testing & feedback
 
-All four current experiments have automated Chromium integration coverage in GitHub Actions in addition to the repo-wide local-reference check. Those tests verify selected runtime behaviors; they do **not** establish subjective fun, first-time comprehension, physical touch-device quality, or screen-reader usability.
+All four current experiments have automated local Chromium integration coverage in GitHub Actions in addition to the repo-wide local-reference check. Signal Garden also runs its gameplay/accessibility regression in Playwright **WebKit** and simulated touch contexts. Separately, the published Pages arcade has a successful real-Chromium acceptance run covering representative interactions across all four games and the synthetic/local worksheet. These tests verify technical runtime behavior; they do **not** establish subjective fun, first-time comprehension, physical touch-device quality, or screen-reader usability.
 
 For a real manual/device session, use the shared non-binding checklist:
 
