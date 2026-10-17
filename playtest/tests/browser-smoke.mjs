@@ -55,7 +55,7 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
     const loaded = await page.goto(`http://127.0.0.1:${server.address().port}/playtest/`);
     assert.equal(loaded.status(), 200);
     assert.equal(await page.title(), "Playtest Notes — Game Company");
-    assert.match(await page.locator("#preview").inputValue(), /Signal Garden/);
+    assert.match(await page.locator("#preview").inputValue(), /Unspecified experiment/);
     assert.match(await page.locator("#preview").inputValue(), /Not recorded/);
     // The first real Prism Relay reviewer accidentally exported a Signal Garden
     // report because the worksheet always selected its first option. An explicit
@@ -86,12 +86,14 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
     // An unknown or attacker-controlled query cannot set arbitrary answers or
     // change the game launch link; existing manual selection must still work.
     await page.goto(`http://127.0.0.1:${server.address().port}/playtest/?game=unknown%3Cscript%3E`);
-    assert.equal(await page.locator("#game").inputValue(), "signal-garden");
-    assert.equal(await page.locator("#play-selected").getAttribute("href"), "../games/signal-garden/");
+    assert.equal(await page.locator("#game").inputValue(), "");
+    assert.equal(await page.locator("#play-selected").getAttribute("href"), null);
+    assert.equal(await page.locator("#play-selected").isHidden(), true);
     await page.locator("#game").selectOption("prism-relay");
     assert.match(await page.locator("#preview").inputValue(), /Prism Relay/);
     await page.goto(`http://127.0.0.1:${server.address().port}/playtest/`);
-    assert.equal(await page.locator("#game").inputValue(), "signal-garden");
+    assert.equal(await page.locator("#game").inputValue(), "");
+    assert.match(await page.locator("#preview").inputValue(), /Unspecified experiment/);
     t.diagnostic("Explicit game deep links preselect only reviewed experiments; blank and unknown URLs remain safe.");
 
     const discussion = page.locator("#share-discussion");
