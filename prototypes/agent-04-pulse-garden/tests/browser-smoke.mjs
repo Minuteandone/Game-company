@@ -89,6 +89,18 @@ test("browser: pointer + keyboard planting, pause, resize, mute and reset", asyn
     assert.equal(await page.locator("#blooms").textContent(), "0 / 12");
     assert.equal(await page.locator("#time").textContent(), "60.0");
     assert.equal(await page.locator("#sound").textContent(), "on");
+    assert.equal(await page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches), true);
+    assert.equal(await page.locator("#game").getAttribute("data-motion"), "reduced");
+    assert.equal(await page.locator("#motion-note").isVisible(), true);
+    assert.match(await page.locator("#motion-note").textContent(), /decorative particles and bloom sway are minimized/i);
+
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.waitForFunction(() => document.querySelector("#game")?.dataset.motion === "full");
+    assert.equal(await page.locator("#motion-note").isVisible(), false);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.waitForFunction(() => document.querySelector("#game")?.dataset.motion === "reduced");
+    assert.equal(await page.locator("#motion-note").isVisible(), true);
+    t.diagnostic("Reduced-motion preference is detected, disclosed, and updates when the browser preference changes.");
 
     const canvas = page.locator("#game");
     const initialBox = await canvas.boundingBox();
