@@ -139,10 +139,40 @@ test(`browser (${selectedBrowser}): controls, full level, records, persistence a
 
     await page.locator("#reset").click();
     assert.equal(await page.locator("#turns").textContent(), "00");
-    await page.locator("#hint").click();
+    const hint = page.locator("#hint");
+    assert.equal(await hint.isEnabled(), true);
+    assert.equal((await hint.textContent()).trim(), "✧ Hint");
+    await hint.click();
     assert.match(await page.locator("#status").textContent(), /Try rotating the highlighted tile/);
     assert.equal(await page.locator(".tile.hint").count(), 1, "hint highlights one tile");
-    t.diagnostic("Keyboard rotation, spatial navigation, reset and hint passed.");
+    assert.equal(await hint.isDisabled(), true, "exact hint is single-use within an attempt");
+    assert.equal((await hint.textContent()).trim(), "✓ Hint used");
+
+    // Correct the hinted authored-route tile. The control must stay unavailable
+    // rather than advancing to the next incorrect solution tile.
+    const hintedStep = await page.evaluate(async () => {
+      const { createBoard, hintIndex } = await import("/games/signal-garden/logic.mjs");
+      const level = createBoard(0);
+      const index = hintIndex(level);
+      const tile = level.tiles[index];
+      return {
+        index,
+        turns: (tile.solutionOrientation - tile.orientation + 4) % 4
+      };
+    });
+    assert.ok(hintedStep.index >= 0 && hintedStep.turns > 0);
+    for (let turn = 0; turn < hintedStep.turns; turn++) {
+      await page.locator(`#board button[data-index="${hintedStep.index}"]`).click();
+    }
+    assert.equal(await hint.isDisabled(), true,
+      "correcting the hinted tile must not expose a second exact hint in the same attempt");
+    assert.equal((await hint.textContent()).trim(), "✓ Hint used");
+
+    await page.locator("#reset").click();
+    assert.equal(await page.locator("#turns").textContent(), "00");
+    assert.equal(await hint.isEnabled(), true, "Reset starts a fresh attempt with one hint");
+    assert.equal((await hint.textContent()).trim(), "✧ Hint");
+    t.diagnostic("Keyboard navigation plus single-use hint/reset lifecycle passed.");
 
     // Read the actual shipped puzzle engine and solve using real UI clicks.
     const rotations = await page.evaluate(async () => {
@@ -315,16 +345,24 @@ test(`mobile touch (${selectedBrowser}): real taps, reset, hint, and narrow-scre
       "touch rotation must update connector directions");
     await page.locator("#reset").tap();
     assert.equal(await page.locator("#turns").textContent(), "00");
-    await page.locator("#hint").tap();
+    const mobileHint = page.locator("#hint");
+    await mobileHint.tap();
     assert.equal(await page.locator(".tile.hint").count(), 1);
     assert.match(await page.locator("#status").textContent(), /row \d+, column \d+/);
+    assert.equal(await mobileHint.isDisabled(), true,
+      "touch hint should also be single-use within the current attempt");
+    assert.equal((await mobileHint.textContent()).trim(), "✓ Hint used");
+    await page.locator("#reset").tap();
+    assert.equal(await mobileHint.isEnabled(), true,
+      "touch Reset should restore one hint for a fresh attempt");
+    assert.equal((await mobileHint.textContent()).trim(), "✧ Hint");
     await page.setViewportSize({ width: 320, height: 650 });
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth
     );
     assert.ok(overflow <= 1, `320px touch viewport overflows by ${overflow}px`);
     assert.deepEqual(runtimeErrors, [], "no mobile-browser errors");
-    t.diagnostic(`${selectedBrowser}: real touch taps rotated/reset/hinted a tile; 320px viewport has no horizontal overflow.`);
+    t.diagnostic(`${selectedBrowser}: touch rotation plus single-use hint/reset lifecycle passed; 320px viewport has no horizontal overflow.`);
     await context.close();
   } finally {
     if (browser) await browser.close();

@@ -17,10 +17,10 @@ Visit **http://localhost:8000/games/signal-garden/** in a browser or enter Signa
 - **Mouse / touch:** click or tap a path to rotate it clockwise.
 - **Keyboard:** Tab to reach the board; arrow keys to navigate among movable tiles; Enter or Space to rotate. The board's accessible overview announces the fixed star and flower coordinates as well as grid size and movement instructions. Tile accessible names include grid position, path shape, opening directions (north/east/south/west), and powered state, updating after rotations. This provides essential puzzle information without relying solely on color/visual paths, but has not yet been verified through a manual screen-reader playtest.
 - **Goal:** connect the ✦ source to the ✿ flower. Connections only carry light when adjacent arms point toward each other.
-- **Hint:** briefly highlights one tile along the authored solution path that still needs rotation. Reset restarts the current level.
+- **Hint:** once per level attempt, briefly highlights one tile along the authored solution path that still needs rotation. After that exact hint is used, the control stays visibly disabled until **Reset** or a new level starts. Reset restarts the current level and restores the hint.
 - **Progress:** six unlocked-in-order stages, with each stage's lowest turn count saved in local browser storage when available. No account or server is needed. **Clear saved progress** asks for confirmation, then removes only Signal Garden's save key, resets all unlocks/bests and restarts at garden one; cancel keeps the saved state. It does not remove other games' data, and the in-game **Reset** button still only restarts the current puzzle.
 
-The game has no sound, countdown, or score penalties for hints. It honors reduced-motion preferences.
+The game has no sound or countdown. Exact hints do not affect the turn score, but are limited to one per level attempt as a small player-choice experiment following the first human playtest report; see [Issue #59](https://github.com/Minuteandone/Game-company/issues/59). It honors reduced-motion preferences.
 
 ## Testing
 
