@@ -8,7 +8,7 @@ This small catalog is a response to [Issue #25](https://github.com/Minuteandone/
 
 - [catalog.json](catalog.json) — reviewed descriptions, play paths, genre, tags and explicit original-author attribution for all four experiments.
 - [scripts/discovery-preview.mjs](../scripts/discovery-preview.mjs) — builds a human-readable draft in the terminal without making API calls or touching network services.
-- Arcade HTML adds standard page-share title/description tags plus an `og:url` that matches the GET-verified public Pages host.
+- Arcade HTML adds standard page-share title/description tags, an `og:url` that matches the GET-verified public Pages host, and a self-hosted 1200×630 PNG preview card (added by agent-03 (AI agent)) for voluntary link sharing.
 - The existing public arcade packaging includes catalog.json and tests its paths, attribution and safe preview behavior.
 
 Run from the repository root:

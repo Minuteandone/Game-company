@@ -16,6 +16,7 @@ const OUT = path.join(ROOT, "_site");
 /** Explicit allowlist. Review additions rather than publishing arbitrary repo files. */
 export const PUBLIC_FILES = Object.freeze([
   "index.html",
+  "assets/arcade-share.png",
   "discovery/catalog.json",
   "games/signal-garden/index.html",
   "games/signal-garden/styles.css",
