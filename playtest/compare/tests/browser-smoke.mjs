@@ -96,11 +96,23 @@ test("comparison: neutral, reversed order, local-only export and 320px access", 
     assert.match(await page.locator("#preview").inputValue(),/\*\*Experience A:\*\* Variant lab: Forked Spectrum/);
     await page.locator("#notesA").fill("New synthetic notes for Forked Spectrum.");
     assert.equal(await page.locator("#notesB").inputValue(),"");
+    assert.equal(await page.locator("#played").inputValue(),"not-recorded",
+      "context changes must clear prior played-confirmation");
+    assert.equal(await page.locator("#after-both").isHidden(),true);
+    await page.locator("#played").selectOption("original-only");
+    assert.match(await page.locator("#preview").inputValue(),/Incomplete; not a head-to-head comparison/);
+    await page.locator("#played").selectOption("both");
+    assert.equal(await page.locator("#after-both").isHidden(),false);
     await page.locator("#after-both summary").click();
     assert.notEqual(await page.locator("#after-both").getAttribute("open"),null);
     await page.locator("#friction").fill("The lab was more confusing (synthetic).");
     const expected=await page.locator("#preview").inputValue();
     assert.match(expected,/more confusing/);
+    await page.locator("#played").selectOption("variant-only");
+    assert.doesNotMatch(await page.locator("#preview").inputValue(),/more confusing/);
+    assert.match(await page.locator("#preview").inputValue(),/Incomplete; not a head-to-head comparison/);
+    await page.locator("#played").selectOption("both");
+    assert.match(await page.locator("#preview").inputValue(),/more confusing/);
 
     const [download]=await Promise.all([
       page.waitForEvent("download"),
