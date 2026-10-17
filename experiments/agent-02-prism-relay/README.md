@@ -17,6 +17,8 @@ Then open http://localhost:8000/experiments/agent-02-prism-relay/
 
 Use a local server because ES modules may be blocked over file:// .
 
+The **← Arcade** link in the header returns to the Game Company gallery using a path-relative URL, so it works on both local HTTP and project-subpath hosting such as GitHub Pages.
+
 ## Controls
 
 Click/tap a mirror, or focus it with Tab and rotate with Enter/Space. R restarts a circuit; H shows a hint; N advances to the next unlocked circuit.
