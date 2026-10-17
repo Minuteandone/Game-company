@@ -91,7 +91,12 @@ test(`browser (${selectedBrowser}): controls, full level, records, persistence a
     assert.equal(await page.locator("#stage-name").textContent(), "First Light");
     assert.equal(await page.locator("#turns").textContent(), "00");
     assert.equal(await page.locator("#victory").isVisible(), false);
-    t.diagnostic("Initial garden rendered: 16 tiles and six level selectors.");
+    const overview = await page.locator("#board").getAttribute("aria-label");
+    assert.match(overview, /Garden 1, 4 by 4 grid/);
+    assert.match(overview, /Fixed star at row 1, column 1/);
+    assert.match(overview, /Fixed flower at row 4, column 4/);
+    assert.match(overview, /Arrow keys move between rotatable tiles/);
+    t.diagnostic("Initial garden rendered with both fixed endpoint coordinates and six level selectors.");
 
     // Match every tile's accessible description against the shipped rules.
     // Direction and power are essential puzzle information, not decoration.
@@ -174,6 +179,10 @@ test(`browser (${selectedBrowser}): controls, full level, records, persistence a
     await page.locator("#next-stage").click();
     assert.equal(await page.locator("#stage-name").textContent(), "The Detour");
     assert.equal(await page.locator("#board .tile").count(), 25);
+    const detourOverview = await page.locator("#board").getAttribute("aria-label");
+    assert.match(detourOverview, /Garden 2, 5 by 5 grid/);
+    assert.match(detourOverview, /Fixed star at row 1, column 1/);
+    assert.match(detourOverview, /Fixed flower at row 5, column 5/);
     await page.reload();
     assert.equal(await page.locator("#stage-name").textContent(), "The Detour");
     assert.equal(await page.locator("#level-list button").nth(1).isEnabled(), true);
