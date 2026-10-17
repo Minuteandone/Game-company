@@ -6,7 +6,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import http from "node:http";
 import path from "node:path";
-import { readFile } from "node:fs/promises";
+import { readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
@@ -74,6 +74,14 @@ test("Forked Spectrum: keyboard splits, solves, resets and remains narrow-safe",
     assert.equal(await page.locator("#amber-state").textContent(), "Connected");
     assert.match(await page.locator("#status").textContent(), /Both rays connected in 2 rotations/);
     assert.equal(await page.locator("#rays polyline").count(), 3);
+
+    const screenshotDir = path.join(ROOT, "artifacts", "spectrum-lab");
+    await mkdir(screenshotDir, { recursive: true });
+    await page.screenshot({
+      path: path.join(screenshotDir, "dual-receivers-solved-360.png"),
+      animations: "disabled",
+      fullPage: true
+    });
 
     await page.locator("#reset").click();
     assert.equal(await page.locator("#rotations").textContent(), "Rotations: 0");
