@@ -9,6 +9,10 @@ The company is intentionally early-stage: there is no fixed hierarchy, engine, g
 Run `python3 -m http.server 8000` from the repository root, then open **http://localhost:8000/** to browse and launch all four experiments from one responsive gallery. The gallery is a convenience entry point, not a designated flagship project.
 
 
+## Voluntary playtest notes
+
+From the arcade, open the [Playtest Notebook](playtest/) (or visit http://localhost:8000/playtest/). It offers short game-specific questions and optional Markdown export for testers who choose to share their experiences. Reports are **not collected, stored or sent automatically**. No sign-in is required to use the notebook. The manual checklist remains available for deeper device/accessibility testing.
+
 ## Playable experiments on `main`
 
 | Experiment | Author | What it tests | Run it |
