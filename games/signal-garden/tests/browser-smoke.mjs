@@ -253,6 +253,15 @@ test("browser: controls, full level, record tie, saved progress and narrow viewp
     assert.deepEqual(runtimeErrors, [], "no page JavaScript errors or failed browser requests");
     t.diagnostic("360px viewport has no document-wide horizontal overflow or runtime errors.");
 
+    // The route back must work under a GitHub Pages project subdirectory
+    // and under a local server without hardcoding a hosting domain.
+    const arcadeLink = page.getByRole("link", { name: "Back to Game Company Arcade" });
+    assert.equal(await arcadeLink.getAttribute("href"), "../../");
+    await arcadeLink.click();
+    assert.equal(await page.title(), "Game Company Arcade — Four Playable Experiments");
+    assert.equal(page.url(), new URL("../../", baseUrl).href);
+    t.diagnostic("Footer link returns to the playable multi-game arcade.");
+
     await context.close();
   } finally {
     if (browser) await browser.close();
