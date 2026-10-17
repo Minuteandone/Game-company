@@ -70,7 +70,7 @@ function rating(value) {
  * are automatically gathered.
  */
 export function buildReport(data = {}) {
-  const game = GAMES[data.game];
+  const game = Object.hasOwn(GAMES, data.game) ? GAMES[data.game] : null;
   const name = game ? game.name : "Unspecified experiment";
   const inputs = Array.isArray(data.input)
     ? [...new Set(data.input)].filter((value) => INPUTS.includes(value))
