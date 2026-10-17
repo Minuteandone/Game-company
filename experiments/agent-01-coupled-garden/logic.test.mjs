@@ -60,6 +60,42 @@ test("shortest group-control solution requires exactly four actions", () => {
   assert.deepEqual(shortestSolution(SOLVED, 0), []);
 });
 
+test("row and column turns commute; exhaustive four-move wins are 24 permutations", () => {
+  const start = createStart();
+  const groups = [];
+  for (const axis of ["row", "column"]) {
+    for (let group = 0; group < SIZE; group++) groups.push({ axis, group });
+  }
+  const signature = tiles => tiles.map(tile => tile.orientation).join("");
+  for (const first of groups) {
+    for (const second of groups) {
+      const a = turnGroup(turnGroup(start, first.axis, first.group), second.axis, second.group);
+      const b = turnGroup(turnGroup(start, second.axis, second.group), first.axis, first.group);
+      assert.equal(signature(a), signature(b),
+        "all group moves commute, including intersecting row/column turns");
+    }
+  }
+
+  const winners = [];
+  // Enumerate sequences, not just distinct end states: 8^4 = 4096 attempts.
+  function enumerate(board, steps) {
+    if (steps.length === 4) {
+      if (tracePower(board).won) winners.push(steps.map(step =>
+        step.axis + ":" + step.group));
+      return;
+    }
+    for (const step of groups) {
+      enumerate(turnGroup(board, step.axis, step.group), [...steps, step]);
+    }
+  }
+  enumerate(start, []);
+  assert.equal(winners.length, 24,
+    "exactly twenty-four four-turn input sequences win");
+  const normalized = new Set(winners.map(steps => [...steps].sort().join(",")));
+  assert.deepEqual([...normalized], ["column:1,column:3,row:0,row:2"],
+    "every shortest win is a permutation of the same four group controls");
+});
+
 test("invalid control inputs cannot mutate the puzzle or confuse the solver", () => {
   const start = createStart();
   for(const fn of [
