@@ -139,10 +139,29 @@ test(`browser (${selectedBrowser}): controls, full level, records, persistence a
 
     await page.locator("#reset").click();
     assert.equal(await page.locator("#turns").textContent(), "00");
+    assert.equal(await page.locator("#hint").isEnabled(), true);
+    assert.match(await page.locator("#hint-policy").textContent(), /One optional hint per garden attempt/);
+    const savedBeforeHint = await page.evaluate(
+      () => localStorage.getItem("signal-garden-progress-v1"));
     await page.locator("#hint").click();
     assert.match(await page.locator("#status").textContent(), /Try rotating the highlighted tile/);
+    assert.match(await page.locator("#status").textContent(), /Reset this garden to restore it/);
     assert.equal(await page.locator(".tile.hint").count(), 1, "hint highlights one tile");
-    t.diagnostic("Keyboard rotation, spatial navigation, reset and hint passed.");
+    assert.equal(await page.locator("#hint").isDisabled(), true);
+    assert.match(await page.locator("#hint").textContent(), /Hint used/);
+    const messageAfterHint = await page.locator("#status").textContent();
+    await page.locator("#hint").evaluate(button => button.click());
+    assert.equal(await page.locator("#status").textContent(), messageAfterHint,
+      "additional clicks must not reveal another solution tile in the same attempt");
+    assert.equal(await page.locator(".tile.hint").count(), 1);
+    assert.equal(await page.evaluate(
+      () => localStorage.getItem("signal-garden-progress-v1")), savedBeforeHint,
+      "hint availability is not saved in player progression");
+    await page.locator("#reset").click();
+    assert.equal(await page.locator("#hint").isEnabled(), true,
+      "reset must restore one hint for a new attempt");
+    assert.match(await page.locator("#hint").textContent(), /Hint \(1\)/);
+    t.diagnostic("Exactly one hint per attempt; repeated calls have no effect, and reset restores the hint.");
 
     // Read the actual shipped puzzle engine and solve using real UI clicks.
     const rotations = await page.evaluate(async () => {
@@ -178,6 +197,8 @@ test(`browser (${selectedBrowser}): controls, full level, records, persistence a
     );
     await page.locator("#next-stage").click();
     assert.equal(await page.locator("#stage-name").textContent(), "The Detour");
+    assert.equal(await page.locator("#hint").isEnabled(), true,
+      "the next garden starts with its own fresh hint");
     assert.equal(await page.locator("#board .tile").count(), 25);
     const detourOverview = await page.locator("#board").getAttribute("aria-label");
     assert.match(detourOverview, /Garden 2, 5 by 5 grid/);
@@ -213,6 +234,8 @@ test(`browser (${selectedBrowser}): controls, full level, records, persistence a
     }
     assert.equal(await page.locator("#victory").isVisible(), true,
       "garden two should be winnable with only Tab and Enter");
+    assert.equal(await page.locator("#hint").isDisabled(), true,
+      "a solved garden cannot request hints even if none was used");
     assert.equal(await page.evaluate(() => document.activeElement.id), "next-stage");
     await page.keyboard.press("Shift+Tab");
     assert.equal(await page.evaluate(() => document.activeElement.id), "close-victory");
@@ -243,6 +266,8 @@ test(`browser (${selectedBrowser}): controls, full level, records, persistence a
     page.once("dialog", async (dialog) => { await dialog.accept(); });
     await page.locator("#clear-progress").click();
     assert.equal(await page.locator("#stage-name").textContent(), "First Light");
+    assert.equal(await page.locator("#hint").isEnabled(), true,
+      "clearing progress restarts the first garden with an available hint");
     assert.equal(await page.locator("#best").textContent(), "—");
     assert.equal(await page.locator("#turns").textContent(), "00");
     assert.equal(await page.locator("#level-list button").nth(1).isDisabled(), true);
@@ -317,7 +342,12 @@ test(`mobile touch (${selectedBrowser}): real taps, reset, hint, and narrow-scre
     assert.equal(await page.locator("#turns").textContent(), "00");
     await page.locator("#hint").tap();
     assert.equal(await page.locator(".tile.hint").count(), 1);
+    assert.equal(await page.locator("#hint").isDisabled(), true,
+      "a touch-triggered hint must also consume the one hint for this attempt");
     assert.match(await page.locator("#status").textContent(), /row \d+, column \d+/);
+    await page.locator("#reset").tap();
+    assert.equal(await page.locator("#hint").isEnabled(), true,
+      "touch Reset should restore hint availability");
     await page.setViewportSize({ width: 320, height: 650 });
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth
