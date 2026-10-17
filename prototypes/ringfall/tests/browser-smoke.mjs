@@ -171,8 +171,14 @@ test("browser: damage status distinguishes missed circles from triangle contact"
       "● ● ●",
       "an uncaught circle should visibly drain core energy"
     );
+    await circlePage.waitForFunction(
+      () => document.querySelector("#state")?.textContent === "Run over · missed circle",
+      null,
+      { timeout: 9000 }
+    );
+    assert.match(await circlePage.locator("#overlay p").textContent(), /Final hit: missed circle/i);
     await circleContext.close();
-    t.diagnostic("Deterministic uncaught circle announces missed-circle core damage.");
+    t.diagnostic("Deterministic uncaught circles preserve missed-circle cause through game over.");
 
     const hazardContext = await browser.newContext({
       viewport: { width: 600, height: 600 },
@@ -198,8 +204,14 @@ test("browser: damage status distinguishes missed circles from triangle contact"
       "● ● ●",
       "collector contact with a triangle should visibly drain core energy"
     );
+    await hazardPage.waitForFunction(
+      () => document.querySelector("#state")?.textContent === "Run over · triangle contact",
+      null,
+      { timeout: 9000 }
+    );
+    assert.match(await hazardPage.locator("#overlay p").textContent(), /Final hit: triangle contact/i);
     await hazardContext.close();
-    t.diagnostic("Deterministic triangle collision announces contact core damage.");
+    t.diagnostic("Deterministic triangle collisions preserve contact cause through game over.");
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));
