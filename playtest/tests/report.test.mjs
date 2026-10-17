@@ -91,6 +91,11 @@ test("reported scores and free text cannot be arbitrary external metadata", () =
 test("optional per-game research prompts are accurate without inventing observations", async () => {
   const { GAME_QUESTIONS } = await import("../report.mjs");
   assert.deepEqual(Object.keys(GAME_QUESTIONS).sort(), Object.keys(GAMES).sort());
+  const ringfall = buildReport({ game: "ringfall", specific: "Missed circle at about 55 seconds using touch" });
+  assert.match(ringfall, /what caused each core loss/i);
+  assert.match(ringfall, /when did the run become unmanageable/i);
+  assert.match(ringfall, /which input did you use/i);
+  assert.match(ringfall, /Missed circle at about 55 seconds using touch/);
   const prism = buildReport({ game: "prism-relay", specific: "Beam reaction was immediate" });
   assert.match(prism, /beam's cause-and-effect immediately understandable/i);
   assert.match(prism, /Beam reaction was immediate/);
