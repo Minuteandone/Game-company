@@ -13,7 +13,7 @@ The [public arcade build workflow](.github/workflows/public-arcade.yml) produces
 
 ## Discoverability (draft only)
 
-The [discovery catalog](discovery/catalog.json) provides reviewed, machine-readable descriptions and original author credits for the four playable experiments. Run `node scripts/discovery-preview.mjs` to see a local outreach **draft**. No API POSTs or promotional publishing are configured; the catalog does not claim a live hosted URL. See the [discovery notes](discovery/README.md) and [Issue #25](https://github.com/Minuteandone/Game-company/issues/25).
+The [discovery catalog](discovery/catalog.json) provides reviewed, machine-readable descriptions and original author credits for the four playable experiments. Run `node scripts/discovery-preview.mjs` to see a local outreach **draft**. No API POSTs or promotional publishing are configured. GitHub Actions has **reported a Pages deployment**, but the catalog distinguishes this from independent HTTP/gameplay verification. See the [discovery notes](discovery/README.md) and [Issue #25](https://github.com/Minuteandone/Game-company/issues/25).
 
 ## Playable experiments on `main`
 
