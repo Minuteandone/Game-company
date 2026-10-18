@@ -1,5 +1,5 @@
 /**
- * Headless Chromium integration checks for Prism Relay review regressions.
+ * Headless Chromium/WebKit integration checks for Prism Relay regressions.
  * Author: agent-03 (AI agent), testing agent-02's merged experiment.
  */
 import test from "node:test";
@@ -8,7 +8,9 @@ import http from "node:http";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { chromium } from "playwright";
+import { chromium, webkit } from "playwright";
+const browserType = process.env.PRISM_BROWSER === "webkit" ? webkit : chromium;
+const browserLabel = browserType.name();
 import { solvePuzzle } from "./logic.mjs";
 import { LEVELS } from "./levels.mjs";
 
@@ -66,7 +68,7 @@ test("browser: mirror focus survives redraw and unavailable audio state is acces
   let browser;
 
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await browserType.launch({ headless: true });
     const context = await browser.newContext({
       viewport: { width: 900, height: 760 },
       reducedMotion: "reduce"
@@ -148,7 +150,7 @@ test("browser: solve, unlock, persist and remain usable at narrow width", async 
   let browser;
 
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await browserType.launch({ headless: true });
     const context = await browser.newContext({
       viewport: { width: 1000, height: 760 },
       reducedMotion: "reduce"
@@ -248,7 +250,7 @@ test("browser: confirm clears only Prism Relay data; cancel preserves it", async
   const { server, url } = await startServer();
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await browserType.launch({ headless: true });
     const context = await browser.newContext({ viewport: { width: 360, height: 740 }, reducedMotion: "reduce" });
     const page = await context.newPage();
     const errors = [];
@@ -307,7 +309,7 @@ test("browser: storage denial warns that previous progress may return after relo
   const { server, url } = await startServer();
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await browserType.launch({ headless: true });
     const context = await browser.newContext();
     await context.addInitScript(() => {
       const original = Storage.prototype.removeItem;
@@ -339,7 +341,7 @@ test("browser: keyboard return link navigates from Prism Relay to arcade", async
   const { server, url } = await startServer();
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await browserType.launch({ headless: true });
     const page = await browser.newPage({ viewport: { width: 360, height: 740 }, reducedMotion: "reduce" });
     assert.equal((await page.goto(url)).status(), 200);
     const back = page.getByRole("link", { name: "Back to Game Company Arcade" });
@@ -369,7 +371,7 @@ test("browser: rejected Web Audio resume announces unavailable without blocking 
   const { server, url } = await startServer();
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await browserType.launch({ headless: true });
     const context = await browser.newContext({ viewport: { width: 360, height: 740 } });
     await context.addInitScript(() => {
       class DeniedResumeAudio {
@@ -427,6 +429,61 @@ test("browser: rejected Web Audio resume announces unavailable without blocking 
     assert.equal(await sound.textContent(), "♫ Sound: unavailable");
     assert.equal(await sound.getAttribute("aria-pressed"), "false");
     assert.deepEqual(runtimeErrors, [], "no audio-related browser/page errors after solving");
+    await context.close();
+  } finally {
+    if (browser) await browser.close();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
+
+test("browser " + browserLabel + ": simulated touch rotates live and off-beam mirrors", async () => {
+  const { server, url } = await startServer();
+  let browser;
+  try {
+    browser = await browserType.launch({ headless: true });
+    const context = await browser.newContext({
+      viewport: { width: 375, height: 812 },
+      deviceScaleFactor: 2, hasTouch: true, isMobile: true,
+      reducedMotion: "reduce"
+    });
+    const page = await context.newPage();
+    const errors = [], outgoing = [];
+    page.on("pageerror", error => errors.push(error.message));
+    page.on("console", message => {
+      if (message.type() === "error") errors.push(message.text());
+    });
+    page.on("request", request => {
+      const origin = new URL(url).origin + "/";
+      if (request.method() !== "GET" || !request.url().startsWith(origin)) {
+        outgoing.push(request.method() + " " + request.url());
+      }
+    });
+    assert.equal((await page.goto(url)).status(), 200);
+    const rayBefore = await page.locator("#board .beam-core").getAttribute("points");
+    const offPath = page.locator('#board .mirror[data-x="2"][data-y="5"]');
+    await offPath.tap();
+    assert.equal(await page.locator("#moves").textContent(), "1");
+    assert.equal(await page.locator("#board .beam-core").getAttribute("points"), rayBefore);
+    assert.match(await page.locator("#status").textContent(),
+      /row 6, column 3 mirror turned to slash.*unchanged so far/i);
+    await page.locator("#reset").tap();
+    assert.equal(await page.locator("#moves").textContent(), "0");
+
+    // Use actual emulated touchscreen taps to solve shipped circuit one.
+    const onPath = page.locator('#board .mirror[data-x="2"][data-y="3"]');
+    await onPath.tap();
+    assert.equal(await page.locator("#beam-state").textContent(), "✦ SIGNAL CONNECTED");
+    assert.equal(await page.locator("#moves").textContent(), "1");
+    assert.equal(await page.locator("#next").isDisabled(), false);
+
+    await page.setViewportSize({ width: 320, height: 740 });
+    await page.evaluate(() => new Promise(resolve =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    assert.ok(overflow <= 1, "320px touch viewport overflow: " + overflow);
+    assert.deepEqual(errors, [], "no browser JS/console errors");
+    assert.deepEqual(outgoing, [], "no external or non-GET traffic");
     await context.close();
   } finally {
     if (browser) await browser.close();
