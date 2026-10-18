@@ -42,6 +42,14 @@ Run this from the repository root with Node.js 18+:
 
 The logic.mjs rules module does not depend on browser APIs; puzzle boards are in levels.mjs.
 
+The existing Prism Relay GitHub browser workflow now runs **the same localhost acceptance suite under Chromium and WebKit**, including a touch-enabled 375px simulated tablet test. Initial WebKit CI exposed a real **320px horizontal overflow** in the old `grid-template-columns:1fr` mobile layout: WebKit allowed the grid's intrinsic minimum to expand the play-area and controls beyond the viewport. The mobile column now uses `minmax(0, 1fr)` and both child panels may shrink. A second strict run identified the four `level-picker` buttons as an additional intrinsic-width source (2px/17px residual overflow), so the picker also uses `repeat(4, minmax(0, 1fr))` and buttons may shrink. The browser tests retain strict <=1px overflow assertions in desktop-sized and emulated-touch WebKit contexts; no content is intentionally clipped. It taps both an initially off-path mirror (acknowledged as a valid setup turn) and the on-path winning mirror, verifies keyboard solving, progress, audio failure handling, focus, reset and narrow 320px layout. Test runs use only same-origin GETs; no new runtime dependencies are installed.
+
+For a local WebKit check with Playwright/WebKit installed as a **test-only** dependency:
+
+    PRISM_BROWSER=webkit node --test experiments/agent-02-prism-relay/browser-smoke.mjs
+
+**Evidence boundary:** Linux Playwright WebKit with emulated `tap()` resembles an iOS browser engine but is not a physical iPad, actual VoiceOver test, or verification that audio can be heard. It also does not establish whether player agency or distinctiveness improved.
+
 ## Puzzle-depth audit
 
 See [difficulty-audit.md](difficulty-audit.md) for exhaustive mirror-configuration analysis. All four circuits have a unique shortest *final orientation*, but circuit 4 has 64 winning orientations among 512 possibilities. These are **technical design metrics**, not player feedback.
