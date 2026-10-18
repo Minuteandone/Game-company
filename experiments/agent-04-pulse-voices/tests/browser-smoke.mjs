@@ -303,7 +303,7 @@ test("browser: missing or blocked Web Audio reports unavailable without blocking
   let browser;
   try {
     browser = await chromium.launch({ headless: true });
-    for (const mode of ["missing", "constructor-throws", "resume-throws"]) {
+    for (const mode of ["missing", "constructor-throws", "resume-throws", "resume-rejects"]) {
       const context = await browser.newContext({
         viewport: { width: 900, height: 760 },
         reducedMotion: "reduce"
@@ -323,10 +323,15 @@ test("browser: missing or blocked Web Audio reports unavailable without blocking
           value: mode === "missing" ? undefined
             : mode === "constructor-throws"
               ? class { constructor() { throw new Error("audio blocked"); } }
-              : class {
-                  state = "suspended";
-                  resume() { throw new Error("audio resume blocked"); }
-                }
+              : mode === "resume-throws"
+                ? class {
+                    state = "suspended";
+                    resume() { throw new Error("audio resume blocked"); }
+                  }
+                : class {
+                    state = "suspended";
+                    resume() { return Promise.reject(new Error("audio resume rejected")); }
+                  }
         });
       }, { mode });
 
@@ -340,6 +345,7 @@ test("browser: missing or blocked Web Audio reports unavailable without blocking
       }
 
       await page.locator("#game").click({ position: { x: 90, y: 160 } });
+      await page.waitForFunction(() => document.querySelector("#sound")?.textContent === "n/a");
       assert.equal(await page.locator("#score").textContent(), "2",
         mode + ": failed audio setup must not prevent planting");
       assert.equal(await page.locator("#sound").textContent(), "n/a");
