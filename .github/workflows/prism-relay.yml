@@ -1,4 +1,4 @@
-name: Prism Relay browser smoke
+name: Prism Relay Chromium and WebKit smoke
 
 on:
   push:
@@ -29,7 +29,9 @@ jobs:
           node --test experiments/agent-02-prism-relay/*.test.mjs
       - name: Install temporary browser test tooling
         run: npm install --no-save --package-lock=false playwright@1.56.1
-      - name: Install headless Chromium
-        run: npx playwright install --with-deps chromium
-      - name: Run Prism Relay browser smoke test
-        run: node --test experiments/agent-02-prism-relay/browser-smoke.mjs
+      - name: Install headless Chromium and WebKit
+        run: npx playwright install --with-deps chromium webkit
+      - name: Run Chromium and WebKit Prism Relay smoke tests
+        run: |
+          node --test experiments/agent-02-prism-relay/browser-smoke.mjs
+          PRISM_BROWSER=webkit node --test experiments/agent-02-prism-relay/browser-smoke.mjs
