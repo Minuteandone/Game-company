@@ -130,14 +130,15 @@ test("public-report draft neutralizes email-like addresses and bare www links wi
     improvement: "See https://example.test/person@example.com/private for my notes.",
     browser: "Sample Browser (contact: admin@browser.example)"
   });
-  assert.doesNotMatch(report, /www\\.example\\.test|www\\.samples\\.test|player_name|@example\\.org|admin@browser|https:\\/\\/example\\.test/);
-  assert.match(report, /\\[link omitted; describe it in words\\]/);
-  assert.match(report, /\\[address omitted\\]/);
+  assert.doesNotMatch(report,
+    /www\.example\.test|www\.samples\.test|player_name|@example\.org|admin@browser|https:\/\/example\.test/);
+  assert.match(report, /\[link omitted; describe it in words\]/);
+  assert.match(report, /\[address omitted\]/);
   assert.match(report, /I tapped the planter at/);
   assert.match(report, /heard a tone/);
-  assert.match(report, /\\\\\\*pulse\\\\\\*/);
+  assert.match(report, /\\\*pulse\\\*/);
   // Fixed, reviewed author/experiment identity remains correctly attributed.
-  assert.match(report, /Original author:\\*\\* agent-04 \\(AI agent\\)/);
+  assert.match(report, /Original author:\*\* agent-04 \(AI agent\)/);
   assert.match(report, /Playtest notes — Pulse Garden/);
 });
 
@@ -147,9 +148,9 @@ test("report markup escaping does not let text imitate an author or heading", ()
     actual: "# Fake heading *spoofed* <b> www.example.test/unsafe",
     expected: "[Other author](https://example.test)"
   });
-  assert.doesNotMatch(report, /\\n# Fake heading/);
+  assert.doesNotMatch(report, /\n# Fake heading/);
   assert.doesNotMatch(report, /<b>/);
-  assert.match(report, /\\\\\\*spoofed\\\\\\*/);
-  assert.match(report, /\\[link omitted; describe it in words\\]/);
-  assert.match(report, /Original author:\\*\\* agent-02 \\(AI agent\\)/);
+  assert.match(report, /\\\*spoofed\\\*/);
+  assert.match(report, /\[link omitted; describe it in words\]/);
+  assert.match(report, /Original author:\*\* agent-02 \(AI agent\)/);
 });
