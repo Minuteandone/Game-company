@@ -9,6 +9,37 @@ const form = $("comparison"), preview = $("preview"), status = $("status");
 const requested = new URLSearchParams(location.search).get("pair");
 if(requested && Object.hasOwn(PAIRS,requested)) $("pair").value=requested;
 
+// The Markdown preview is explicitly editable. Track its last generated form
+// state so later edits never silently destroy hand-edited observations.
+let lastGeneratedPreview="";
+let lastGeneratedFields=[];
+function rememberFormFields(){
+  lastGeneratedFields=[...form.querySelectorAll("input, select, textarea")]
+    .map(field=>({field,value:field.value,checked:field.checked}));
+}
+function restoreFormFields(){
+  for(const saved of lastGeneratedFields){
+    saved.field.value=saved.value;
+    if(saved.field.type==="checkbox"||saved.field.type==="radio"){
+      saved.field.checked=saved.checked;
+    }
+  }
+}
+function hasManualPreviewEdits(){
+  return preview.value!==lastGeneratedPreview;
+}
+function regenerateWithManualEditConsent(){
+  if(hasManualPreviewEdits() && !window.confirm(
+    "You manually edited the Markdown report. Changing form answers will replace " +
+    "those edits. Copy or download the report first. Continue?"
+  )){
+    restoreFormFields();
+    status.textContent="Change cancelled. Your manually edited Markdown is unchanged.";
+    return;
+  }
+  regenerate();
+}
+
 function regenerate(){
   const answers=Object.fromEntries(new FormData(form));
   const games=orderedGames(answers.pair,answers.order);
@@ -31,6 +62,8 @@ function regenerate(){
   $("after-both").hidden=!canCompare;
   if(!canCompare)$("after-both").open=false;
   preview.value=buildComparison(answers);
+  lastGeneratedPreview=preview.value;
+  rememberFormFields();
   status.textContent="";
 }
 // A/B notes must not silently transfer to a different experiment or order.
@@ -41,15 +74,18 @@ function updateContext(){
   const nextPair=$("pair").value, nextOrder=$("order").value;
   const changed=nextPair!==previousPair||nextOrder!==previousOrder;
   if(changed && (GAME_NOTES.some(id=>$(id).value.trim()) ||
-      $("played").value!=="not-recorded")){
+      $("played").value!=="not-recorded" || hasManualPreviewEdits())){
     const approved=window.confirm(
       "Changing the pair or order will clear notes about experiences A and B, " +
-      "so they cannot be attributed to the wrong games. Continue?"
+      "so they cannot be attributed to the wrong games. This includes any " +
+      "manually edited Markdown report. Copy or download it first. Continue?"
     );
     if(!approved){
       $("pair").value=previousPair;
       $("order").value=previousOrder;
-      regenerate();
+      // Do not regenerate: that would itself erase the manual Markdown edits
+      // the visitor just asked us to preserve.
+      status.textContent="Switch cancelled. Your Markdown and form notes are unchanged.";
       return;
     }
     for(const id of GAME_NOTES)$(id).value="";
@@ -68,11 +104,11 @@ function updateContext(){
 }
 form.addEventListener("input",event=>{
   if(event.target.id==="pair"||event.target.id==="order")return;
-  regenerate();
+  regenerateWithManualEditConsent();
 });
 form.addEventListener("change",event=>{
   if(event.target.id==="pair"||event.target.id==="order")updateContext();
-  else regenerate();
+  else regenerateWithManualEditConsent();
 });
 form.addEventListener("submit",event=>event.preventDefault());
 $("copy").addEventListener("click",async()=>{
