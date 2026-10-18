@@ -364,3 +364,72 @@ test("browser: keyboard return link navigates from Prism Relay to arcade", async
     await new Promise(resolve => server.close(resolve));
   }
 });
+
+test("browser: rejected Web Audio resume announces unavailable without blocking solving", async () => {
+  const { server, url } = await startServer();
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext({ viewport: { width: 360, height: 740 } });
+    await context.addInitScript(() => {
+      class DeniedResumeAudio {
+        state = "suspended";
+        currentTime = 0;
+        destination = {};
+        resume() { return Promise.reject(new Error("synthetic audio resume denied")); }
+        createOscillator() {
+          return {
+            type: "sine",
+            frequency: { setValueAtTime() {} },
+            connect(gain) { return gain; },
+            start() {}, stop() {}
+          };
+        }
+        createGain() {
+          return {
+            gain: {
+              setValueAtTime() {},
+              exponentialRampToValueAtTime() {}
+            },
+            connect(destination) { return destination; }
+          };
+        }
+      }
+      Object.defineProperty(window, "AudioContext", {
+        configurable: true, value: DeniedResumeAudio
+      });
+      Object.defineProperty(window, "webkitAudioContext", {
+        configurable: true, value: undefined
+      });
+    });
+    const page = await context.newPage();
+    const runtimeErrors = [];
+    page.on("pageerror", error => runtimeErrors.push(error.message));
+    page.on("console", message => {
+      if (message.type() === "error") runtimeErrors.push(message.text());
+    });
+
+    assert.equal((await page.goto(url)).status(), 200);
+    const sound = page.locator("#sound");
+    await sound.click();
+    await page.waitForFunction(() =>
+      document.querySelector("#sound")?.textContent === "♫ Sound: unavailable");
+    assert.equal(await sound.getAttribute("aria-pressed"), "false",
+      "asynchronous denial must clear a previously pressed sound toggle");
+    assert.deepEqual(runtimeErrors, [], "rejected resume must not become an unhandled error");
+
+    // Rejected audio has no bearing on puzzle logic, click/keyboard input,
+    // unlocks, or locally reported puzzle completion.
+    await page.locator('#board .mirror[data-x="2"][data-y="3"]').focus();
+    await page.keyboard.press("Enter");
+    assert.equal(await page.locator("#beam-state").textContent(), "✦ SIGNAL CONNECTED");
+    assert.equal(await page.locator("#next").isDisabled(), false);
+    assert.equal(await sound.textContent(), "♫ Sound: unavailable");
+    assert.equal(await sound.getAttribute("aria-pressed"), "false");
+    assert.deepEqual(runtimeErrors, [], "no audio-related browser/page errors after solving");
+    await context.close();
+  } finally {
+    if (browser) await browser.close();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
