@@ -87,7 +87,7 @@ h2 { letter-spacing: -.04em; font-size: 32px; line-height: 1.14; margin: 22px 0 
 kbd { font: 700 10px ui-monospace, monospace; background: #274459; border: 1px solid #527086; border-radius: 3px; padding: 2px 4px; }
 footer { padding: 22px 0 27px; display: flex; gap: 15px; justify-content: space-between; border-top: 1px solid #2a4055; color: #829cab; font-size: 9px; }
 footer strong { color: var(--aqua); }
-@media(max-width: 900px) { .layout { grid-template-columns: 1fr; gap: 8px; padding-top: 35px; } .control-panel { margin-top: 0; } .play-area, .board-card { max-width: 670px; } .control-panel { max-width: 670px; } .mirror-glyph { font-size: clamp(22px, 7vw, 43px); } }
+@media(max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 8px; padding-top: 35px; } .play-area, .control-panel { min-width: 0; } .control-panel { margin-top: 0; } .play-area, .board-card { max-width: 670px; } .control-panel { max-width: 670px; } .mirror-glyph { font-size: clamp(22px, 7vw, 43px); } }
 @media(max-width: 540px) { .app-shell { padding: 0 14px; } .topbar { min-height: 72px; } .prototype-label { display: none; } .layout { padding-top: 28px; } .board-card { padding: 9px; border-radius: 14px; } .board-frame { padding: 5px; } .board { gap: 3px; } .tile { border-radius: 5px; } .board-topline, .board-bottomline { font-size: 8px; letter-spacing: .06em; } .board-bottomline { gap: 5px; } .control-panel { padding: 23px; } footer { flex-direction: column; } }
 @media(prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 
