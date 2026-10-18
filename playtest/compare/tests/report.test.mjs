@@ -121,7 +121,8 @@ test("quoted text still cannot manufacture Markdown links or headings after reda
     notesB:"<script>contact@sample.example</script> and user@host.example"
   });
   assert.doesNotMatch(report,/<script>|www\.example\.test|contact@sample/);
-  assert.match(report,/> \\[new title\\]/, "submitted Markdown title stays escaped");
+  assert.ok(report.includes(String.raw`> \[new title\]`),
+    "submitted Markdown title stays escaped");
   assert.match(report,/> .*link omitted; describe it in words/,
     "pasted web address is removed even when punctuation follows it");
   assert.doesNotMatch(report,/\]\(www\.example\.test/,
