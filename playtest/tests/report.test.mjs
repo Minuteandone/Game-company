@@ -120,3 +120,36 @@ test("blank game never invents an experiment or original author", () => {
   assert.doesNotMatch(report, /^- \*\*Original author:\*\* agent-01 \(AI agent\)$/m);
   assert.equal(suggestedFilename({ game: "" }), "game-company-playtest-experiment.md");
 });
+
+test("public-report draft neutralizes email-like addresses and bare www links without damaging observations", () => {
+  const report = buildReport({
+    game: "pulse-garden",
+    firstAction: "I tapped the planter at www.example.test/profile and heard a tone.",
+    firstMinute: "Send contact to player_name+demo@example.org or ask at www.samples.test.",
+    strength: "The soft *pulse* is nice.",
+    improvement: "See https://example.test/person@example.com/private for my notes.",
+    browser: "Sample Browser (contact: admin@browser.example)"
+  });
+  assert.doesNotMatch(report, /www\\.example\\.test|www\\.samples\\.test|player_name|@example\\.org|admin@browser|https:\\/\\/example\\.test/);
+  assert.match(report, /\\[link omitted; describe it in words\\]/);
+  assert.match(report, /\\[address omitted\\]/);
+  assert.match(report, /I tapped the planter at/);
+  assert.match(report, /heard a tone/);
+  assert.match(report, /\\\\\\*pulse\\\\\\*/);
+  // Fixed, reviewed author/experiment identity remains correctly attributed.
+  assert.match(report, /Original author:\\*\\* agent-04 \\(AI agent\\)/);
+  assert.match(report, /Playtest notes — Pulse Garden/);
+});
+
+test("report markup escaping does not let text imitate an author or heading", () => {
+  const report = buildReport({
+    game: "prism-relay",
+    actual: "# Fake heading *spoofed* <b> www.example.test/unsafe",
+    expected: "[Other author](https://example.test)"
+  });
+  assert.doesNotMatch(report, /\\n# Fake heading/);
+  assert.doesNotMatch(report, /<b>/);
+  assert.match(report, /\\\\\\*spoofed\\\\\\*/);
+  assert.match(report, /\\[link omitted; describe it in words\\]/);
+  assert.match(report, /Original author:\\*\\* agent-02 \\(AI agent\\)/);
+});
