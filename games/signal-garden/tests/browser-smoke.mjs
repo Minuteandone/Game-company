@@ -130,6 +130,12 @@ test(`browser (${selectedBrowser}): controls, full level, records, persistence a
     const beforeLabel = await page.locator(`#board button[data-index="${beforeFocus}"]`).getAttribute("aria-label");
     await page.keyboard.press("Enter");
     assert.equal(await page.locator("#turns").textContent(), "01", "Enter rotates a focused tile");
+    const turnStatus = await page.locator("#status").textContent();
+    assert.match(turnStatus,
+      new RegExp(`Row ${Math.floor(beforeFocus / 4) + 1}, column ${beforeFocus % 4 + 1} turned\\. Openings:`),
+      "status identifies the actual tile and updated connector directions");
+    assert.match(turnStatus, /Light unchanged so far \(1 tile glowing\)/,
+      "a legal rotation without immediate new glow must not sound like a failed click");
     const afterLabel = await page.locator(`#board button[data-index="${beforeFocus}"]`).getAttribute("aria-label");
     assert.notEqual(afterLabel, beforeLabel, "rotation must update the accessible opening directions");
     assert.match(afterLabel, /Openings (north|east|south|west)/);
@@ -221,6 +227,23 @@ test(`browser (${selectedBrowser}): controls, full level, records, persistence a
     assert.equal(await page.locator("#stage-name").textContent(), "The Detour");
     assert.equal(await page.locator("#level-list button").nth(1).isEnabled(), true);
     t.diagnostic("Replay tie, next-level unlock and localStorage persistence passed.");
+
+    // A different legal first turn in garden two actually expands the lit
+    // network. Discover it through shipped rules rather than guessing a cell.
+    const spreadingMove = await page.evaluate(async () => {
+      const { createBoard, tracePower, rotateTile } =
+        await import("/games/signal-garden/logic.mjs");
+      const board = createBoard(1);
+      const before = tracePower(board.tiles, board.size).powered.size;
+      const index = board.tiles.findIndex((tile, at) => !tile.locked &&
+        tracePower(rotateTile(board.tiles, at), board.size).powered.size > before);
+      return index;
+    });
+    assert.ok(spreadingMove >= 0, "level two should contain a first-click glow expansion");
+    await page.locator(`#board button[data-index="${spreadingMove}"]`).click();
+    assert.match(await page.locator("#status").textContent(),
+      /Row \d+, column \d+ turned\. Openings: .*Light spread to \d+ tiles \(\+\d+\)/);
+    await page.locator("#reset").click();
 
     // Complete garden two using keyboard Tab navigation + Enter exclusively.
     // Unlike pointer-driven completion above, focus must find the real button.
