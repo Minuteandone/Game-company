@@ -47,7 +47,7 @@ jobs:
         run: node --test playtest/tests/browser-smoke.mjs playtest/compare/tests/browser-smoke.mjs
 
   webkit-worksheet:
-    name: WebKit single-game worksheet smoke
+    name: WebKit feedback worksheets smoke
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
