@@ -28,7 +28,15 @@ function restoreFormFields(){
 function hasManualPreviewEdits(){
   return preview.value!==lastGeneratedPreview;
 }
+function formHasChanges(){
+  return lastGeneratedFields.some(({field,value,checked})=>
+    field.value!==value ||
+    ((field.type==="checkbox"||field.type==="radio")&&field.checked!==checked));
+}
 function regenerateWithManualEditConsent(){
+  // A textarea's change event often follows its input event on blur. Never
+  // regenerate (or prompt again) if nothing changed since the last generation.
+  if(!formHasChanges())return;
   if(hasManualPreviewEdits() && !window.confirm(
     "You manually edited the Markdown report. Changing form answers will replace " +
     "those edits. Copy or download the report first. Continue?"
@@ -73,6 +81,7 @@ const GAME_NOTES=["notesA","notesB","returnChoice","difference","friction","vers
 function updateContext(){
   const nextPair=$("pair").value, nextOrder=$("order").value;
   const changed=nextPair!==previousPair||nextOrder!==previousOrder;
+  if(!changed)return;
   if(changed && (GAME_NOTES.some(id=>$(id).value.trim()) ||
       $("played").value!=="not-recorded" || hasManualPreviewEdits())){
     const approved=window.confirm(
