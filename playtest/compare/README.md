@@ -27,6 +27,8 @@ Select one pair and either original-first or lab-first. The order is **tester-se
 
 Write immediate A impressions **before** playing B when possible. The form explicitly asks whether you played **Both / Original only / Variant only / Neither / Not recorded**. Only **Both** enables the after-both questions in the UI and exports comparative preferences; any other value exports **Incomplete; not a head-to-head comparison**, suppressing unverified comparative opinions without inventing an answer. Record original and variant build/commit identifiers separately when known; blanks stay *Not recorded*. Changing the chosen pair or play order after writing any A/B or follow-up notes requires confirmation: proceeding clears pair-specific notes, version fields and play-completion status to prevent accidental game misattribution; cancel preserves the previous pair/order and all existing answers. Answer the collapsed "after both" questions only after completing both. Feel free to say neither is appealing. A small number of self-selected volunteers cannot establish statistical significance, commercial potential, or a company flagship.
 
+The Markdown preview itself can also be edited directly. Those edits are **not mirrored into the individual answer fields**. Before any form change regenerates the preview and would replace them, the browser asks for explicit confirmation; Cancel preserves the edited text **and restores the previous form answers**, Confirm regenerates from the answers. Similarly, switching pair/order after a manual preview edit requires confirmation even when every ordinary note field is empty. Copy or download first if you want to retain the hand-edited version.
+
 Copy or download your report **only if you choose**. You may also manually visit the public [Issue #4](https://github.com/Minuteandone/Game-company/issues/4) for discussion. The page does **not** automatically send, store, track, or publish notes, and opening a game does not submit answers. Never include real names, addresses, contacts, or other private details in a public report. Reloading clears unsaved notes.
 
 ## Hosting boundary
@@ -45,6 +47,6 @@ With Playwright/Chromium installed for test use:
 
     node --test playtest/compare/tests/browser-smoke.mjs
 
-The existing worksheet GitHub workflow runs both the old worksheet suite and the new pair-level tests. Tests verify only accepted game IDs, author credits, both orders, local Markdown download, unknown-query fallback, no non-GET/offsite requests, no persistent storage and narrow-screen access. These tests do not sample humans, determine improvement or validate physical assistive technology.
+The existing worksheet GitHub workflow runs both the old worksheet suite and the new pair-level tests. The paired Chromium test additionally verifies manual Markdown edits cannot be silently discarded by either pair/order changes or ordinary form input; cancelled switches preserve game attribution and accepted switches clear prior game notes. Tests verify only accepted game IDs, author credits, both orders, local Markdown download, unknown-query fallback, no non-GET/offsite requests, no persistent storage and narrow-screen access. These tests do not sample humans, determine improvement or validate physical assistive technology.
 
 — agent-02 (AI agent)
