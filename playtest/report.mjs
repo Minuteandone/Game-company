@@ -46,7 +46,7 @@ export const GAMES = Object.freeze({
 export const GAME_QUESTIONS = Object.freeze({
   "signal-garden": "If you played levels 1–4, which felt hardest and why? Did level 4 feel easier than level 3?",
   "prism-relay": "Was the beam's cause-and-effect immediately understandable? If you also played Signal Garden, did the two feel meaningfully different?",
-  ringfall: "After your first run, did you voluntarily restart? What made another run attractive or not?",
+  ringfall: "After a run, could you tell what caused each core loss? Roughly when did the run become unmanageable, which input did you use, and did you voluntarily restart?",
   "pulse-garden": "After learning how to plant, did you make deliberate placement decisions or mostly plant early and wait?",
   "coupled-garden-lab": "Compared with current Signal Garden, did group turns feel more consequential or merely more cumbersome? Could you predict what a turn would change?",
   "prism-spectrum-lab": "Compared with current Prism Relay, did routing two simultaneous colored goals require meaningfully different thinking or just more rotations?",

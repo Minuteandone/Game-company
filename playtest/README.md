@@ -57,7 +57,7 @@ An additional prompt now changes with the selected experiment, drawing on the ex
 
 - **Signal Garden:** which of levels 1–4 actually felt hardest?
 - **Prism Relay:** did the beam feel legible, and different from Signal Garden?
-- **Ringfall:** was a second run voluntary, and why?
+- **Ringfall:** could the player identify each damage cause, roughly when did pressure become unmanageable, which input did they use, and did they voluntarily restart?
 - **Pulse Garden:** was placement deliberate, or did the player mostly wait?
 - **Coupled Garden lab:** did group turns feel consequential/predictable or merely cumbersome?
 - **Forked Spectrum lab:** did simultaneous colored goals require different thinking or just more rotations?
