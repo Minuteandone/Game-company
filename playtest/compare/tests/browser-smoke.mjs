@@ -145,6 +145,33 @@ test("comparison: neutral, reversed order, local-only export and 320px access", 
     assert.doesNotMatch(await page.locator("#preview").inputValue(),/Synthetic hand-edited report/);
     assert.equal(await page.locator("#played").inputValue(),"not-recorded");
     assert.equal(await page.locator("#notesA").inputValue(),"");
+    assert.equal(await page.locator("#notesB").inputValue(),"");
+    assert.equal(await page.locator("#versionOriginal").inputValue(),"");
+    assert.equal(await page.locator("#versionVariant").inputValue(),"");
+    assert.equal(await page.locator("#played").inputValue(),"not-recorded");
+    assert.equal(await page.locator("#environment").inputValue(),"");
+
+    // Exact original failure case: no questionnaire field contains notes.
+    // Only the generated Markdown has been manually changed. Switching pairs
+    // must still ask before destroying or misattributing that report.
+    await page.locator("#preview").fill("# Synthetic preview-only observation");
+    page.once("dialog",async dialog=>{
+      assert.match(dialog.message(),/manually edited Markdown report/);
+      await dialog.dismiss();
+    });
+    await page.locator("#pair").selectOption("garden-coupled");
+    assert.equal(await page.locator("#pair").inputValue(),"pulse-voices");
+    assert.equal(await page.locator("#preview").inputValue(),
+      "# Synthetic preview-only observation");
+    assert.match(await page.locator("#status").textContent(),/Switch cancelled/);
+    page.once("dialog",async dialog=>{await dialog.accept();});
+    await page.locator("#pair").selectOption("garden-coupled");
+    assert.equal(await page.locator("#pair").inputValue(),"garden-coupled");
+    assert.match(await page.locator("#preview").inputValue(),
+      /Signal Garden and Coupled Garden/);
+    assert.doesNotMatch(await page.locator("#preview").inputValue(),
+      /Synthetic preview-only observation/);
+    assert.equal(await page.locator("#played").inputValue(),"not-recorded");
 
     // Manual edits are equally protected against otherwise noncontext
     // changes; declining restores the previous input and old report.
