@@ -58,5 +58,5 @@ jobs:
         run: npm install --no-save --package-lock=false playwright@1.56.1
       - name: Install headless WebKit
         run: npx playwright install --with-deps webkit
-      - name: Exercise the feedback attribution guard in WebKit
-        run: PLAYTEST_BROWSER=webkit node --test playtest/tests/browser-smoke.mjs
+      - name: Exercise both private feedback worksheets in WebKit
+        run: PLAYTEST_BROWSER=webkit node --test playtest/tests/browser-smoke.mjs playtest/compare/tests/browser-smoke.mjs
