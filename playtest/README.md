@@ -14,6 +14,8 @@ python3 -m http.server 8000
 
 Open **http://localhost:8000/playtest/**, or visit the [public playtest worksheet](https://minuteandone.github.io/Game-company/playtest/). **No experiment is preselected.** Choose the shipped game or reviewed comparison lab you actually played to correctly attribute the report. The four shipped games reveal an optional **Open [game] in a new tab** link; comparison labs are attribution-only here and remain intentionally absent from the arcade/downloadable `_site` package. Their verified public Pages links live in [Issue #4](https://github.com/Minuteandone/Game-company/issues/4). The worksheet does **not** infer which game you visited, track browsing history or store a remembered selection. If you leave the choice blank, the report explicitly says **Unspecified experiment**, records no original game author and provides no game-specific launch link. Play before recording your first impressions; only complete fields you can meaningfully answer. Selecting a game or opening its link does not submit, save or send your answers.
 
+**Changing the selected experiment after filling a report:** when a named game's notes, ratings, test context, or manually edited preview already exist, the page asks for confirmation before clearing those details and switching game identity. Cancel preserves the game and all notes; confirm starts a clean report for the new game. If the selection was initially blank, you can identify the game *after* writing first impressions without erasing them. Copy or download before deliberately switching from a completed report. This prevents written feedback from being silently relabeled as another agent's experiment.
+
 The report preview updates locally as you type and can be edited directly. Select **Copy Markdown** or **Download .md** when ready. If you want to share an observation, the worksheet also links to the existing **[public prototype feedback discussion (Issue #4)](https://github.com/Minuteandone/Game-company/issues/4)**. This opens GitHub separately, does not insert or transmit notes, and requires you to choose what to post yourself. **Review the report for names, contact details, and any other personal information before making a public GitHub comment.** Sharing is never required, and the tool does **not** submit a report to GitHub or any server.
 
 ## Privacy and evidence boundaries
@@ -35,9 +37,11 @@ The page works entirely as a static site; importing its ES module requires a loc
 node --test playtest/tests/report.test.mjs
 # With temporary Playwright + Chromium installed:
 node --test playtest/tests/browser-smoke.mjs
+# With temporary Playwright + WebKit installed:
+PLAYTEST_BROWSER=webkit node --test playtest/tests/browser-smoke.mjs
 ```
 
-The pure tests check all seven reviewed identities (four shipped games + three comparison labs), **unattributed blank reports**, missing-value handling, invalid values and Markdown escaping. The Chromium smoke test exercises correct shipped/lab deep-link attribution, verifies that labs do **not** receive launch URLs, preserves all four shipped-game launch links, user-initiated navigation, retention of unsent worksheet entries, exact exported Markdown, and small-screen behavior without automatically sending data. Neither constitutes a manual human study.
+The pure tests check all seven reviewed identities (four shipped games + three comparison labs), **unattributed blank reports**, missing-value handling, invalid values and Markdown escaping. The Chromium smoke test exercises correct shipped/lab deep-link attribution, verifies that labs do **not** receive launch URLs, preserves all four shipped-game launch links, user-initiated navigation, retention of unsent worksheet entries, exact exported Markdown, and small-screen behavior without automatically sending data. The single-game suite also runs in **Playwright WebKit** to check the same game-switch cancel/confirm behavior in a second browser engine, relevant to the initial tester's iOS-browser context. This is **not** a physical iPad or assistive-technology test, nor a manual human study.
 
 ## Game context from the arcade
 

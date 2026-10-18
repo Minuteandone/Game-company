@@ -1,5 +1,5 @@
 /**
- * Real HTTP/Chromium integration smoke test for the voluntary playtest worksheet.
+ * Real HTTP/Chromium+WebKit integration smoke test for the voluntary playtest worksheet.
  * Author: agent-01 (AI agent). Playwright is test-only, not a game dependency.
  */
 import test from "node:test";
@@ -8,12 +8,14 @@ import http from "node:http";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { chromium } from "playwright";
+import { chromium, webkit } from "playwright";
+const browserType = process.env.PLAYTEST_BROWSER === "webkit" ? webkit : chromium;
+const browserLabel = browserType.name();
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const MIME = { ".html": "text/html", ".mjs": "text/javascript", ".css": "text/css" };
 
-test("worksheet: real controls, local-only Markdown download and narrow layout", async (t) => {
+test(`worksheet (${browserLabel}): real controls, local-only Markdown download and narrow layout`, async (t) => {
   const requests = [];
   const server = http.createServer(async (request, response) => {
     const url = new URL(request.url ?? "/", "http://localhost");
@@ -40,7 +42,7 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
 
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await browserType.launch({ headless: true });
     const page = await browser.newPage({
       viewport: { width: 1100, height: 850 },
       reducedMotion: "reduce",
@@ -230,6 +232,60 @@ test("worksheet: real controls, local-only Markdown download and narrow layout",
       "# Custom note edited by the tester");
     await popup.close();
     t.diagnostic("Opening the selected playable game is opt-in and preserves unsent feedback notes.");
+
+    // A submitted first-round Prism Relay review was mislabeled Signal Garden.
+    // Merely changing the selector must never silently relabel typed notes.
+    // Test both typed form answers and a manually edited Markdown preview.
+    const changedPreview = await page.locator("#preview").inputValue();
+    const rejected = page.waitForEvent("dialog");
+    await Promise.all([
+      page.locator("#game").selectOption("prism-relay"),
+      (async () => {
+        const dialog = await rejected;
+        assert.match(dialog.message(), /clear this report's notes, ratings and test context/);
+        await dialog.dismiss();
+      })()
+    ]);
+    assert.equal(await page.locator("#game").inputValue(), "pulse-garden",
+      "Cancel must restore the previous game's identity");
+    assert.equal(await page.locator("#firstAction").inputValue(),
+      "I tried the arrow keys before reading the help.");
+    assert.equal(await page.locator("#preview").inputValue(), changedPreview,
+      "Cancelling must preserve manual edits to the exported Markdown");
+    assert.match(await page.locator("#status").textContent(), /Switch cancelled/);
+
+    const accepted = page.waitForEvent("dialog");
+    await Promise.all([
+      page.locator("#game").selectOption("prism-relay"),
+      (async () => {
+        const dialog = await accepted;
+        assert.match(dialog.message(), /Copy or download them first/);
+        await dialog.accept();
+      })()
+    ]);
+    assert.equal(await page.locator("#game").inputValue(), "prism-relay");
+    assert.equal(await page.locator("#firstAction").inputValue(), "");
+    assert.equal(await page.locator("#specific").inputValue(), "");
+    assert.equal(await page.locator("#goal").inputValue(), "Not recorded");
+    assert.equal(await page.locator("#enjoyment").inputValue(), "");
+    assert.equal(await page.locator("#device").inputValue(), "Not recorded");
+    assert.equal(await page.locator('input[value="Keyboard"]').isChecked(), false);
+    assert.equal(await page.locator("#specific-followup").getAttribute("open"), null);
+    assert.match(await page.locator("#preview").inputValue(), /Playtest notes — Prism Relay/);
+    assert.doesNotMatch(await page.locator("#preview").inputValue(), /Custom note edited by the tester|mostly waited/);
+    assert.equal(await page.locator("#play-selected").getAttribute("href"),
+      "../experiments/agent-02-prism-relay/");
+    assert.match(await page.locator("#status").textContent(), /notes were cleared/);
+
+    // Blank form is a neutral staging area: a tester who wrote notes before
+    // choosing a game must still be able to attribute those notes without loss.
+    await page.locator("#game").selectOption("");
+    await page.locator("#firstAction").fill("I pressed a tile before picking the game.");
+    await page.locator("#game").selectOption("signal-garden");
+    assert.equal(await page.locator("#firstAction").inputValue(),
+      "I pressed a tile before picking the game.");
+    assert.match(await page.locator("#preview").inputValue(), /Playtest notes — Signal Garden/);
+    t.diagnostic("Switching filled-game context requires consent; cancelled changes preserve, accepted changes clear, neutral attribution preserves.");
     await page.close();
   } finally {
     if (browser) await browser.close();
