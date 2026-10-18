@@ -286,6 +286,58 @@ test(`worksheet (${browserLabel}): real controls, local-only Markdown download a
       "I pressed a tile before picking the game.");
     assert.match(await page.locator("#preview").inputValue(), /Playtest notes — Signal Garden/);
     t.diagnostic("Switching filled-game context requires consent; cancelled changes preserve, accepted changes clear, neutral attribution preserves.");
+
+    // The Markdown preview is editable even if all ordinary answer fields are
+    // untouched. Changes to another answer must not erase hand-edited text.
+    await page.locator("#preview").fill("# My carefully revised Signal Garden report");
+    page.once("dialog", async dialog => {
+      assert.match(dialog.message(), /manually edited this Markdown report/i);
+      await dialog.dismiss();
+    });
+    await page.locator("#device").selectOption("Tablet");
+    assert.equal(await page.locator("#device").inputValue(), "Not recorded",
+      "rejecting a form change restores the previous answer");
+    assert.equal(await page.locator("#preview").inputValue(),
+      "# My carefully revised Signal Garden report");
+    assert.match(await page.locator("#status").textContent(), /hand-edited report was preserved/);
+
+    // Checkboxes need the same reversible snapshot semantics.
+    page.once("dialog", async dialog => { await dialog.dismiss(); });
+    await page.locator('input[value="Touch"]').check();
+    assert.equal(await page.locator('input[value="Touch"]').isChecked(), false);
+    assert.equal(await page.locator("#preview").inputValue(),
+      "# My carefully revised Signal Garden report");
+
+    page.once("dialog", async dialog => { await dialog.accept(); });
+    await page.locator("#device").selectOption("Tablet");
+    assert.equal(await page.locator("#device").inputValue(), "Tablet");
+    assert.match(await page.locator("#preview").inputValue(), /Tablet/);
+    assert.doesNotMatch(await page.locator("#preview").inputValue(),
+      /My carefully revised Signal Garden report/);
+
+    // Switching a blank, unattributed worksheet with a manually edited
+    // Markdown report must also request permission, while ordinary answers
+    // written before selection still remain supported without a prompt.
+    page.once("dialog", async dialog => { await dialog.accept(); });
+    await page.locator("#game").selectOption("");
+    assert.equal(await page.locator("#game").inputValue(), "");
+    await page.locator("#preview").fill("# Neutral custom notes, no game assigned");
+    page.once("dialog", async dialog => {
+      assert.match(dialog.message(), /Choosing a game will regenerate this hand-edited Markdown report/);
+      await dialog.dismiss();
+    });
+    await page.locator("#game").selectOption("prism-relay");
+    assert.equal(await page.locator("#game").inputValue(), "");
+    assert.equal(await page.locator("#preview").inputValue(),
+      "# Neutral custom notes, no game assigned");
+
+    page.once("dialog", async dialog => { await dialog.accept(); });
+    await page.locator("#game").selectOption("prism-relay");
+    assert.equal(await page.locator("#game").inputValue(), "prism-relay");
+    assert.match(await page.locator("#preview").inputValue(), /Playtest notes — Prism Relay/);
+    assert.doesNotMatch(await page.locator("#preview").inputValue(), /Neutral custom notes/);
+    t.diagnostic("Manual Markdown is protected from ordinary form changes, checkbox changes and neutral-to-game selection in Chromium/WebKit.");
+
     await page.close();
   } finally {
     if (browser) await browser.close();
