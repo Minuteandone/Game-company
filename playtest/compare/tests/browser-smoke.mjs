@@ -121,6 +121,56 @@ test("comparison: neutral, reversed order, local-only export and 320px access", 
     assert.equal(download.suggestedFilename(),"game-company-comparison-prism-fork.md");
     assert.match(await page.locator("#status").textContent(),/Nothing was submitted/);
 
+    // A manual Markdown edit was previously lost with no prompt on a
+    // pair/order change if all named form fields were blank. It could also
+    // disappear when an unrelated input caused automatic regeneration.
+    await page.locator("#preview").fill("# Synthetic hand-edited report for Prism");
+    page.once("dialog", async dialog=>{
+      assert.match(dialog.message(),/manually edited Markdown report/);
+      await dialog.dismiss();
+    });
+    await page.locator("#pair").selectOption("pulse-voices");
+    assert.equal(await page.locator("#pair").inputValue(),"prism-fork");
+    assert.equal(await page.locator("#preview").inputValue(),
+      "# Synthetic hand-edited report for Prism",
+      "Rejecting a pair change preserves direct Markdown edits and original attribution");
+    assert.match(await page.locator("#status").textContent(),/Switch cancelled/);
+
+    // Accepting the context switch deliberately discards the old report
+    // while removing observations and played-both claims from the new pair.
+    page.once("dialog",async dialog=>{await dialog.accept();});
+    await page.locator("#pair").selectOption("pulse-voices");
+    assert.equal(await page.locator("#pair").inputValue(),"pulse-voices");
+    assert.match(await page.locator("#preview").inputValue(),/Pulse Garden and Plant Voices/);
+    assert.doesNotMatch(await page.locator("#preview").inputValue(),/Synthetic hand-edited report/);
+    assert.equal(await page.locator("#played").inputValue(),"not-recorded");
+    assert.equal(await page.locator("#notesA").inputValue(),"");
+
+    // Manual edits are equally protected against otherwise noncontext
+    // changes; declining restores the previous input and old report.
+    await page.locator("#preview").fill("# Carefully revised local report");
+    page.once("dialog",async dialog=>{
+      assert.match(dialog.message(),/Changing form answers will replace/);
+      await dialog.dismiss();
+    });
+    await page.locator("#environment").fill("Synthetic tablet notes");
+    assert.equal(await page.locator("#environment").inputValue(),"");
+    assert.equal(await page.locator("#preview").inputValue(),
+      "# Carefully revised local report");
+    assert.match(await page.locator("#status").textContent(),/Change cancelled/);
+    // A blur/change following a rejected input must not ask again or erase.
+    await page.locator("#pair").focus();
+    assert.equal(await page.locator("#preview").inputValue(),
+      "# Carefully revised local report");
+
+    page.once("dialog",async dialog=>{await dialog.accept();});
+    await page.locator("#environment").fill("Synthetic tablet notes");
+    assert.equal(await page.locator("#environment").inputValue(),"Synthetic tablet notes");
+    assert.match(await page.locator("#preview").inputValue(),/> Synthetic tablet notes/);
+    assert.doesNotMatch(await page.locator("#preview").inputValue(),/Carefully revised local report/);
+    // All these operations remain local; the shared request assertions below
+    // still reject even a single non-GET/off-origin request.
+
     await page.goto(url+"?pair=javascript:alert(1)");
     assert.equal(await page.locator("#pair").inputValue(),"");
     assert.equal(await page.locator("#link-a").getAttribute("href"),null);
