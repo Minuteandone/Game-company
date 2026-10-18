@@ -202,3 +202,67 @@ test("browser: pointer + keyboard planting, pause, resize, mute and reset", asyn
     await new Promise(resolve => server.close(resolve));
   }
 });
+
+
+test("browser: missing or blocked Web Audio reports unavailable without blocking planting", async (t) => {
+  const { server, baseUrl } = await startServer();
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true });
+    for (const mode of ["missing", "constructor-throws", "resume-throws"]) {
+      const context = await browser.newContext({
+        viewport: { width: 900, height: 760 },
+        reducedMotion: "reduce"
+      });
+      const page = await context.newPage();
+      const runtimeErrors = [];
+      page.on("pageerror", error => runtimeErrors.push(error.message));
+      page.on("console", message => {
+        if (message.type() === "error") runtimeErrors.push(message.text());
+      });
+      await page.addInitScript(({ mode }) => {
+        Object.defineProperty(window, "webkitAudioContext", {
+          configurable: true, value: undefined
+        });
+        Object.defineProperty(window, "AudioContext", {
+          configurable: true,
+          value: mode === "missing" ? undefined
+            : mode === "constructor-throws"
+              ? class { constructor() { throw new Error("audio blocked"); } }
+              : class {
+                  state = "suspended";
+                  resume() { throw new Error("audio resume blocked"); }
+                }
+        });
+      }, { mode });
+
+      const response = await page.goto(baseUrl);
+      assert.equal(response.status(), 200);
+      if (mode === "missing") {
+        assert.equal(await page.locator("#sound").textContent(), "n/a");
+        assert.equal(await page.locator("#audio-note").isVisible(), true);
+      } else {
+        assert.equal(await page.locator("#sound").textContent(), "on");
+      }
+
+      await page.locator("#game").click({ position: { x: 90, y: 160 } });
+      assert.equal(await page.locator("#score").textContent(), "2",
+        mode + ": failed audio setup must not prevent planting");
+      assert.equal(await page.locator("#sound").textContent(), "n/a");
+      assert.equal(await page.locator("#audio-note").isVisible(), true);
+      assert.match(await page.locator("#audio-note").textContent(), /planting still works/i);
+
+      await page.keyboard.press("m");
+      assert.equal(await page.locator("#sound").textContent(), "off");
+      await page.keyboard.press("m");
+      assert.equal(await page.locator("#sound").textContent(), "n/a");
+
+      assert.deepEqual(runtimeErrors, [], mode + ": no uncaught errors");
+      await context.close();
+    }
+    t.diagnostic("Sound availability is truthful with missing, refused and blocked Web Audio; gameplay stays playable.");
+  } finally {
+    if (browser) await browser.close();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
