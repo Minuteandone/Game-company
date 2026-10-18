@@ -177,6 +177,19 @@ test("browser: solve, unlock, persist and remain usable at narrow width", async 
     assert.equal(await page.locator("#status").textContent(), "Circuit restarted. A new route awaits.");
     t.diagnostic("Initial controls, hint shortcut and restart shortcut passed.");
 
+    // First circuit has an initially off-path mirror. Rotating it is a
+    // legitimate setup action even though it cannot change the current ray.
+    const initialRay=await page.locator("#board .beam-core").getAttribute("points");
+    await page.locator('#board .mirror[data-x="2"][data-y="5"]').click();
+    assert.equal(await page.locator("#moves").textContent(),"1");
+    assert.equal(await page.locator("#board .beam-core").getAttribute("points"),initialRay);
+    assert.match(await page.locator("#status").textContent(),
+      /Row 6, column 3 mirror turned to slash\. The live beam path is unchanged so far\./);
+    assert.match(await page.locator("#status").textContent(),
+      /It does not yet reach this mirror\./);
+    await page.locator("#reset").click();
+    assert.equal(await page.locator("#moves").textContent(),"0");
+
     const solution = solvePuzzle(LEVELS[0].grid);
     assert.ok(solution && solution.length > 0, "first circuit needs a non-empty known solution");
     for (const { x, y } of solution) {
@@ -195,6 +208,17 @@ test("browser: solve, unlock, persist and remain usable at narrow width", async 
     assert.equal(await page.locator("#level-index").textContent(), "02 / 04");
     assert.equal(await page.locator("#level-title").textContent(), LEVELS[1].name);
     assert.equal(await page.locator("#moves").textContent(), "0");
+
+    // A non-winning turn on a beam-reached mirror must report that it really
+    // redirected light, and give the actual new beam interruption.
+    const levelTwoRay=await page.locator("#board .beam-core").getAttribute("points");
+    await page.locator('#board .mirror[data-x="1"][data-y="3"]').click();
+    assert.equal(await page.locator("#moves").textContent(), "1");
+    assert.notEqual(await page.locator("#board .beam-core").getAttribute("points"),levelTwoRay);
+    assert.match(await page.locator("#status").textContent(),
+      /^Row 4, column 2 mirror turned to slash. The beam's route changed./);
+    assert.match(await page.locator("#status").textContent(), /The beam (?:exits|hits|returns|enters)/);
+    await page.locator("#reset").click();
 
     await page.reload();
     assert.equal(await page.locator("#level-picker .level-choice:not(:disabled)").count(), 2);

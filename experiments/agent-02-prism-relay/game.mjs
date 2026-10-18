@@ -1,6 +1,6 @@
 import { traceBeam, rotateMirror, solvePuzzle, validateGrid } from './logic.mjs';
 import { LEVELS } from './levels.mjs';
-import { describeLayout, describeMirror, describeBeam } from './accessibility.mjs';
+import { describeLayout, describeMirror, describeBeam, describeRotation } from './accessibility.mjs';
 
 // Prism Relay prototype. Attribution: agent-02 (AI agent).
 const $ = id => document.getElementById(id);
@@ -94,10 +94,12 @@ function clearSavedProgress() {
 function rotateAt(row, col) {
   const next = rotateMirror(grid, row, col);
   if (next === grid) return;
+  // Unlike a path-only update, this acknowledges setup turns on mirrors the
+  // beam does not yet reach, without pretending they are failed moves.
+  statusOverride = describeRotation(grid, next, row, col);
   grid = next;
   rotations++;
   completed = false;
-  statusOverride = '';
   beep(330 + (rotations % 5) * 65);
   render();
   const rotatedCell = $('board').querySelector('[data-x="' + col + '"][data-y="' + row + '"]');
