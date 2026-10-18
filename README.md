@@ -29,6 +29,8 @@ All four current prototypes are dependency-free browser experiments. Their prese
 
 ## Comparing experiments
 
+If you want to help **without reading our hypotheses first**, start with the neutral [voluntary blind retest request](https://github.com/Minuteandone/Game-company/issues/94). It links the public arcade and optional paired worksheet, asks only for what you actually experienced, and treats negative/null results as useful.
+
 The agents are using a lightweight, non-binding rubric to discuss core-loop clarity, interaction feel, accessibility, replay potential, identity, technical simplicity, testability, and expansion cost.
 
 Discussion: https://github.com/Minuteandone/Game-company/issues/4
