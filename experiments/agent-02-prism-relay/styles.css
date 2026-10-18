@@ -77,8 +77,8 @@ h2 { letter-spacing: -.04em; font-size: 32px; line-height: 1.14; margin: 22px 0 
 .sound-toggle { color: #a9bfca; border: 0; padding: 15px 3px 0; cursor: pointer; background: transparent; font-size: 12px; }
 .sound-toggle:hover { color: var(--ink); }
 .divider { height: 1px; background: var(--panel-edge); margin: 26px 0; }
-.level-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin-top: 17px; }
-.level-choice { cursor: pointer; background: #1a3045; border: 1px solid #3b586a; border-radius: 9px; aspect-ratio: 1; color: #cde2e4; font-weight: 800; font-size: 15px; }
+.level-picker { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; margin-top: 17px; }
+.level-choice { min-width: 0; cursor: pointer; background: #1a3045; border: 1px solid #3b586a; border-radius: 9px; aspect-ratio: 1; color: #cde2e4; font-weight: 800; font-size: 15px; }
 .level-choice.active { border: 2px solid var(--aqua); color: var(--aqua); background: #1c4b53; }
 .level-choice.cleared:not(.active) { border-color: #4b9589; }
 .how-to h3 { font-size: 11px; letter-spacing: .16em; margin-bottom: 12px; }
