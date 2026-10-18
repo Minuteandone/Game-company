@@ -22,6 +22,7 @@ The report preview updates locally as you type and can be edited directly. **Dir
 
 - No login, tracking, network API, cookies, local storage or telemetry.
 - No personal data is requested. Testers are explicitly asked not to enter names, contact information or other private details.
+- **Generated Markdown** replaces common pasted `http(s)://` links, `www.` links and email-like addresses with explanatory placeholders. This is a limited safeguard against accidental public sharing, **not comprehensive anonymization**: names, locations, handles, uncommon contact syntax, and any content typed directly into the editable preview can still remain. Always review the exact exported report before voluntarily posting it publicly.
 - No automatic date, precise location, user agent fingerprint, IP address or identity is inserted into a report.
 - Nothing is saved persistently by the application. Closing or reloading clears unsaved form contents.
 - Downloading a Markdown report creates a local file only upon a user action. Copy uses browser clipboard permission if available, otherwise selects the report for manual copying.
