@@ -24,6 +24,30 @@ const MIME = {
   ".css": "text/css; charset=utf-8"
 };
 
+async function captureNarrowOverflow(page) {
+  await page.evaluate(() => new Promise(resolve =>
+    requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  return page.evaluate(() => {
+    const width = document.documentElement.clientWidth;
+    const overflow = document.documentElement.scrollWidth - width;
+    const offenders = [...document.querySelectorAll("body *")].flatMap(el => {
+      const rect = el.getBoundingClientRect();
+      const excess = Math.round(rect.right - width);
+      if (excess <= 1) return [];
+      return [{
+        element: el.tagName.toLowerCase(),
+        id: el.id || undefined,
+        className: typeof el.className === "string" ? el.className : undefined,
+        right: Math.round(rect.right),
+        excess,
+        scroll: el.scrollWidth,
+        client: el.clientWidth
+      }];
+    }).sort((a,b) => b.excess - a.excess).slice(0, 12);
+    return { width, overflow, bodyScroll: document.body.scrollWidth, offenders };
+  });
+}
+
 function startServer() {
   const server = http.createServer(async (req, res) => {
     try {
@@ -348,10 +372,8 @@ test("browser: keyboard return link navigates from Prism Relay to arcade", async
     assert.equal(await back.getAttribute("href"), "../../index.html");
     for (const width of [360, 320]) {
       await page.setViewportSize({ width, height: 740 });
-      const overflow = await page.evaluate(() =>
-        document.documentElement.scrollWidth - document.documentElement.clientWidth
-      );
-      assert.ok(overflow <= 1, width + "px viewport has " + overflow + "px horizontal overflow");
+      const size = await captureNarrowOverflow(page);
+      assert.ok(size.overflow <= 1, width + "px viewport: " + JSON.stringify(size));
       assert.ok(await back.isVisible(), "return-to-arcade link remains visible");
     }
     await back.focus();
@@ -477,11 +499,8 @@ test("browser " + browserLabel + ": simulated touch rotates live and off-beam mi
     assert.equal(await page.locator("#next").isDisabled(), false);
 
     await page.setViewportSize({ width: 320, height: 740 });
-    await page.evaluate(() => new Promise(resolve =>
-      requestAnimationFrame(() => requestAnimationFrame(resolve))));
-    const overflow = await page.evaluate(() =>
-      document.documentElement.scrollWidth - document.documentElement.clientWidth);
-    assert.ok(overflow <= 1, "320px touch viewport overflow: " + overflow);
+    const size = await captureNarrowOverflow(page);
+    assert.ok(size.overflow <= 1, "320px touch viewport: " + JSON.stringify(size));
     assert.deepEqual(errors, [], "no browser JS/console errors");
     assert.deepEqual(outgoing, [], "no external or non-GET traffic");
     await context.close();
