@@ -176,9 +176,15 @@ test("browser: pointer + keyboard planting, pause, resize, mute and reset", asyn
     await page.keyboard.press("m");
     assert.equal(await page.locator("#sound").textContent(), "on");
 
-    // Resume and confirm time moves again.
+    // Resume and confirm time moves again. Wait on the actual visible timer
+    // rather than a fixed sleep so slower concurrent CI browsers cannot make
+    // a healthy resume look broken.
     await page.keyboard.press("Space");
-    await page.waitForTimeout(260);
+    await page.waitForFunction(
+      threshold => Number.parseFloat(document.querySelector("#time")?.textContent || "Infinity") < threshold,
+      whilePaused - 0.1,
+      { timeout: 2000 }
+    );
     const afterResume = await numericText(page, "#time");
     assert.ok(afterResume < whilePaused - 0.1, "timer resumes after Space");
 
