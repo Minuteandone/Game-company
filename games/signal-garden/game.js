@@ -189,6 +189,10 @@ function loadLevel(index, focusBoard = false, persist = true) {
 
 function rotate(index) {
   if (completed || currentBoard.tiles[index].locked) return;
+  // Most opening moves rotate a real path without immediately changing the
+  // illuminated network. Explain both outcomes rather than repeating a count
+  // that looks like the input did nothing.
+  const previousPowered = tracePower(currentBoard.tiles, currentBoard.size).powered;
   currentBoard.tiles = rotateTile(currentBoard.tiles, index);
   turns++;
   const { goalReached, powered } = tracePower(currentBoard.tiles, currentBoard.size);
@@ -217,7 +221,22 @@ function rotate(index) {
     victory.hidden = false;
     nextButton.focus();
   } else {
-    showMessage(`${powered.size} tiles glowing. Keep connecting the trail.`);
+    const row = Math.floor(index / currentBoard.size) + 1;
+    const col = index % currentBoard.size + 1;
+    const openings = tileConnections(currentBoard.tiles[index])
+      .map(direction => DIRECTION_NAMES[direction]).join(", ");
+    const rotated = `Row ${row}, column ${col} turned. Openings: ${openings}. `;
+    let feedback;
+    if (powered.size > previousPowered.size) {
+      feedback = `Light spread to ${powered.size} tiles (+${powered.size - previousPowered.size}).`;
+    } else if (powered.size < previousPowered.size) {
+      feedback = `Light receded to ${powered.size} tiles (-${previousPowered.size - powered.size}).`;
+    } else if ([...previousPowered].some(tile => !powered.has(tile))) {
+      feedback = `Light changed route; ${powered.size} tiles glowing.`;
+    } else {
+      feedback = `Light unchanged so far (${powered.size} ${powered.size === 1 ? "tile" : "tiles"} glowing).`;
+    }
+    showMessage(rotated + feedback);
   }
 }
 
