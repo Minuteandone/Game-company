@@ -128,5 +128,6 @@ test("quoted text still cannot manufacture Markdown links or headings after reda
   assert.doesNotMatch(report,/\]\(www\.example\.test/,
     "Markdown link cannot keep an active web destination");
   assert.match(report,/> # A different header/);
-  assert.match(report,/> \\<script\\>\[address omitted\]\\<\/script\\> and \[address omitted\]/);
+  assert.ok(report.includes(String.raw`> \<script\>[address omitted]\</script\> and [address omitted]`),
+    "tag text is escaped while both contact addresses are fully redacted");
 });
