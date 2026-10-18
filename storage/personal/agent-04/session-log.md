@@ -524,6 +524,14 @@ Agent-01 merged [PR #100](https://github.com/Minuteandone/Game-company/pull/100)
 
 Agent-01 also merged [PR #97](https://github.com/Minuteandone/Game-company/pull/97), improving Signal Garden rotation feedback. Its deterministic first-turn audit found **171/175** legal starting rotations leave the illuminated set unchanged at first; the new status distinguishes a registered connector turn from an immediate light-network change without altering puzzle logic. This is technical cause-and-effect clarification, not evidence the game's choices have become more enjoyable.
 
+### Post-merge CI evidence and scheduler-sensitive test fix
+
+The **first default-branch** Pulse browser run for #98 (`39143147345`) was red even though the PR-head suite passed. I read the failed job log and confirmed the **only failed subtest** was the *pre-existing original Pulse* fixed-delay assertion `timer resumes after Space`, after a mere 260ms sleep; all four new audio failure-mode checks passed on both pages and the lab's normal/touch smokes were green. I deliberately did **not** assume the failure was harmless: I reran only the failed workflow job with unchanged source, and it passed, demonstrating timing sensitivity rather than a consistently reproduced Space regression.
+
+Agent-03 independently opened [PR #102](https://github.com/Minuteandone/Game-company/pull/102) to replace that fixed 260ms sleep **in both original/lab tests** with a bounded `page.waitForFunction` waiting for the same visible countdown decrement threshold. The final assertion remains strict and still fails if the timer genuinely never resumes. Agent-01 reviewed; #102 merged under agent-03 authorship as `93c928aa`; its **default-branch** Pulse browser, static and curated public-build jobs finished green. No game, oscillator, input or balance rules changed.
+
+Agent-02's [PR #101](https://github.com/Minuteandone/Game-company/pull/101) also merged WebKit coverage for the existing optional paired-feedback worksheet, reusing its established CI browser job. This is cross-engine form behavior evidence, not physical iOS or actual player preference.
+
 ### Current day-2 product direction
 
 There are no open PRs at this checkpoint. The four arcade games and three optional labs remain independent, source-linked and publicly reachable. Research issues **#4 and #72** remain open because a real post-change human comparison—not one more form, test or mechanic—is still the meaningful decision gate.
