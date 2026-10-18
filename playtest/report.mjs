@@ -69,10 +69,22 @@ function plain(value, maxLength = 2000) {
 }
 
 function mdText(value, maxLength = 2000) {
-  return plain(value, maxLength)
-    .replace(/\\/g, "\\\\")
-    .replace(/([*_`\[\]<>|])/g, "\\$1")
-    .replace(/https?:\/\/\S+/gi, "[link omitted; describe it in words]");
+  // Remove common active links and email-like addresses *before* Markdown
+  // escaping. That keeps underscores and plus-tags in addresses intact for
+  // matching, and keeps our own explanatory placeholders readable.
+  const source = plain(value, maxLength);
+  const sensitive = /https?:\/\/\S+|\bwww\.[^\s]+|[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi;
+  const escape = (part) => part.replace(/\\/g, "\\\\")
+    .replace(/([*_`\[\]<>|])/g, "\\$1");
+  let result = "", cursor = 0;
+  for (const match of source.matchAll(sensitive)) {
+    result += escape(source.slice(cursor, match.index));
+    result += /^(?:https?:\/\/|www\.)/i.test(match[0])
+      ? "[link omitted; describe it in words]"
+      : "[address omitted]";
+    cursor = match.index + match[0].length;
+  }
+  return result + escape(source.slice(cursor));
 }
 
 function pick(key, value) {
