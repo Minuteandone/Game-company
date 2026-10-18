@@ -23,7 +23,7 @@ The **← Arcade** link in the header returns to the Game Company gallery using 
 
 Click/tap a mirror, or focus it with Tab and rotate with Enter/Space. R restarts a circuit; H shows a hint; N advances to the next unlocked circuit.
 
-Sound is disabled by default. Progress is stored in the browser when localStorage is available.
+Sound is disabled by default. Enabling it only requests Web Audio; it **does not verify speaker output**. If the browser cannot create an audio context or denies its asynchronous resume, the toggle announces **“Sound: unavailable”** and clears its pressed state; all puzzle rotations, unlocking and scores continue normally. This is a browser-compatibility safeguard, not a physical iOS/audio-perception test. Progress is stored in the browser when localStorage is available.
 
 **Clear saved progress** is a separate, confirmed action for people replaying from the beginning or using a shared browser. Cancel leaves the save untouched. Confirmation removes only Prism Relay’s storage key, re-locks later circuits and clears best rotation scores; other games remain unaffected. If storage deletion is blocked, the session resets and clearly warns that old progress may return after reload.
 

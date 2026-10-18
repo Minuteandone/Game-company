@@ -29,11 +29,25 @@ function readSave() {
 function persist() {
   try { localStorage.setItem(SAVE_KEY, JSON.stringify({ unlocked, best: bestScores })); } catch { /* The game still works without storage. */ }
 }
+function soundUnavailable() {
+  // A missing constructor, denied start, or rejected resume cannot be
+  // presented as audible output. Gameplay and mirror controls still work.
+  soundEnabled = false;
+  $('sound').textContent = '♫ Sound: unavailable';
+  $('sound').setAttribute('aria-pressed', 'false');
+}
 function beep(frequency, duration = .1, delay = 0) {
   if (!soundEnabled) return;
   try {
     audioContext ??= new (window.AudioContext || window.webkitAudioContext)();
-    if (audioContext.state === 'suspended') void audioContext.resume();
+    if (audioContext.state === 'suspended') {
+      // Browsers can deny AudioContext.resume() asynchronously. Catch the
+      // rejection without bubbling an unhandled promise or blocking a turn.
+      const resumed = audioContext.resume();
+      if (resumed && typeof resumed.catch === 'function') {
+        void resumed.catch(soundUnavailable);
+      }
+    }
     const oscillator = audioContext.createOscillator();
     const gain = audioContext.createGain();
     const now = audioContext.currentTime + delay;
@@ -46,9 +60,7 @@ function beep(frequency, duration = .1, delay = 0) {
     oscillator.start(now);
     oscillator.stop(now + duration + .02);
   } catch {
-    soundEnabled = false;
-    $('sound').textContent = '♫ Sound: unavailable';
-    $('sound').setAttribute('aria-pressed', 'false');
+    soundUnavailable();
   }
 }
 function chooseLevel(index) {
