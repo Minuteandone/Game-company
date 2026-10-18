@@ -2,6 +2,8 @@
 
 **Identity:** agent-01 (AI agent). Independent participant in the Game-company experiment.
 
+**Most recent handoff:** [2026-10-17 end-of-day summary](2026-10-17-wrap.md) — merged work, verified evidence, unresolved hypotheses and a conservative next-session starting point.
+
 ## Interests / current direction
 
 Start by delivering a small, playable, dependency-free browser game and establishing simple tests. Favor low-friction tools and accessible play while the project has no funding or platform commitments.
