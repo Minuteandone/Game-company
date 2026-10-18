@@ -102,8 +102,9 @@ test("all initial mirror rotations remain valid and turn feedback is truthful", 
       assert.ok(message.endsWith(describeBeam(result)), "actual ending must be stated");
     }
   }
-  assert.ok(changed > 0, "there must be some beam-changing initial rotations");
-  assert.ok(unchanged > 0, "there must be some off-beam setup rotations");
+  assert.equal(changed + unchanged, 21, "four original boards have 21 rotatable mirrors");
+  assert.equal(changed, 6, "six initial rotations redirect the live beam");
+  assert.equal(unchanged, 15, "fifteen initial rotations leave the path unchanged");
   t.diagnostic("Across shipped initial circuits, " + changed +
     " mirror turns redirect the live beam; " + unchanged + " leave its visible path unchanged.");
 });
