@@ -29,11 +29,16 @@ Sound is disabled by default. Progress is stored in the browser when localStorag
 
 Mirror buttons now describe their coordinate, slash/backslash orientation, whether the live beam reaches them, and the beam's inbound/outbound directions when reached. The board's accessible description lists the emitter, receiver, walls and keyboard controls. Interrupted-beam status messages give a terminating cell when available. **Automated DOM checks do not replace actual assistive-technology usability testing.**
 
+**Turn feedback:** after a non-winning rotation, the status line names the mirror's row, column and new slash/backslash orientation. It reports whether the **ordered beam path changed** and the **actual beam destination/interruption**. A mirror outside the currently reached beam produces “path unchanged so far; beam does not yet reach this mirror,” *not* “failed move.” Off-path rotations can be necessary setup moves for a later solution. Winning rotations still announce the existing completion/unlock message. The same text is in the live-region status for nonvisual users.
+
+This is a bounded response to the first review's **perceived low distinctiveness/agency**, not proof of greater fun or planning. It does **not** add new puzzle complexity, limit hints, tell the player whether the rotation is strategically good, or change the saved best scores. A voluntary follow-up should test whether more explicit turn feedback clarifies causality **without** becoming repetitive or noisy.
+
 ## Tests
 
 Run this from the repository root with Node.js 18+:
 
     node --test experiments/agent-02-prism-relay/logic.test.mjs
+    node --test experiments/agent-02-prism-relay/accessibility.test.mjs
 
 The logic.mjs rules module does not depend on browser APIs; puzzle boards are in levels.mjs.
 
