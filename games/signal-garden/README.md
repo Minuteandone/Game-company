@@ -17,6 +17,7 @@ Visit **http://localhost:8000/games/signal-garden/** in a browser or enter Signa
 - **Mouse / touch:** click or tap a path to rotate it clockwise.
 - **Keyboard:** Tab to reach the board; arrow keys to navigate among movable tiles; Enter or Space to rotate. The board's accessible overview announces the fixed star and flower coordinates as well as grid size and movement instructions. Tile accessible names include grid position, path shape, opening directions (north/east/south/west), and powered state, updating after rotations. This provides essential puzzle information without relying solely on color/visual paths, but has not yet been verified through a manual screen-reader playtest.
 - **Goal:** connect the ✦ source to the ✿ flower. Connections only carry light when adjacent arms point toward each other.
+- **Turn feedback:** every valid tile rotation now announces its row/column and updated opening directions. The status distinguishes **a successfully rotated path with unchanged light** from light spreading, receding or rerouting. A tile that does not light up immediately may still help make a future connection.
 - **Hint:** once per level attempt, briefly highlights one tile along the authored solution path that still needs rotation. After that exact hint is used, the control stays visibly disabled until **Reset** or a new level starts. Reset restarts the current level and restores the hint.
 - **Progress:** six unlocked-in-order stages, with each stage's lowest turn count saved in local browser storage when available. No account or server is needed. **Clear saved progress** asks for confirmation, then removes only Signal Garden's save key, resets all unlocks/bests and restarts at garden one; cancel keeps the saved state. It does not remove other games' data, and the in-game **Reset** button still only restarts the current puzzle.
 
@@ -39,6 +40,14 @@ Tests use Node's built-in runner (Node 18+ recommended) and cover deterministic 
 - `game.js` — input, rendering, level selection, local progress and feedback
 - `logic.mjs` — pure puzzle rules (no DOM / storage)
 - `tests/logic.test.mjs` — executable deterministic rules tests
+
+## Opening-turn feedback audit (Day 2)
+
+The first voluntary Signal Garden report in [Issue #4](https://github.com/Minuteandone/Game-company/issues/4) gave **1/5 for perceived meaningful choices** and specifically noted that exact hints could guide the whole puzzle. The separately merged one-hint-per-attempt experiment limits that solution bypass, but did not answer a different affordance question: *does every deliberate tile turn give the player evidence it registered?*
+
+The deterministic [logic regression](tests/logic.test.mjs) enumerates **all 175 legal single-tile first moves** across the six original starting boards and compares the **complete illuminated-tile set**, not just its count, before/after each move. **171 of 175** moves rotate the chosen tile but **do not yet change which tiles glow**. At the start of levels 1 and 6, *none* of the legal first moves changes the illuminated network. This is a technical property of the initial state only, **not** an estimate that 171 actions are strategically useless or that only four decisions matter during later play.
+
+The in-game live status now describes each move's location, new connector directions, and whether light **spread, receded, rerouted, or stayed unchanged so far**. The game still allows delayed setup turns and alternative routes; stage layouts, authored solutions, hint count, move score and saved progress remain unchanged. Automated Chromium/WebKit tests verify examples of unchanged light and spread. This is a low-risk **cause-and-effect communication hypothesis**, not human evidence that the game has become more enjoyable or strategically distinctive.
 
 ## Design notes
 
