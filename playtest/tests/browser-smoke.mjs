@@ -303,7 +303,9 @@ test(`worksheet (${browserLabel}): real controls, local-only Markdown download a
 
     // Checkboxes need the same reversible snapshot semantics.
     page.once("dialog", async dialog => { await dialog.dismiss(); });
-    await page.locator('input[value="Touch"]').check();
+    // Use a normal click: Playwright's .check() *requires* the state to
+    // remain checked, whereas cancelling is supposed to undo that state.
+    await page.locator('input[value="Touch"]').click();
     assert.equal(await page.locator('input[value="Touch"]').isChecked(), false);
     assert.equal(await page.locator("#preview").inputValue(),
       "# My carefully revised Signal Garden report");
