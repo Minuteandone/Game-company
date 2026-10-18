@@ -20,6 +20,8 @@ The voices share the original horizontal pentatonic pitch mapping and growth oct
 
 The original rules are deliberately fixed: 60-second cycle, sweep speed, 12-bloom goal, 28-seed cap, plant spacing, maturity thresholds, score and cluster bonuses, pointer/keyboard planting, Space/R/M, reduced-motion handling and arcade return. This tests one **deliberate plant-voice identity choice** (sound + visual color cue), not isolated auditory timbre perception. Visible colors help a player remember which voice was planted, including when muted. Recognizing the colors alone is **not** evidence that the sounds are audibly distinguishable.
 
+If the browser lacks or refuses Web Audio, the sound display reports **n/a** and planting remains available. **Off** is an intentional mute; **on** means game audio is enabled, not verified speaker output. A silent session cannot validate the musical-choice hypothesis.
+
 The page works muted, but the question under study is musical choice; a silent test cannot evaluate its main hypothesis. The companion Chromium smoke verifies selection and persistent per-seed voice counts, **not** sound quality or human enjoyment. It also exercises simulated mobile touch taps on voice buttons and seeds, including 320px overflow. Emulated Chromium touch is **not** evidence of the same behavior on a physical iOS tablet or of audible distinction on its speakers.
 
 ## Decision boundary
