@@ -15,6 +15,44 @@ const gameSelect = document.querySelector("#game");
 const followup = document.querySelector("#specific-followup");
 let previousGame = "";
 let lastGeneratedPreview = "";
+let lastGeneratedFields = [];
+
+// The preview is intentionally editable independently of form answers.
+// Preserve this work until the visitor explicitly approves regeneration.
+function rememberFields() {
+  lastGeneratedFields = [...form.querySelectorAll("input, select, textarea")]
+    .map(field => ({
+      field, value: field.value,
+      checked: field.type === "checkbox" || field.type === "radio" ? field.checked : null
+    }));
+}
+
+function restoreFields() {
+  for (const { field, value, checked } of lastGeneratedFields) {
+    field.value = value;
+    if (checked !== null) field.checked = checked;
+  }
+}
+
+function fieldsChanged() {
+  return lastGeneratedFields.some(({ field, value, checked }) =>
+    field.value !== value || (checked !== null && field.checked !== checked));
+}
+
+function regenerateWithConsent() {
+  // Browsers fire 'change' after 'input' on text inputs. Avoid duplicate
+  // prompts (and accidental loss) when no form value actually changed.
+  if (!fieldsChanged()) return;
+  if (preview.value !== lastGeneratedPreview && !window.confirm(
+    "You manually edited this Markdown report. Changing the form will replace " +
+    "those edits. Copy or download first. Continue?"
+  )) {
+    restoreFields();
+    status.textContent = "Change cancelled. Your hand-edited report was preserved.";
+    return;
+  }
+  regenerate();
+}
 
 // An explicit game deep link may preselect only one reviewed experiment.
 // Ignore unknown IDs rather than guessing from the visitor's browser/referrer.
@@ -56,6 +94,17 @@ function confirmGameChange() {
     previousGame = nextGame;
     regenerate();
     status.textContent = "Previous experiment's notes were cleared before switching.";
+    return;
+  }
+  // A neutral report can contain hand-edited Markdown too; choosing the
+  // correct game should preserve *form answers* but must not silently erase
+  // custom report text. This is separate from clearing a named game's notes.
+  if (!previousGame && preview.value !== lastGeneratedPreview && !window.confirm(
+    "Choosing a game will regenerate this hand-edited Markdown report. " +
+    "Copy or download it first if you want to keep those edits. Continue?"
+  )) {
+    gameSelect.value = previousGame;
+    status.textContent = "Switch cancelled. Your hand-edited report was preserved.";
     return;
   }
   previousGame = nextGame;
@@ -105,6 +154,7 @@ function regenerate() {
   }
   preview.value = buildReport(answers);
   lastGeneratedPreview = preview.value;
+  rememberFields();
   status.textContent = "";
 }
 
@@ -112,11 +162,11 @@ form.addEventListener("input", (event) => {
   // A <select> fires input before change in many browsers. Do not overwrite
   // the current report under another game's heading while confirmation awaits.
   if (event.target === gameSelect) return;
-  regenerate();
+  regenerateWithConsent();
 });
 form.addEventListener("change", (event) => {
   if (event.target === gameSelect) confirmGameChange();
-  else regenerate();
+  else regenerateWithConsent();
 });
 form.addEventListener("submit", (event) => event.preventDefault());
 
