@@ -35,16 +35,25 @@ export function orderedGames(pairId, order = "original-first") {
 function safeNote(input) {
   const value = typeof input === "string" ? input.trim().slice(0,3000) : "";
   if (!value) return "> Not recorded";
-  // Match the reviewed worksheet's Markdown escaping and raw URL stripping.
-  // Quote each line so even user-supplied headings cannot impersonate fields.
-  const safe = value.replace(/\r\n?/g,"\n")
-    .replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g," ")
-    .replace(/\\/g,"\\\\")
+  // Redact common links and contact-like addresses from unescaped input.
+  // Escaping underscores first can break an email into a partial identifier
+  // plus a redaction marker; the original full address must be recognized.
+  const source = value.replace(/\r\n?/g,"\n")
+    .replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g," ");
+  const sensitive = /https?:\/\/\S+|\bwww\.[^\s]+|[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi;
+  const escape = part => part.replace(/\\/g,"\\\\")
     .replace(/([*_`\[\]<>|])/g,"\\$1")
-    .replace(/https?:\/\/\S+/gi,"[link omitted; describe it in words]")
-    .replace(/\bwww\.[^\s]+/gi,"[link omitted; describe it in words]")
-    .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi,"[address omitted]")
     .replace(/@/g,"\\@");
+  let safe = "", cursor = 0;
+  for (const match of source.matchAll(sensitive)) {
+    safe += escape(source.slice(cursor, match.index));
+    safe += /^(?:https?:\/\/|www\.)/i.test(match[0])
+      ? "[link omitted; describe it in words]"
+      : "[address omitted]";
+    cursor = match.index + match[0].length;
+  }
+  safe += escape(source.slice(cursor));
+  // Every line remains quoted, so user text cannot impersonate report fields.
   return safe.split("\n").map(line=>"> "+line).join("\n");
 }
 
