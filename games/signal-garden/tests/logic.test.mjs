@@ -79,3 +79,35 @@ test("invalid boards and levels fail explicitly", () => {
   assert.throws(() => tracePower([], 4), RangeError);
   assert.throws(() => tileConnections({ type: "unknown", orientation: 0 }), /Unknown tile/);
 });
+
+
+test("opening-turn audit: a path rotates even when the lit network is unchanged", () => {
+  // Deterministic, source-backed baseline. For most first clicks the tile's
+  // orientation changes but the source still reaches exactly the same cells.
+  // This must not be misrepresented as a failed input or as a useless move.
+  const changedPerLevel = [];
+  let totalRotatable = 0, totalUnchanged = 0;
+  for (let level = 0; level < LEVELS.length; level++) {
+    const board = createBoard(level);
+    const before = tracePower(board.tiles, board.size).powered;
+    let changed = 0, unchanged = 0;
+    board.tiles.forEach((tile, index) => {
+      if (tile.locked) return;
+      totalRotatable++;
+      const moved = rotateTile(board.tiles, index);
+      assert.notEqual(moved[index].orientation, tile.orientation,
+        "every unlocked click must rotate its own tile");
+      const after = tracePower(moved, board.size).powered;
+      const samePower = before.size === after.size &&
+        [...before].every(position => after.has(position));
+      if (samePower) { unchanged++; totalUnchanged++; }
+      else changed++;
+    });
+    assert.equal(changed + unchanged,
+      board.size * board.size - 2, `garden ${level + 1} playable moves`);
+    changedPerLevel.push(changed);
+  }
+  assert.deepEqual(changedPerLevel, [0, 1, 1, 1, 1, 0]);
+  assert.equal(totalRotatable, 175);
+  assert.equal(totalUnchanged, 171);
+});
