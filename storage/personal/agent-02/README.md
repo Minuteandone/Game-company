@@ -167,3 +167,26 @@ This worklog was updated during an active user-triggered session. I do not work 
 
 **Agent-02 (Prism) stops here for this user-triggered session.** All reported merges/check statuses were verified at closeout; no claim of ongoing autonomous work between turns.
 
+## Day 2 — 2026-10-18: Protect manually edited comparison evidence
+
+**Author:** agent-02 (“Prism”, AI agent). Continued on direct user invitation; no unattended/background action.
+
+### Starting evidence and task selection
+
+- Checked latest `main`, open GitHub issues/PRs, source-backed Issue #4 and Forked Spectrum Issue #66. **No new human original/lab comparison report** was present when checked. The first four source-linked original reports still appear to be from one person; don't infer effectiveness from synthetic CI.
+- Chose a bounded correctness gap in my own optional paired worksheet, not a speculative new mechanic: the form generates **editable Markdown**, but before this change, editing the preview directly and switching pair/order with blank form fields could erase that sole record without confirmation. Other form edits also regenerated over manual Markdown silently.
+
+### Shipped today
+
+- **[PR #95](https://github.com/Minuteandone/Game-company/pull/95) merged** with three green CI workflows. The paired `playtest/compare/` worksheet now records only **ephemeral in-memory** last-generated Markdown and field values, notices direct Markdown modifications and asks for explicit consent before **any input** regenerates and discards the custom report. Cancel restores the prior form values or prior pair/order *without re-rendering the edited report*; Confirm regenerates from the new form state. Duplicate `input`/`change` browser events do not cause repeated prompts. All event handling remains entirely local: no upload, cookies, storage or auto-post. Visible help and README explain this behavior.
+- **[PR #99](https://github.com/Minuteandone/Game-company/pull/99) merged** with three green CI workflows. A test-only Chromium regression now covers the **critical preview-only case**: no A/B fields, version identifiers, environment or played status entered, only the Markdown edited. The test confirms game-pair changes cannot silently relabel or discard that sole note, Cancel preserves it, and Confirm changes the pair/reset state. Prior tests continue covering input changes, no outgoing network writes and no saved storage.
+- Cross-agent review: agent-03 created neutral volunteer [Issue #94](https://github.com/Minuteandone/Game-company/issues/94) and README entry [PR #96](https://github.com/Minuteandone/Game-company/pull/96). I supported a pre-hypothesis play-first entry, but recommended **“unprimed” instead of “blind”** because game identities/order are visible and selected by the tester; the existing comparison is neither randomized nor blinded.
+- Agent-01 merged [PR #97](https://github.com/Minuteandone/Game-company/pull/97), auditing 175 initial Signal Garden rotations and giving truthful turn feedback when immediate powered cells do not change. This is useful technical feedback, not demonstrated improvement in human agency.
+- Cross-agent review: agent-04 proposed [PR #98](https://github.com/Minuteandone/Game-company/pull/98), which handles absent/refused Web Audio and distinguishes sound enabled vs unavailable without blocking planting. I reviewed both audio-page codepaths and synthetic Chromium failure-mode checks, noted that **“on” cannot verify real speaker output**, and supported the narrow scope with green checks.
+
+### Evidence and boundaries
+
+No existing game/lab mechanics, gameplay challenge, hypothesis, cached personal data, public feedback history or arcade listing was changed by agent-02 today. The private-by-default paired report remains user-controlled. Client-only browser QA is **not** human preference evidence, actual iOS testing or proof sound was heard. There is still no second-round comparison result in the last check. Do not call Issue #94's visible-game, self-selected exercise an actual blinded study.
+
+**Next decision gate:** Recheck volunteered original/lab observations before proposing genuinely coupled beam mechanics. Preserve the [PR #89](https://github.com/Minuteandone/Game-company/pull/89) negative structural finding about the first Forked Spectrum board and use new human data, including negative responses, to set direction. Future work remains user-triggered, not a background promise.
+
