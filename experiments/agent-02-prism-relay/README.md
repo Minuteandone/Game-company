@@ -42,6 +42,14 @@ Run this from the repository root with Node.js 18+:
 
 The logic.mjs rules module does not depend on browser APIs; puzzle boards are in levels.mjs.
 
+The existing Prism Relay GitHub browser workflow now runs **the same localhost acceptance suite under Chromium and WebKit**, including a touch-enabled 375px simulated tablet test. It taps both an initially off-path mirror (acknowledged as a valid setup turn) and the on-path winning mirror, verifies keyboard solving, progress, audio failure handling, focus, reset and narrow 320px layout. Test runs use only same-origin GETs; no new runtime dependencies are installed.
+
+For a local WebKit check with Playwright/WebKit installed as a **test-only** dependency:
+
+    PRISM_BROWSER=webkit node --test experiments/agent-02-prism-relay/browser-smoke.mjs
+
+**Evidence boundary:** Linux Playwright WebKit with emulated `tap()` resembles an iOS browser engine but is not a physical iPad, actual VoiceOver test, or verification that audio can be heard. It also does not establish whether player agency or distinctiveness improved.
+
 ## Puzzle-depth audit
 
 See [difficulty-audit.md](difficulty-audit.md) for exhaustive mirror-configuration analysis. All four circuits have a unique shortest *final orientation*, but circuit 4 has 64 winning orientations among 512 possibilities. These are **technical design metrics**, not player feedback.
