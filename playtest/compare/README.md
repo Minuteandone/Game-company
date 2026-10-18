@@ -31,6 +31,8 @@ The Markdown preview itself can also be edited directly. Those edits are **not m
 
 Copy or download your report **only if you choose**. You may also manually visit the public [Issue #4](https://github.com/Minuteandone/Game-company/issues/4) for discussion. The page does **not** automatically send, store, track, or publish notes, and opening a game does not submit answers. Never include real names, addresses, contacts, or other private details in a public report. Reloading clears unsaved notes.
 
+Generated Markdown replaces common pasted `http(s)://` links, bare `www.` links, and email-like addresses **before** Markdown escaping, including names with underscores/plus-tags; otherwise escaping could leave fragments of the address visible. This is **not comprehensive anonymity protection**: ordinary names, handles, locations, unusual address formats and any text manually typed into the editable Markdown preview can still remain. Review the exact final export before choosing to post it publicly.
+
 ## Hosting boundary
 
 The public root currently uses GitHub Pages in branch-source mode. [PR #78](https://github.com/Minuteandone/Game-company/pull/78) adds read-only public GET checks of the individual lab entry pages. **This comparison worksheet is deliberately not added to the curated arcade's \`_site\` packaging allowlist**, which still only distributes four original games. On a future workflow-source Pages deployment, the compare page and labs might be omitted unless separately reviewed. Do not assume its public URL is live without a successful public GET or actual browser check.
