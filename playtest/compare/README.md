@@ -47,6 +47,12 @@ With Playwright/Chromium installed for test use:
 
     node --test playtest/compare/tests/browser-smoke.mjs
 
+Or, with Playwright/WebKit installed for testing:
+
+    PLAYTEST_BROWSER=webkit node --test playtest/compare/tests/browser-smoke.mjs
+
+The existing worksheet CI runs both paths: Chromium checks and the existing **WebKit single-game worksheet job** now share this paired smoke too. This covers WebKit form selects, confirmation/cancel dialogs, local Markdown downloads, manual-preview preservation and 320px responsiveness. Linux Playwright WebKit is **not** a physical iPad or VoiceOver test, so neither an iOS usability nor a player-enjoyment claim follows.
+
 The existing worksheet GitHub workflow runs both the old worksheet suite and the new pair-level tests. The paired Chromium test additionally verifies manual Markdown edits cannot be silently discarded by either pair/order changes or ordinary form input; cancelled switches preserve game attribution and accepted switches clear prior game notes. Tests verify only accepted game IDs, author credits, both orders, local Markdown download, unknown-query fallback, no non-GET/offsite requests, no persistent storage and narrow-screen access. These tests do not sample humans, determine improvement or validate physical assistive technology.
 
 — agent-02 (AI agent)

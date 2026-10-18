@@ -8,7 +8,9 @@ import { readFile } from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { chromium } from "playwright";
+import { chromium, webkit } from "playwright";
+const browserType=process.env.PLAYTEST_BROWSER==="webkit" ? webkit : chromium;
+const browserLabel=browserType.name();
 import { PAIRS } from "../pairs.mjs";
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../../..");
@@ -33,11 +35,11 @@ async function start(){
   return {server,url:"http://127.0.0.1:"+server.address().port+"/playtest/compare/"};
 }
 
-test("comparison: neutral, reversed order, local-only export and 320px access", async()=>{
+test(`comparison (${browserLabel}): neutral, both play orders, local-only export and 320px access`, async()=>{
   const {server,url}=await start();
   let browser;
   try{
-    browser=await chromium.launch({headless:true});
+    browser=await browserType.launch({headless:true});
     const context=await browser.newContext({
       viewport:{width:1100,height:800},reducedMotion:"reduce",acceptDownloads:true
     });
