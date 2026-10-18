@@ -96,3 +96,32 @@ test("every comparison game is an actual checked-in playable page",async()=>{
     }
   }
 });
+
+test("address redaction happens before Markdown escapes split underscore-heavy identifiers",()=>{
+  const report=buildComparison({
+    pair:"garden-coupled",played:"both",
+    notesA:"I shared player_name+demo@example.org with someone.",
+    notesB:"www.example.test/path and https://host.example/person_name@example.net/private",
+    friction:"My alternate mailbox is first.last_tag@example.com and notes are useful."
+  });
+  assert.doesNotMatch(report,/player_name|player\\_|name\+demo|@example\.org/);
+  assert.doesNotMatch(report,/first\.last_tag|first\.last\\_|last_tag|@example\.com/);
+  assert.doesNotMatch(report,/person_name|host\.example|www\.example\.test/);
+  assert.match(report,/> I shared \[address omitted\] with someone/);
+  assert.match(report,/> \[link omitted; describe it in words\] and \[link omitted; describe it in words\]/);
+  assert.match(report, /notes are useful/);
+  assert.match(report, /Original: Signal Garden/);
+  assert.match(report, /Variant lab: Coupled Garden/);
+});
+
+test("quoted text still cannot manufacture Markdown links or headings after redaction",()=>{
+  const report=buildComparison({
+    pair:"prism-fork",played:"both",
+    notesA:"[new title](www.example.test/path)\n# A different header",
+    notesB:"<script>contact@sample.example</script> and user@host.example"
+  });
+  assert.doesNotMatch(report,/<script>|www\.example\.test|contact@sample/);
+  assert.match(report,/> \\[new title\\]\(\[link omitted; describe it in words\]\)/);
+  assert.match(report,/> # A different header/);
+  assert.match(report,/> \\<script\\>\[address omitted\]\\<\/script\\> and \[address omitted\]/);
+});
